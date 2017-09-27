@@ -1,36 +1,34 @@
 from gensim import corpora
 import os
 import xml.etree.ElementTree
+from six import iteritems
+import paths
 
-def readXML(node):
-    global body
-    global header
-    tag = node.tag[38:]
-    if (tag == "p"):
-        if (isinstance(node.text, str)):
-            body += node.text
-    if (tag == "hl1"):
-        header = node.text
-    for child in node:
-        readXML(child)
+def what(thisis):
+    return thisis
+
+# collect statistics about all tokens
+whatsthis = list(what(line.lower().split() for line in open('mycorpus.txt')))
+dictionary = corpora.Dictionary(line.lower().split() for line in open('mycorpus.txt'))
+dictionary.add_documents(line.lower().split() for line in open('mycorpus2.txt'))
+# remove stop words and words that appear only once
+#stop_ids = [dictionary.token2id[stopword] for stopword in stoplist
+#            if stopword in dictionary.token2id]
+#dictionary.filter_tokens(stop_ids + once_ids)  # remove stop words and words that appear only once
+#dictionary.compactify()  # remove gaps in id sequence after words that were removed
+#print(dictionary)
+
 
 body = ""
 header = ""
-counter = 0
 bodies = []
+dictionary = corpora.Dictionary()
 
-for subdir, dirs, files in os.walk('/home/erisos/Articles/mnt/newsarchive_share'):
-    if (subdir[-10:] == "/TabletXML"):
-        counter += 1
-        if counter == 10:
-            break
-        for filename in os.listdir(subdir):
-            if (filename[-4:] == ".xml"):
-                readXML(xml.etree.ElementTree.parse(subdir + '/' + filename).getroot())
-                bodies.append(body)
-                body = ""
-                header = ""
-
+for filename in os.listdir(paths.get_external_disk_path()):
+    dictionary.add_documents(line.lower().split() for line in open(filename))
+once_ids = [tokenid for tokenid, docfreq in iteritems(dictionary.dfs) if docfreq == 1]
+dictionary.filter_tokens(once_ids)  # remove stop words and words that appear only once
+dictionary.compactify()  # remove gaps in id sequence after words that were removed
 #tokenize
 class MyCorpus(object):
     def __iter__(self):
@@ -41,3 +39,4 @@ class MyCorpus(object):
 texts = [[word for word in document.lower().split()] for document in bodies ]
 
 print(texts)
+
