@@ -10,8 +10,10 @@ def find_link(search_term, text):
         return []
     search_term = search_term.lower()
     text = text.lower()
-    with_split = re.findall(r'\[\[[^\]]*\|' + search_term + '\]\]', text)
+    with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
+    if 'kashmir' in text:
+        test = 1
     return with_split + without_split
 
 def make_parentheses_for_regex(names):
@@ -26,46 +28,35 @@ def unmake_parentheses_for_regex(name):
     new_name = new_name.replace('\)', ')')
     return new_name
 
-def get_link_names(name):
-    if '|' in name:
-        link_text = re.sub(r'\]\]', '', re.sub(r'[^\|]*\|', '', name))
-        link_name = re.sub(r'\[\[', '', re.sub(r'\|[^\|]*', '', name))
-    else:
-        link_text = re.sub(r'\[\[', '', re.sub(r'\]\]', '', name))
-        link_name = link_text
-    unmake_parentheses_for_regex(link_text)
-    unmake_parentheses_for_regex(link_name)
-    return [link_text, link_name]
-
-def popularityPrior(names):
+def links_to_me(names):
     make_parentheses_for_regex(names)
     tree = etree.parse(paths.get_wikipedia_article_path())
     root = tree.getroot()
-    reference_list = []
+    title = ''
+    linking_list = []
     for root_child in root:
         if cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
+                if cut_brackets(page_child.tag) == 'title':
+                    title = page_child.text
                 if cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if cut_brackets(text.tag) == 'text':
                             for name in names:
                                 result = find_link(name, text.text)
-                                for link in result:
-                                    reference_list.append(get_link_names(link))
+                                if len(result) > 0:
+                                    new_name = unmake_parentheses_for_regex(name)
+                                    linking_list.append([new_name, title])
 
-    prior_return_list = []
+    linking_return_list = []
     for name in names:
         new_name = unmake_parentheses_for_regex(name)
-        matches = [match for match in reference_list if match[0] == new_name.lower()]
-        list_length = len(matches)
-        sub_list = []
-        while len(matches) != 0:
-            first_match = [match for match in matches if match == matches[0]]
-            sub_list_length = len(first_match)
-            matches = [x for x in matches if x not in first_match]
-            sub_list.append([first_match[0][1], sub_list_length/list_length])
-        prior_return_list.append([first_match[0][0], sub_list])
+        matches = [match for match in linking_list if match[0] == new_name.lower()]
+        links = []
+        for match in matches:
+            links.append(match[1])
+        linking_return_list.append([new_name, links])
 
-    return prior_return_list
+    return linking_return_list
 
-print(popularityPrior(['Aalborghus', 'ældre bronzealder', 'Kashmir']))
+print(links_to_me(['kashmir (band)']))
