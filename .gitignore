@@ -1,0 +1,8 @@
+Ignore .paths file
+.paths.txt
+
+#Ignore logfiles
+*.log
+
+#Ignore IDE files
+.idea/
