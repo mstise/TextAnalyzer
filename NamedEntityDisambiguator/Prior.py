@@ -37,12 +37,10 @@ def get_link_names(name):
     unmake_parentheses_for_regex(link_name)
     return [link_text, link_name]
 
-def popularityPrior(names):
+def popularityPrior(names, wiki_tree_root):
     make_parentheses_for_regex(names)
-    tree = etree.parse(paths.get_wikipedia_article_path())
-    root = tree.getroot()
     reference_list = []
-    for root_child in root:
+    for root_child in wiki_tree_root:
         if cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
                 if cut_brackets(page_child.tag) == 'revision':
@@ -67,5 +65,3 @@ def popularityPrior(names):
         prior_return_list.append([first_match[0][0], sub_list])
 
     return prior_return_list
-
-print(popularityPrior(['Aalborghus', 'ældre bronzealder', 'Kashmir']))
