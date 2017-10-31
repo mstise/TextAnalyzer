@@ -10,6 +10,8 @@ def readXML(node):
     tag = node.tag[38:]
     if (tag == "p"):
         if (isinstance(node.text, str)):
+            if body[-1] != ' ':
+                body += ' '
             body += node.text
     if (tag == "hl1"):
         header = node.text
@@ -25,7 +27,6 @@ writer = ix.writer()
 
 for subdir, dirs, files in os.walk('/home/erisos/Articles/mnt/newsarchive_share'):
     if (subdir[-10:] == "/TabletXML"):
-        counter += 1
         for filename in os.listdir(subdir):
             if (filename[-4:] == ".xml"):
                 readXML(xml.etree.ElementTree.parse(subdir + '/' + filename).getroot())

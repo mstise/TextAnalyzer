@@ -1,5 +1,3 @@
-from lxml import etree
-import paths
 import re
 
 def cut_brackets(text):
@@ -12,8 +10,6 @@ def find_link(search_term, text):
     text = text.lower()
     with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
-    if 'kashmir' in text:
-        test = 1
     return with_split + without_split
 
 def make_parentheses_for_regex(names):
@@ -28,13 +24,11 @@ def unmake_parentheses_for_regex(name):
     new_name = new_name.replace('\)', ')')
     return new_name
 
-def links_to_me(names):
+def links_to_me(names, wiki_tree_root):
     make_parentheses_for_regex(names)
-    tree = etree.parse(paths.get_wikipedia_article_path())
-    root = tree.getroot()
     title = ''
     linking_list = []
-    for root_child in root:
+    for root_child in wiki_tree_root:
         if cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
                 if cut_brackets(page_child.tag) == 'title':
@@ -58,5 +52,3 @@ def links_to_me(names):
         linking_return_list.append([new_name, links])
 
     return linking_return_list
-
-print(links_to_me(['kashmir (band)']))
