@@ -1,4 +1,4 @@
-Ignore .paths file
+#Ignore .paths file
 .paths.txt
 
 #Ignore logfiles

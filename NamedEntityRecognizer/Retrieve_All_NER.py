@@ -20,4 +20,3 @@ def ner_retriever(path="/home/duper/Desktop/tmp"):
 
 s = ner_retriever()
 
-print("end")
