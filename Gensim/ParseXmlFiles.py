@@ -9,6 +9,8 @@ def readXML(node):
     tag = node.tag[38:]
     if (tag == "p"):
         if (isinstance(node.text, str)):
+            if len(body) > 0 and body[-1] != " ":
+                body += " "
             body += node.text
     if (tag == "hl1"):
         header = node.text
