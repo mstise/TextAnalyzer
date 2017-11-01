@@ -1,3 +1,5 @@
+#From folder of recognized entities, retrieve ALL recognized mentions into a set: s
+
 import os
 import re
 import paths
@@ -25,4 +27,3 @@ def ner_retriever(path=paths.get_external_disk_path()):
 
 s = ner_retriever()
 
-print("end")
