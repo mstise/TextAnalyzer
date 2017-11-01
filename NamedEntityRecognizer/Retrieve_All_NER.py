@@ -1,5 +1,6 @@
 import os
 import re
+import paths
 
 def clean_line(line):
     indices = [m.start() for m in re.finditer('\'', line)]
@@ -10,12 +11,16 @@ def clean_line(line):
     return cleaned_line
 
 
-def ner_retriever(path="/home/duper/Desktop/tmp"):
+def ner_retriever(path=paths.get_external_disk_path()):
+    counter = 0
     s = set()
     for filename in os.listdir(path):
         for line in open(path + "/" + filename):
             new_line = clean_line(line)
             s.add(new_line)
+        counter += 1
+        if counter >= 25:
+            break
     return s
 
 s = ner_retriever()

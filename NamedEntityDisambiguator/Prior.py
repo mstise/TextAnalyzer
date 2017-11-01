@@ -1,9 +1,5 @@
-from lxml import etree
-import paths
 import re
-
-def cut_brackets(text):
-    return re.sub(r'\{[^}]*\}', '', text)
+from NamedEntityDisambiguator import Utilities
 
 def find_link(search_term, text):
     if text == None:
@@ -14,18 +10,6 @@ def find_link(search_term, text):
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
     return with_split + without_split
 
-def make_parentheses_for_regex(names):
-    for name in names:
-        new_name = name.replace('(', '\(')
-        new_name = new_name.replace(')', '\)')
-        names.remove(name)
-        names.append(new_name)
-
-def unmake_parentheses_for_regex(name):
-    new_name = name.replace('\(', '(')
-    new_name = new_name.replace('\)', ')')
-    return new_name
-
 def get_link_names(name):
     if '|' in name:
         link_text = re.sub(r'\]\]', '', re.sub(r'[^\|]*\|', '', name))
@@ -33,19 +17,19 @@ def get_link_names(name):
     else:
         link_text = re.sub(r'\[\[', '', re.sub(r'\]\]', '', name))
         link_name = link_text
-    unmake_parentheses_for_regex(link_text)
-    unmake_parentheses_for_regex(link_name)
+    Utilities.unmake_parentheses_for_regex(link_text)
+    Utilities.unmake_parentheses_for_regex(link_name)
     return [link_text, link_name]
 
 def popularityPrior(names, wiki_tree_root):
-    make_parentheses_for_regex(names)
+    Utilities.make_parentheses_for_regex(names)
     reference_list = []
     for root_child in wiki_tree_root:
-        if cut_brackets(root_child.tag) == 'page':
+        if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
-                if cut_brackets(page_child.tag) == 'revision':
+                if Utilities.cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
-                        if cut_brackets(text.tag) == 'text':
+                        if Utilities.cut_brackets(text.tag) == 'text':
                             for name in names:
                                 result = find_link(name, text.text)
                                 for link in result:
@@ -53,7 +37,7 @@ def popularityPrior(names, wiki_tree_root):
 
     prior_return_list = []
     for name in names:
-        new_name = unmake_parentheses_for_regex(name)
+        new_name = Utilities.unmake_parentheses_for_regex(name)
         matches = [match for match in reference_list if match[0] == new_name.lower()]
         list_length = len(matches)
         sub_list = []
