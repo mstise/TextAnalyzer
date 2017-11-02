@@ -22,7 +22,7 @@ def get_link_names(name):
     return [link_text, link_name]
 
 def popularityPrior(names, wiki_tree_root):
-    Utilities.make_parentheses_for_regex(names)
+    Utilities.make_parentheses_for_regex_list(names)
     reference_list = []
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':

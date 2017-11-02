@@ -45,5 +45,7 @@ def References(wiki_tree_root):
                 if Utilities.cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if Utilities.cut_brackets(text.tag) == 'text':
-                            result.append([title, find_references(text.text)])
+                            references = find_references(text.text)
+                            if references:
+                                result.append([title, references])
     return result
