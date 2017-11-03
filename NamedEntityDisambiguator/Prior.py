@@ -21,6 +21,7 @@ def get_link_names(name):
     Utilities.unmake_parentheses_for_regex(link_name)
     return [link_text, link_name]
 
+#names: ALLE recognized entities. Prior return list: [["Hp", [["Hewlett-Packard, 52,5], [HP, 40.0], [Harry Potter, 7.5]]], "Voldemort", [...]]
 def popularityPrior(names, wiki_tree_root):
     Utilities.make_parentheses_for_regex_list(names)
     reference_list = []
