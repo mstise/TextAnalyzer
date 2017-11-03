@@ -4,7 +4,7 @@ from NamedEntityDisambiguator import Utilities
 def find_references(text):
     if text == None:
         return []
-    text = Utilities.make_parentheses_for_regex(text)
+    text = Utilities.make_parentheses_for_regex_text(text)
     references = re.findall(r'<ref>[^<]*</ref>', text)
     for reference in re.findall(r'<ref>[^<]*<sup>[^<]*</sup>[^<]*</ref>', text):
         references.append(reference)
@@ -36,7 +36,7 @@ def find_references(text):
     return final_references
 
 def References(wiki_tree_root):
-    result = []
+    result = {}
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
@@ -45,5 +45,5 @@ def References(wiki_tree_root):
                 if Utilities.cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if Utilities.cut_brackets(text.tag) == 'text':
-                            result.append([title, find_references(text.text)])
+                            result[title] = find_references(text.text)
     return result
