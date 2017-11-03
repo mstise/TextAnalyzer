@@ -4,14 +4,14 @@ from NamedEntityDisambiguator import Utilities
 def find_link(search_term, text):
     if text == None:
         return []
-    search_term = search_term.lower()
-    text = text.lower()
+    search_term = search_term
+    text = text
     with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
     return with_split + without_split
 
 def links_to_me(names, wiki_tree_root):
-    Utilities.make_parentheses_for_regex(names)
+    Utilities.make_parentheses_for_regex_list(names)
     title = ''
     linking_list = []
     for root_child in wiki_tree_root:
@@ -31,7 +31,7 @@ def links_to_me(names, wiki_tree_root):
     linking_return_list = []
     for name in names:
         new_name = Utilities.unmake_parentheses_for_regex(name)
-        matches = [match for match in linking_list if match[0] == new_name.lower()]
+        matches = [match for match in linking_list if match[0] == new_name]
         links = []
         for match in matches:
             links.append(match[1])

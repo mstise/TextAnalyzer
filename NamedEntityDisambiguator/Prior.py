@@ -23,7 +23,7 @@ def get_link_names(name):
 
 #names: ALLE recognized entities. Prior return list: [["Hp", [["Hewlett-Packard, 52,5], [HP, 40.0], [Harry Potter, 7.5]]], "Voldemort", [...]]
 def popularityPrior(names, wiki_tree_root):
-    Utilities.make_parentheses_for_regex(names)
+    Utilities.make_parentheses_for_regex_list(names)
     reference_list = []
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':
