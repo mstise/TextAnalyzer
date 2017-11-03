@@ -36,9 +36,3 @@ def find_link_anchor_texts(names, wiki_tree_root):
             new_anchor_texts.append(new_entity_with_lat)
 
     return anchor_texts
-
-from lxml import etree
-import paths
-tree = etree.parse(paths.get_wikipedia_article_path())
-root = tree.getroot()
-find_link_anchor_texts(['Anders Fogh Rasmussen'], root)

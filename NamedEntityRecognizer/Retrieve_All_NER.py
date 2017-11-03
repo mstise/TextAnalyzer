@@ -25,5 +25,5 @@ def ner_retriever(path=paths.get_external_disk_path()):
             break
     return s
 
-s = ner_retriever()
+#s = ner_retriever()
 
