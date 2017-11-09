@@ -42,11 +42,12 @@ def popularityPrior(names, wiki_tree_root):
         matches = [match for match in reference_list if match[0] == new_name.lower()]
         list_length = len(matches)
         sub_list = []
-        while len(matches) != 0:
-            first_match = [match for match in matches if match == matches[0]]
-            sub_list_length = len(first_match)
-            matches = [x for x in matches if x not in first_match]
-            sub_list.append([first_match[0][1], sub_list_length/list_length])
-        prior_return_list.append([first_match[0][0], sub_list])
+        if len(matches) != 0:
+            while len(matches) != 0:
+                first_match = [match for match in matches if match == matches[0]]
+                sub_list_length = len(first_match)
+                matches = [x for x in matches if x not in first_match]
+                sub_list.append([first_match[0][1], sub_list_length/list_length])
+            prior_return_list.append([first_match[0][0], sub_list])
 
     return prior_return_list

@@ -1,65 +1,46 @@
 from lxml import etree
 import paths
 import sys
-from NamedEntityDisambiguator import Prior
+from NamedEntityDisambiguator.keyphrase_based_similarity import keyphrase_similarity
 from NamedEntityDisambiguator import References
 from NamedEntityDisambiguator import LinksToEntity
 from itertools import product
 from NamedEntityDisambiguator.Prior import popularityPrior
+from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coherence
+from NamedEntityRecognizer.Retrieve_All_NER import ner_lst_retriever
+import networkx as nx
+import matplotlib.pyplot as plt
 
-#This function finds the indicies of the minimum cover using maximum amount of words from kp
-def min_distance_indices(indices):
-    combinations = list(product(*indices))
-    sorted_combinations = [sorted(x) for x in combinations]
-    min_dist = sys.maxsize
-    for i in range(0, len(sorted_combinations)-1):
-        new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0]
-        if new_dist < min_dist:
-            min_dist = new_dist
-            min_dist_index = i
-    return combinations[min_dist_index], min_dist #returns cover (in indices) and length of the cover
-
-def mutual_information(e, w, keyphrases, num_entities):
-    for kp in keyphrases:
-        w_count = kp.count(w)
-        return w_count / num_entities
-
-def keyphrase_similarity(wiki_tree_root, entity = "Anders Fogh Rasmussen", num_entities = 1):
-    words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in line.split()]
-
-    keyphrases = []
-    reference_keyphrases = References.References(wiki_tree_root)
-    keyphrases.extend(reference_keyphrases[entity])
-    simscore = 0
-
-    for kp in keyphrases:
-        indices = []
-        kp_words = kp.split()
-        maximum_words_in_doc = list(set().union(kp_words, words_of_document))
-        for word in maximum_words_in_doc:
-            indices.append([i for i, x in enumerate(words_of_document) if x == word]) #Get indicies of all occurences of word
-        cover, cover_span = min_distance_indices(indices) #finds cover
-        z = len(maximum_words_in_doc) / cover_span
-        nominator = sum([mutual_information(entity, words_of_document[index], keyphrases, num_entities) for index in cover])
-        denominator = sum([mutual_information(entity, word, keyphrases, num_entities) for word in kp_words])
-        score = z * (nominator / denominator)**2
-        simscore += score
-
-        print("5")  # priors = Prior.popularityPrior(names, root)
+recognized_mentions = ner_lst_retriever(path="/home/duper/Desktop/entiti")
 
 tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
 
-priors = popularityPrior(["HP"], root)
+priors = popularityPrior(recognized_mentions, root)
 entities = []
+entity_node_dict = {}
+G = nx.Graph()
 for prior in priors:
-    for entity in prior[1]:
-        entities.append(entity[0])
+    mention_nr = G.number_of_nodes()
+    G.add_node(mention_nr, key=prior[0], entity=False)
+    for entity_with_prior in prior[1]:
+        entity_nr = G.number_of_nodes()
+        G.add_node(entity_nr, key=entity_with_prior[0], entity=True)
+        G.add_edge(entity_nr, mention_nr, weight=entity_with_prior[1])
+        entities.append(entity_with_prior[0])
+        entity_node_dict[entity_with_prior[0]] = entity_nr
 
-print("du er dum")
+#kp_sim_score = keyphrase_similarity(root, )
+
 
 #links_to_entity = LinksToEntity.links_to_me(entities, root)
+#for n in G.nodes_iter():
+#    print(str(n) + ", " + str(G.node[n]["entity"]) + ", " + str(G.node[n]["key"]))
 
+ent_ent_coh_triples = entity_entity_coherence(entities, root)
+node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
+G.add_weighted_edges_from(node_nr_triples)
 
-
+nx.write_gml(G, "/home/duper/Desktop")
+#nx.read_gml("/home/duper/Desktop")
 test = 5

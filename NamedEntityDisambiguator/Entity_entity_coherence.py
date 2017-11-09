@@ -4,6 +4,7 @@ import paths
 import re
 import itertools
 import math
+from NamedEntityDisambiguator.Utilities import make_parentheses_for_regex_text, unmake_parentheses_for_regex_list
 
 NUM_WIKI_ARTICLES = 474017
 
@@ -15,37 +16,40 @@ def find_link(search_term, text):
         return []
     search_term = search_term.lower()
     text = text.lower()
+    search_term = make_parentheses_for_regex_text(search_term)
+    text = make_parentheses_for_regex_text(text)
     with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
-    return with_split + without_split
+    result = unmake_parentheses_for_regex_list(with_split + without_split)
+    return result
 
-def make_parentheses_for_regex(names):
-    for name in names:
-        new_name = name.replace('(', '\(')
-        new_name = new_name.replace(')', '\)')
-        names.remove(name)
-        names.append(new_name)
+#def make_parentheses_for_regex(names):
+#    for name in names:
+#        new_name = name.replace('(', '\(')
+#        new_name = new_name.replace(')', '\)')
+#        names.remove(name)
+#        names.append(new_name)
 
-def unmake_parentheses_for_regex(name):
-    new_name = name.replace('\(', '(')
-    new_name = new_name.replace('\)', ')')
-    return new_name
+#def unmake_parentheses_for_regex(names):
+#    new_names = []
+#    for name in names:
+#        new_name = name.replace('\(', '(')
+#        new_name = new_name.replace('\)', ')')
+#       new_names.append(new_name)
+#    return new_names
 
-def get_link_names(name):
-    if '|' in name:
-        link_text = re.sub(r'\]\]', '', re.sub(r'[^\|]*\|', '', name))
-        link_name = re.sub(r'\[\[', '', re.sub(r'\|[^\|]*', '', name))
-    else:
-        link_text = re.sub(r'\[\[', '', re.sub(r'\]\]', '', name))
-        link_name = link_text
-    unmake_parentheses_for_regex(link_text)
-    unmake_parentheses_for_regex(link_name)
-    return [link_text, link_name]
+#def get_link_names(name):
+#    if '|' in name:
+#        link_text = re.sub(r'\]\]', '', re.sub(r'[^\|]*\|', '', name))
+#        link_name = re.sub(r'\[\[', '', re.sub(r'\|[^\|]*', '', name))
+#    else:
+#        link_text = re.sub(r'\[\[', '', re.sub(r'\]\]', '', name))
+#        link_name = link_text
+#    unmake_parentheses_for_regex(link_text)
+#    unmake_parentheses_for_regex(link_name)
+#    return [link_text, link_name]
 
-def entity_entity_coherence(entities):
-    make_parentheses_for_regex(entities)
-    tree = etree.parse("/home/duper/Desktop/Wikidump/dawiki-20171001-pages-articles.xml")
-    root = tree.getroot()
+def entity_entity_coherence(entities, root):
     reference_dict = {}
     entity_entity_coherences = []
     for entity in entities:
@@ -79,4 +83,4 @@ def entity_entity_coherence(entities):
 
     return entity_entity_coherences
 
-print(entity_entity_coherence(list(NER.ner_retriever())))
+#print(entity_entity_coherence(["Skagen", "Norwegian", "Lufthavn"]))

@@ -38,3 +38,9 @@ def links_to_me(names, wiki_tree_root):
         linking_return_list.append([new_name, links])
 
     return linking_return_list
+
+from lxml import etree
+import paths
+tree = etree.parse(paths.get_wikipedia_article_path())
+root = tree.getroot()
+print(links_to_me(["Anders Fogh Rasmussen"], root))
