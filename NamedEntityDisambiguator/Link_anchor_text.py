@@ -28,17 +28,17 @@ def find_link_anchor_texts(names, wiki_tree_root):
         new_entity_with_lat = [entity_with_lat[0], []]
         for text in entity_with_lat[1]:
             if '|' in text:
-                text = re.findall(r'\[\[[^\|]*\|', text)[0]
-                text = text[2:-1]
+                text = re.findall(r'\|[^\|]*\]\]', text)[0]
+                text = text[1:-2]
             else:
                 text = text[2:-2]
             new_entity_with_lat[1].append(text)
             new_anchor_texts.append(new_entity_with_lat)
 
-    return anchor_texts
+    return new_anchor_texts
 
 from lxml import etree
 import paths
 tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
-find_link_anchor_texts(['Anders Fogh Rasmussen'], root)
+print(find_link_anchor_texts(['Anders Fogh Rasmussen', 'Ritt Bjerregaard'], root)) #TODO: Fjern så der KUN er link anchor text!

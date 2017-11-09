@@ -1,18 +1,18 @@
 #!/usr/bin/python
 import MySQLdb
 
-db = MySQLdb.connect(host="localhost",    # your host, usually localhost
-                     user="duper",         # your username
-                     passwd="an2loper",  # your password
-                     db="wikidb",
-                     charset='utf8')        # name of the data base
-
-# you must create a Cursor object. It will let
-#  you execute all the queries you need
-cur = db.cursor()
-
 def category_words(titles):
-    phrase_lst = []
+    db = MySQLdb.connect(host="localhost",  # your host, usually localhost
+                         user="duper",  # your username
+                         passwd="an2loper",  # your password
+                         db="wikidb",
+                         charset='utf8')  # name of the data base
+
+    # you must create a Cursor object. It will let
+    #  you execute all the queries you need
+    cur = db.cursor()
+
+    phrase_lst = {}
     hard_stoplist = ['Artikler med døde links',
                 'Commons-kategori på Wikidata er ens med lokalt link',
                 'Intet lokalt billede og intet billede på Wikidata',
@@ -52,9 +52,9 @@ def category_words(titles):
         is_not_banned = lambda x: x not in hard_stoplist
         #is_not_contained = lambda x: x
         tmp_phrase_lst = list(filter(is_not_banned, tmp_phrase_lst))
-        phrase_lst.extend(tmp_phrase_lst)
+        phrase_lst[title] = tmp_phrase_lst
 
+    db.close()
     return phrase_lst
 
-print(category_words(["ANDERS FOGH RASMUSSEN"]))
-db.close()
+#print(category_words(["Ritt Bjerregaard", "ANDERS FOGH RASMUSSEN"]))
