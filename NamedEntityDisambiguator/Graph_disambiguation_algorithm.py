@@ -1,6 +1,7 @@
 import networkx as nx
 import copy
 
+
 # Calculates the weighted degrees for all nodes in the graph
 def weighted_degree_calculations(graph):
     non_taboo_degrees = []
@@ -15,6 +16,7 @@ def weighted_degree_calculations(graph):
 
 def min_degree_for_all_solutions(graph):
     min_degree = 0
+    min_degree_graph = None
     remaining_nodes = [node for node in graph.node if not graph.node[node]["entity"]
                        and not graph.node[node]["taboo"]]
     if len(remaining_nodes) == 0:
@@ -65,8 +67,9 @@ def graph_disambiguation_algorithm(graph):
             if graph.node[n]["entity"] and len(graph.neighbors(n)) == 1\
                     and not graph.node[graph.neighbors(n)[0]]["taboo"]:
                 graph.node[graph.neighbors(n)[0]]["taboo"] = True
-    # Post-prossesing phase
+    # Post-processing phase
     result_degree, result_graph = min_degree_for_all_solutions(solution)
+
 
 G = nx.Graph()
 G.add_node(1, key='entity_name1', entity=True, taboo=False)

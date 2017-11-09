@@ -1,6 +1,15 @@
 import google
 
-print (google.filter_result(next(google.search('thomas kastrup larsen'))))
+def google_scraper(mention, list_of_related_mentions):
+    related_mentions = ""
+    for men in list_of_related_mentions[:-1]:
+        related_mentions += "\"" + men + "\" OR "
+    if len(list_of_related_mentions) > 0:
+        related_mentions += "\"" + list_of_related_mentions[-1] + "\""
+    site = "site:https://dk.linkedin.com/in OR site:https//:dk.linkedin.com/company"
 
-# service = build('customsearch', 'v1', developerKey='AIzaSyDWKM3PN9QdA_LpvJvAJNK3bwiNtKvZ9uo')
-# collection = service.stamps()
+    search_string = related_mentions + " " + mention + " " + site
+
+    print(next(google.search(search_string, lang='dk')))
+
+google_scraper('test', [])
