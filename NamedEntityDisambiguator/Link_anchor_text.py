@@ -23,22 +23,18 @@ def find_link_anchor_texts(names, wiki_tree_root):
                                 result = lat(text.text)
                                 if len(result) > 0:
                                     anchor_texts.append([title, result])
+    new_anchor_texts = []
     for entity_with_lat in anchor_texts:
-        new_anchor_texts = []
         new_entity_with_lat = [entity_with_lat[0], []]
         for text in entity_with_lat[1]:
+            if 'Fil:' in text:
+                continue
             if '|' in text:
-                text = re.findall(r'\|[^\|]*\]\]', text)[0]
+                text = re.findall(r'\|[^\]]*\]\]', text)[0]
                 text = text[1:-2]
             else:
                 text = text[2:-2]
             new_entity_with_lat[1].append(text)
-            new_anchor_texts.append(new_entity_with_lat)
+        new_anchor_texts.append(new_entity_with_lat)
 
     return new_anchor_texts
-
-from lxml import etree
-import paths
-tree = etree.parse(paths.get_wikipedia_article_path())
-root = tree.getroot()
-print(find_link_anchor_texts(['Anders Fogh Rasmussen', 'Ritt Bjerregaard'], root)) #TODO: Fjern så der KUN er link anchor text!
