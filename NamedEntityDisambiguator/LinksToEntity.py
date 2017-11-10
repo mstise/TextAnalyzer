@@ -28,19 +28,19 @@ def links_to_me(names, wiki_tree_root):
                                     new_name = Utilities.unmake_parentheses_for_regex(name)
                                     linking_list.append([new_name, title])
 
-    linking_return_list = []
+    linking_return_list = {}
     for name in names:
         new_name = Utilities.unmake_parentheses_for_regex(name)
         matches = [match for match in linking_list if match[0] == new_name]
         links = []
         for match in matches:
             links.append(match[1])
-        linking_return_list.append([new_name, links])
+        linking_return_list[new_name] = links
 
     return linking_return_list
 
-from lxml import etree
-import paths
-tree = etree.parse(paths.get_wikipedia_article_path())
-root = tree.getroot()
-print(links_to_me(["Anders Fogh Rasmussen"], root))
+#from lxml import etree
+#import paths
+#tree = etree.parse(paths.get_wikipedia_article_path())
+#root = tree.getroot()
+#print(links_to_me(["Anders Fogh Rasmussen"], root))
