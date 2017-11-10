@@ -23,7 +23,7 @@ def find_link_anchor_texts(names, wiki_tree_root):
                                 result = lat(text.text)
                                 if len(result) > 0:
                                     anchor_texts.append([title, result])
-    new_anchor_texts = []
+    new_anchor_texts = {}
     for entity_with_lat in anchor_texts:
         new_entity_with_lat = [entity_with_lat[0], []]
         for text in entity_with_lat[1]:
@@ -35,6 +35,6 @@ def find_link_anchor_texts(names, wiki_tree_root):
             else:
                 text = text[2:-2]
             new_entity_with_lat[1].append(text)
-        new_anchor_texts.append(new_entity_with_lat)
+        new_anchor_texts[new_entity_with_lat[0]] = new_entity_with_lat[1]
 
     return new_anchor_texts

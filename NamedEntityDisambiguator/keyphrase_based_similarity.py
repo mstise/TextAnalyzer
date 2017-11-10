@@ -20,7 +20,7 @@ def min_distance_indices(indices):
 def mk_entity_to_keyphrases(entities, wiki_tree_root):
     reference_keyphrases = References.References(wiki_tree_root)
     category_kps = category_words(entities)
-    link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root) #TODO: Muligvis også lav alle disse til en dictionary, sådan at keyphrase_similarity kan tage alle entities?
+    link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root)
     title_of_ent_linking_to_ent = links_to_me(entities, wiki_tree_root)
 
     entity_to_keyphrases = {}
@@ -28,7 +28,7 @@ def mk_entity_to_keyphrases(entities, wiki_tree_root):
         entity_to_keyphrases[entity] = []
         entity_to_keyphrases[entity].extend(reference_keyphrases[entity])
         entity_to_keyphrases[entity].extend(category_kps[entity])
-        entity_to_keyphrases[entity].extend(link_anchors_of_entity[1])
+        entity_to_keyphrases[entity].extend(link_anchors_of_entity[entity])
         entity_to_keyphrases[entity].extend(title_of_ent_linking_to_ent[entity])
 
     return entity_to_keyphrases

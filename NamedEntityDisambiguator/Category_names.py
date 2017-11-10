@@ -12,7 +12,7 @@ def category_words(titles):
     #  you execute all the queries you need
     cur = db.cursor()
 
-    phrase_lst = {}
+    phrase_dic = {}
     hard_stoplist = ['Artikler med døde links',
                 'Commons-kategori på Wikidata er ens med lokalt link',
                 'Intet lokalt billede og intet billede på Wikidata',
@@ -35,14 +35,14 @@ def category_words(titles):
 
     for title in titles:
         tmp_phrase_lst = []
-        title = title.upper()
+        title_uppered = title.upper()
         # Use all the SQL you like
         cur.execute("SELECT cl_to" +
                     " FROM categorylinks" +
-                    " WHERE cl_sortkey = '" + title + "'" +
-                    " OR cl_sortkey LIKE '%\\n" + title + "'" +
-                    " OR cl_sortkey LIKE '" + title + "\\n%'" +
-                    " OR cl_sortkey LIKE '%\\n" + title + "\\n%';")
+                    " WHERE cl_sortkey = '" + title_uppered + "'" +
+                    " OR cl_sortkey LIKE '%\\n" + title_uppered + "'" +
+                    " OR cl_sortkey LIKE '" + title_uppered + "\\n%'" +
+                    " OR cl_sortkey LIKE '%\\n" + title_uppered + "\\n%';")
 
         # print all the first cell of all the rows
         for row in cur.fetchall():
@@ -52,9 +52,9 @@ def category_words(titles):
         is_not_banned = lambda x: x not in hard_stoplist
         #is_not_contained = lambda x: x
         tmp_phrase_lst = list(filter(is_not_banned, tmp_phrase_lst))
-        phrase_lst[title] = tmp_phrase_lst
+        phrase_dic[title] = tmp_phrase_lst
 
     db.close()
-    return phrase_lst
+    return phrase_dic
 
 #print(category_words(["Ritt Bjerregaard", "ANDERS FOGH RASMUSSEN"]))
