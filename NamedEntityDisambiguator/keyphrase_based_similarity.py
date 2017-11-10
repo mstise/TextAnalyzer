@@ -7,7 +7,9 @@ from NamedEntityDisambiguator.LinksToEntity import links_to_me
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
-    combinations = list(product(*indices))
+    # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
+    combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
+
     sorted_combinations = [sorted(x) for x in combinations]
     min_dist = sys.maxsize
     for i in range(0, len(sorted_combinations)-1):
@@ -55,21 +57,27 @@ def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders
         for kp in keyphrases_dic[entity]:
             indices = []
             kp_words = kp.split()
-            maximum_words_in_doc = list(set().union(kp_words, words_of_document))
+            maximum_words_in_doc = list(set().intersection(kp_words, words_of_document))
+            if len(maximum_words_in_doc) == 0:
+                continue
             for word in maximum_words_in_doc:
-                indices.append([i for i, x in enumerate(words_of_document) if x == word]) #Get indicies of all occurences of word
+                word_idxs = [i for i, x in enumerate(words_of_document) if x == word] #Get indicies of all occurences of a kp-word
+                if len(word_idxs) > 0: #if empty, the word is not considered in the cover
+                    indices.append(word_idxs)
             cover, cover_span = min_distance_indices(indices) #finds cover
+            if cover_span == 0:
+                continue
             z = len(maximum_words_in_doc) / cover_span
             nominator = sum([mutual_information(entity, words_of_document[index], keyphrases_dic[entity], len(entities), wiki_tree_root) for index in cover])
             denominator = sum([mutual_information(entity, word, keyphrases_dic[entity], len(entities), wiki_tree_root) for word in kp_words])
             score = z * (nominator / denominator)**2
-            simscore += score #TODO: Dette er IKKE hvad der skal returnes! (det er mention->entitiy scoren som skal returneres, hvor hver mention bidrager med det samme for samme entity så basically: entity_to_score dictionary
+            simscore += score
         simscore_dic[entity] = simscore
 
     return simscore_dic
 
-from lxml import etree
-import paths
-tree = etree.parse(paths.get_wikipedia_article_path())
-root = tree.getroot()
-print(keyphrase_similarity(root))
+#from lxml import etree
+#import paths
+#tree = etree.parse(paths.get_wikipedia_article_path())
+#root = tree.getroot()
+#print(keyphrase_similarity(root))
