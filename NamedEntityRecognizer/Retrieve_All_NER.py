@@ -37,6 +37,17 @@ def ner_lst_retriever(path=paths.get_external_disk_path()):
             break
     return s
 
+def retrieve_ner_single_document(path_to_ner_document):
+    counter = 0
+    s = []
+    for line in open(path_to_ner_document):
+        new_line = clean_line(line)
+        s.append(new_line)
+        counter += 1
+        if counter >= 25:
+            break
+    return s
+
 
 #s = ner_lst_retriever()
 
