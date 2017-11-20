@@ -5,6 +5,7 @@ from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coher
 from NamedEntityDisambiguator.keyphrase_based_similarity import keyphrase_similarity
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
 from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_possibilities
+import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 
 def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, beta=0.4, gamma=0.1):
@@ -15,12 +16,12 @@ def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, bet
     root = tree.getroot()
 
     priors = popularityPrior(recognized_mentions, root)
-    entities = [item[0] for item in priors] #get_mention_entity_possibilities(open("/home/duper/Desktop/entiti/Fogh_eks", 'r'), root)
+    entities = [entity_AND_prior[0] for entity_AND_prior in [entity_AND_priors[0] for entity_AND_priors in [prior[1] for prior in priors]]] #get_mention_entity_possibilities(open("/home/duper/Desktop/entiti/Fogh_eks", 'r'), root)
     entity_node_dict = {}
     G = nx.Graph()
 
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in line.split()])
+    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)])
 
     for prior in priors:
         mention_nr = G.number_of_nodes()

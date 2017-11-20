@@ -4,6 +4,7 @@ from itertools import product
 from NamedEntityDisambiguator.Category_names import category_words
 from NamedEntityDisambiguator.Link_anchor_text import find_link_anchor_texts
 from NamedEntityDisambiguator.LinksToEntity import links_to_me
+import NamedEntityDisambiguator.Utilities as util
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
@@ -20,8 +21,8 @@ def min_distance_indices(indices):
     return combinations[min_dist_index], min_dist #returns cover (in indices) and length of the cover
 
 def mk_entity_to_keyphrases(entities, wiki_tree_root):
-    reference_keyphrases = References.References(wiki_tree_root)
-    category_kps = category_words(entities)
+    reference_keyphrases = References.References(wiki_tree_root) #TODO: Lave kun denne dictionary over entity CANDIDATES (og ikke over alle entities som sådan) (husk at entities er lowered!
+    category_kps = category_words(entities) #TODO: få denne til at deale med lowered entities!
     link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root)
     title_of_ent_linking_to_ent = links_to_me(entities, wiki_tree_root)
 
@@ -47,7 +48,7 @@ def mutual_information(e, w, keyphrases, num_entities, wiki_tree_root):
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in line.split()]):
+def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
     keyphrases_dic = mk_entity_to_keyphrases(entities, wiki_tree_root)
     simscore_dic = {}
     for entity in entities:
@@ -56,7 +57,7 @@ def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders
 
         for kp in keyphrases_dic[entity]:
             indices = []
-            kp_words = kp.split()
+            kp_words = util.split_and_delete_special_characters(kp)
             maximum_words_in_doc = list(set().intersection(kp_words, words_of_document))
             if len(maximum_words_in_doc) == 0:
                 continue

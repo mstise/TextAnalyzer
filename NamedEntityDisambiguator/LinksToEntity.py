@@ -4,6 +4,7 @@ from NamedEntityDisambiguator import Utilities
 def find_link(search_term, text):
     if text == None:
         return []
+    text = text.lower()
     search_term = search_term
     text = text
     with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
@@ -18,7 +19,7 @@ def links_to_me(names, wiki_tree_root):
         if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
                 if Utilities.cut_brackets(page_child.tag) == 'title':
-                    title = page_child.text
+                    title = (page_child.text).lower()
                 if Utilities.cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if Utilities.cut_brackets(text.tag) == 'text':
@@ -35,7 +36,7 @@ def links_to_me(names, wiki_tree_root):
         links = []
         for match in matches:
             links.append(match[1])
-        linking_return_list[new_name] = links
+        linking_return_list[new_name.lower()] = links
 
     return linking_return_list
 
@@ -43,4 +44,4 @@ def links_to_me(names, wiki_tree_root):
 #import paths
 #tree = etree.parse(paths.get_wikipedia_article_path())
 #root = tree.getroot()
-#print(links_to_me(["Anders Fogh Rasmussen"], root))
+#print(links_to_me(["anders fogh rasmussen"], root))

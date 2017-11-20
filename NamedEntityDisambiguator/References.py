@@ -4,6 +4,7 @@ from NamedEntityDisambiguator import Utilities
 def find_references(text):
     if text == None:
         return []
+    text = text.lower()
     text = Utilities.make_parentheses_for_regex_text(text)
     references = re.findall(r'<ref>[^<]*</ref>', text)
     for reference in re.findall(r'<ref>[^<]*<sup>[^<]*</sup>[^<]*</ref>', text):
@@ -47,5 +48,11 @@ def References(wiki_tree_root):
                         if Utilities.cut_brackets(text.tag) == 'text':
                             references = find_references(text.text)
                             if references:
-                                result[title] = references
+                                result[title.lower()] = references
     return result
+
+from lxml import etree
+import paths
+tree = etree.parse(paths.get_wikipedia_article_path())
+root = tree.getroot()
+print(References(root))
