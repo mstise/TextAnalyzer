@@ -6,7 +6,7 @@ def find_link(search_term, text):
         return []
     text = text.lower()
     search_term = search_term
-    text = text
+    text = textgit 
     with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
     without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
     return with_split + without_split

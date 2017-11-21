@@ -5,6 +5,7 @@ from NamedEntityDisambiguator.Category_names import category_words
 from NamedEntityDisambiguator.Link_anchor_text import find_link_anchor_texts
 from NamedEntityDisambiguator.LinksToEntity import links_to_me
 import NamedEntityDisambiguator.Utilities as util
+import time
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
@@ -13,7 +14,7 @@ def min_distance_indices(indices):
 
     sorted_combinations = [sorted(x) for x in combinations]
     min_dist = sys.maxsize
-    for i in range(0, len(sorted_combinations)-1):
+    for i in range(0, len(sorted_combinations)):
         new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0]
         if new_dist < min_dist:
             min_dist = new_dist
@@ -21,10 +22,23 @@ def min_distance_indices(indices):
     return combinations[min_dist_index], min_dist #returns cover (in indices) and length of the cover
 
 def mk_entity_to_keyphrases(entities, wiki_tree_root):
-    reference_keyphrases = References.References(wiki_tree_root) #TODO: Lave kun denne dictionary over entity CANDIDATES (og ikke over alle entities som sådan) (husk at entities er lowered!
-    category_kps = category_words(entities) #TODO: få denne til at deale med lowered entities!
+    print("num entities: " + str(len(entities)))
+    start = time.time()
+    reference_keyphrases = References.References(wiki_tree_root)
+    end = time.time()
+    print("references" + str(end - start))
+    start = time.time()
+    category_kps = category_words(entities)
+    end = time.time()
+    print("categories" + str(end - start))
+    start = time.time()
     link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root)
+    end = time.time()
+    print("link_anchor" + str(end - start))
+    start = time.time()
     title_of_ent_linking_to_ent = links_to_me(entities, wiki_tree_root)
+    end = time.time()
+    print("incoming_ent_titles" + str(end - start))
 
     entity_to_keyphrases = {}
     for entity in entities:
@@ -58,7 +72,7 @@ def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders
         for kp in keyphrases_dic[entity]:
             indices = []
             kp_words = util.split_and_delete_special_characters(kp)
-            maximum_words_in_doc = list(set().intersection(kp_words, words_of_document))
+            maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
             if len(maximum_words_in_doc) == 0:
                 continue
             for word in maximum_words_in_doc:

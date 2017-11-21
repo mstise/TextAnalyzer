@@ -51,8 +51,8 @@ def References(wiki_tree_root):
                                 result[title.lower()] = references
     return result
 
-from lxml import etree
+'''from lxml import etree
 import paths
 tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
-print(References(root))
+print(References(root))'''
