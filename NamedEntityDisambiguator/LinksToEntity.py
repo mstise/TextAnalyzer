@@ -1,3 +1,6 @@
+import sys
+print(sys.path)
+
 import re
 from NamedEntityDisambiguator import Utilities
 
