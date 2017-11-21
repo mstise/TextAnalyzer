@@ -4,32 +4,34 @@ from NamedEntityDisambiguator.Prior import popularityPrior
 from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coherence
 from NamedEntityDisambiguator.keyphrase_based_similarity import keyphrase_similarity
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
+from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_possibilities
+import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 
 def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, beta=0.4, gamma=0.1):
 
-    recognized_mentions = retrieve_ner_single_document(path="/home/duper/Desktop/entiti/Fogh_eks")
+    recognized_mentions = retrieve_ner_single_document("/home/duper/Desktop/entiti/Fogh_eks") #TODO: Husk at ændre denne så den passer med entitii
 
-    tree = etree.parse(paths.get_wikipedia_article_path())
+    tree = etree.parse(paths.get_wikipedia_article_path()) #TODO: Flyt disse 2 linjer ud i Main!
     root = tree.getroot()
 
     priors = popularityPrior(recognized_mentions, root)
-    entities = []
+    entities = [entity_AND_prior[0] for entity_AND_prior in [entity_AND_priors[0] for entity_AND_priors in [prior[1] for prior in priors]]] #get_mention_entity_possibilities(open("/home/duper/Desktop/entiti/Fogh_eks", 'r'), root)
     entity_node_dict = {}
     G = nx.Graph()
 
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in line.split()])
+    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)])
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
         G.add_node(mention_nr, key=prior[0], entity=False)
         for entity_with_prior in prior[1]:
-            entity = entity_with_prior[0]
+            entity = entity_with_prior[0] #TODO: entity her er lowercased mens simscores ikke er
             entity_nr = G.number_of_nodes()
             G.add_node(entity_nr, key=entity, entity=True)
             G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
-            entities.append(entity)
+            #entities.append(entity)
             entity_node_dict[entity] = entity_nr
 
     #kp_sim_score = keyphrase_similarity(root, )
@@ -43,7 +45,11 @@ def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, bet
     #nx.read_gml("/home/duper/Desktop")
 
     return G
+import time
+start = time.time()
 
 G = construct_ME_graph()
 
+end = time.time()
+print(end - start)
 print("hello!")
