@@ -24,7 +24,7 @@ def unmake_parentheses_for_regex_list(names):
     return [unmake_parentheses_for_regex(name) for name in names]
 
 def strip_chars(string):
-    removed_characters = '.,:;<>!?(){}[]\"\'-'
+    removed_characters = '.,:;<>!?(){}[]\"\'-\n'
     for char in removed_characters:
         string = string.strip(char)
     return string
@@ -39,5 +39,5 @@ def split_and_delete_special_characters(string):
         while new_string != old_string:
             old_string = new_string
             new_string = strip_chars(new_string)
-        result.append(new_string)
+        result.append(new_string.lower())
     return result

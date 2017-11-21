@@ -36,6 +36,7 @@ def category_words(titles):
     for title in titles:
         tmp_phrase_lst = []
         title_uppered = title.upper()
+        title_uppered = title_uppered.replace("'", "\\'")
         # Use all the SQL you like
         cur.execute("SELECT cl_to" +
                     " FROM categorylinks" +
@@ -47,12 +48,12 @@ def category_words(titles):
         # print all the first cell of all the rows
         for row in cur.fetchall():
             non_bytestring = row[0].decode("utf-8")
-            tmp_phrase_lst.append(non_bytestring.replace("_", " "))
+            tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
 
         is_not_banned = lambda x: x not in hard_stoplist
         #is_not_contained = lambda x: x
         tmp_phrase_lst = list(filter(is_not_banned, tmp_phrase_lst))
-        phrase_dic[title] = tmp_phrase_lst
+        phrase_dic[title.lower()] = tmp_phrase_lst
 
     db.close()
     return phrase_dic
