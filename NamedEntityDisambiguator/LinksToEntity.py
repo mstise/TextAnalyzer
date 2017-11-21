@@ -1,23 +1,17 @@
-import sys
-print(sys.path)
-
 import re
 from NamedEntityDisambiguator import Utilities
 
-def find_link(search_term, text):
+def find_links(text):
     if text == None:
         return []
     text = text.lower()
-    search_term = search_term
-    text = text
-    with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
-    without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
-    return with_split + without_split
+    links = re.findall(r'\[\[[^\]]*\]\]', text)
+    return links
 
 def links_to_me(names, wiki_tree_root):
     Utilities.make_parentheses_for_regex_list(names)
     title = ''
-    linking_list = []
+    link_dictionary = {}
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
@@ -26,25 +20,32 @@ def links_to_me(names, wiki_tree_root):
                 if Utilities.cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if Utilities.cut_brackets(text.tag) == 'text':
-                            for name in names:
-                                result = find_link(name, text.text)
-                                if len(result) > 0:
-                                    new_name = Utilities.unmake_parentheses_for_regex(name)
-                                    linking_list.append([new_name, title])
+                            result = find_links(text.text)
+                            if len(result) > 0:
+                                for link in result:
+                                    if 'fil:' in link:
+                                        continue
+                                    link = Utilities.unmake_parentheses_for_regex(link)
+                                    if '|' in link:
+                                        link_entity = link[2:].partition('|')[0]
+                                    else:
+                                        link_entity = link[2:-2]
+                                    link_dictionary.setdefault(link_entity, [])
+                                    link_dictionary[link_entity].append(title)
 
-    linking_return_list = {}
-    for name in names:
-        new_name = Utilities.unmake_parentheses_for_regex(name)
-        matches = [match for match in linking_list if match[0] == new_name]
-        links = []
-        for match in matches:
-            links.append(match[1])
-        linking_return_list[new_name.lower()] = links
+    # linking_return_list = {}
+    # for name in names:
+    #     new_name = Utilities.unmake_parentheses_for_regex(name)
+    #     matches = [match for match in linking_list if match[0] == new_name]
+    #     links = []
+    #     for match in matches:
+    #         links.append(match[1])
+    #     linking_return_list[new_name.lower()] = links
 
-    return linking_return_list
+    return link_dictionary
 
-#from lxml import etree
-#import paths
-#tree = etree.parse(paths.get_wikipedia_article_path())
-#root = tree.getroot()
-#print(links_to_me(["anders fogh rasmussen"], root))
+from lxml import etree
+import paths
+tree = etree.parse(paths.get_wikipedia_article_path())
+root = tree.getroot()
+print(links_to_me(["anders fogh rasmussen"], root))
