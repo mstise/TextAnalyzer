@@ -8,8 +8,7 @@ def find_links(text):
     links = re.findall(r'\[\[[^\]]*\]\]', text)
     return links
 
-def links_to_me(names, wiki_tree_root):
-    Utilities.make_parentheses_for_regex_list(names)
+def links_to_me(wiki_tree_root):
     title = ''
     link_dictionary = {}
     for root_child in wiki_tree_root:
@@ -44,8 +43,8 @@ def links_to_me(names, wiki_tree_root):
 
     return link_dictionary
 
-from lxml import etree
+'''from lxml import etree
 import paths
 tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
-print(links_to_me(["anders fogh rasmussen"], root))
+print(links_to_me(["anders fogh rasmussen"], root))'''

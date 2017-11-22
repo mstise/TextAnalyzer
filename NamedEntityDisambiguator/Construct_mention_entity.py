@@ -16,7 +16,11 @@ def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, bet
     root = tree.getroot()
 
     priors = popularityPrior(recognized_mentions, root)
-    entities = [entity_AND_prior[0] for entity_AND_prior in [entity_AND_priors[0] for entity_AND_priors in [prior[1] for prior in priors]]] #get_mention_entity_possibilities(open("/home/duper/Desktop/entiti/Fogh_eks", 'r'), root)
+    priors_wo_mentions = [prior[1] for prior in priors]
+    entities = []
+    for entities_AND_priors in priors_wo_mentions:
+        entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+
     entity_node_dict = {}
     G = nx.Graph()
 

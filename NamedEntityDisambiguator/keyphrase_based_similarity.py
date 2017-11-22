@@ -21,8 +21,27 @@ def min_distance_indices(indices):
             min_dist_index = i
     return combinations[min_dist_index], min_dist #returns cover (in indices) and length of the cover
 
-def mk_entity_to_keyphrases(entities, wiki_tree_root):
-    print("num entities: " + str(len(entities)))
+def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent):
+    entity_to_keyphrases = {}
+    for entity in entities:
+        entity_to_keyphrases[entity] = []
+        entity_to_keyphrases[entity].extend(reference_keyphrases.get(entity, []))
+        entity_to_keyphrases[entity].extend(category_kps.get(entity, []))
+        entity_to_keyphrases[entity].extend(link_anchors_of_entity.get(entity, []))
+        entity_to_keyphrases[entity].extend(title_of_ent_linking_to_ent.get(entity, []))
+
+    return entity_to_keyphrases
+
+
+def mutual_information(w, num_entities, mixed_keyphrases): #foreign_entities is a dictionary containing only 1 entry
+    w_count = 0
+    for kp in mixed_keyphrases:
+        w_count += kp.count(w)
+    return w_count / num_entities
+
+
+#Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
+def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
     start = time.time()
     reference_keyphrases = References.References(wiki_tree_root)
     end = time.time()
@@ -36,43 +55,22 @@ def mk_entity_to_keyphrases(entities, wiki_tree_root):
     end = time.time()
     print("link_anchor" + str(end - start))
     start = time.time()
-    title_of_ent_linking_to_ent = links_to_me(entities, wiki_tree_root)
+    title_of_ent_linking_to_ent = links_to_me(wiki_tree_root)
     end = time.time()
     print("incoming_ent_titles" + str(end - start))
-
-    entity_to_keyphrases = {}
-    for entity in entities:
-        entity_to_keyphrases[entity] = []
-        entity_to_keyphrases[entity].extend(reference_keyphrases[entity])
-        entity_to_keyphrases[entity].extend(category_kps[entity])
-        entity_to_keyphrases[entity].extend(link_anchors_of_entity[entity])
-        entity_to_keyphrases[entity].extend(title_of_ent_linking_to_ent[entity])
-
-    return entity_to_keyphrases
-
-
-def mutual_information(e, w, keyphrases, num_entities, wiki_tree_root):
-    foreign_entities = links_to_me([e], wiki_tree_root)  # foreign_entities is a dictionary containing only 1 entry
-    foreign_keyphrases = mk_entity_to_keyphrases(foreign_entities[e], wiki_tree_root)
-    mixed_keyphrases = set().union(keyphrases, foreign_keyphrases)
-    w_count = 0
-    for kp in mixed_keyphrases:
-        w_count += kp.count(w)
-    return w_count / num_entities
-
-
-#Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
-    keyphrases_dic = mk_entity_to_keyphrases(entities, wiki_tree_root)
+    keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
     for entity in entities:
 
         simscore = 0
 
+        print("keyphrases: " + str(keyphrases_dic[entity]))
         for kp in keyphrases_dic[entity]:
+            print("new kp: " + kp)
             indices = []
             kp_words = util.split_and_delete_special_characters(kp)
             maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
+            print("What is max words?: " + str(maximum_words_in_doc))
             if len(maximum_words_in_doc) == 0:
                 continue
             for word in maximum_words_in_doc:
@@ -80,11 +78,17 @@ def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders
                 if len(word_idxs) > 0: #if empty, the word is not considered in the cover
                     indices.append(word_idxs)
             cover, cover_span = min_distance_indices(indices) #finds cover
+            print("indicies in cover: " + str(cover))
             if cover_span == 0:
                 continue
+            #find here the keyphrases of IN_e (in the article)
+            foreign_keyphrases = mk_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps,
+                                                         link_anchors_of_entity, title_of_ent_linking_to_ent)
+            mixed_keyphrases = set().union(keyphrases_dic[entity], foreign_keyphrases)
             z = len(maximum_words_in_doc) / cover_span
-            nominator = sum([mutual_information(entity, words_of_document[index], keyphrases_dic[entity], len(entities), wiki_tree_root) for index in cover])
-            denominator = sum([mutual_information(entity, word, keyphrases_dic[entity], len(entities), wiki_tree_root) for word in kp_words])
+            nominator = sum([mutual_information(words_of_document[index], len(entities), mixed_keyphrases) for index in cover])
+            print("now go for denominator")
+            denominator = sum([mutual_information(word, len(entities), mixed_keyphrases) for word in kp_words])
             score = z * (nominator / denominator)**2
             simscore += score
         simscore_dic[entity] = simscore
