@@ -8,9 +8,9 @@ from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_po
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 
-def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, beta=0.4, gamma=0.1):
+def construct_ME_graph(document = "/home/erisos/Desktop/Fogh_eks", alpha=0.4, beta=0.4, gamma=0.1):
 
-    recognized_mentions = retrieve_ner_single_document("/home/duper/Desktop/entiti/Fogh_eks") #TODO: Husk at ændre denne så den passer med entitii
+    recognized_mentions = retrieve_ner_single_document("/home/erisos/Desktop/entiti/Fogh_eks") #TODO: Husk at ændre denne så den passer med entitii
 
     tree = etree.parse(paths.get_wikipedia_article_path()) #TODO: Flyt disse 2 linjer ud i Main!
     root = tree.getroot()
@@ -29,11 +29,11 @@ def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, bet
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
-        G.add_node(mention_nr, key=prior[0], entity=False)
+        G.add_node(mention_nr, key=prior[0], entity=False, taboo=False)
         for entity_with_prior in prior[1]:
             entity = entity_with_prior[0] #TODO: entity her er lowercased mens simscores ikke er
             entity_nr = G.number_of_nodes()
-            G.add_node(entity_nr, key=entity, entity=True)
+            G.add_node(entity_nr, key=entity, entity=True, taboo=False)
             G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
             #entities.append(entity)
             entity_node_dict[entity] = entity_nr
@@ -49,11 +49,11 @@ def construct_ME_graph(document = "/home/duper/Desktop/Fogh_eks", alpha=0.4, bet
     #nx.read_gml("/home/duper/Desktop")
 
     return G
-import time
+'''import time
 start = time.time()
 
 G = construct_ME_graph()
 
 end = time.time()
 print(end - start)
-print("hello!")
+print("hello!")'''

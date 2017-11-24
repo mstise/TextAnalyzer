@@ -41,7 +41,7 @@ def mutual_information(w, num_entities, mixed_keyphrases): #foreign_entities is 
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/duper/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
+def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/erisos/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
     start = time.time()
     reference_keyphrases = References.References(wiki_tree_root)
     end = time.time()
