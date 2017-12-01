@@ -12,7 +12,7 @@ def clean_line(line):
         cleaned_line += ' ' + line[i+1 : k]
     return cleaned_line
 
-def get_mentions(filename, path):
+def get_disambiguations(filename, path):
     mentions = []
     for line in open(path + "/" + filename):
         new_line = clean_line(line)
@@ -20,16 +20,16 @@ def get_mentions(filename, path):
     return mentions
 
 
-def ner_evaluator(entity_path=paths.get_external_disk_path(), annotated_path="/home/duper/Desktop/tmp2"):
+def ner_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti"):
     correct = 0
     ground_truth_not_found = 0
     excess_mentions = 0
     for filename in os.listdir(annotated_path):
-        mentions = get_mentions(filename, entity_path)
+        mentions = get_disambiguations(filename, disambiguated_path)
         for line in open(annotated_path + "/" + filename):
-            ground_truths = re.findall(r'\[\*\[[^\|]*\|', line)
+            ground_truths = re.findall(r'\|[^\]]*\]\*\]', line)
             for ground_truth in ground_truths:
-                groundtruth_string = str(ground_truth[3:-1])
+                groundtruth_string = str(ground_truth[1:-3])
                 if groundtruth_string in mentions:
                     mentions.remove(groundtruth_string)
                     correct += 1
