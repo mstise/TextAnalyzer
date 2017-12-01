@@ -1,9 +1,7 @@
 import sys
-from NamedEntityDisambiguator import References
 from itertools import product
 from NamedEntityDisambiguator.Category_names import category_words
 from NamedEntityDisambiguator.Link_anchor_text import find_link_anchor_texts
-from NamedEntityDisambiguator.LinksToEntity import links_to_me
 import NamedEntityDisambiguator.Utilities as util
 import time
 
@@ -41,11 +39,7 @@ def mutual_information(w, num_entities, mixed_keyphrases): #foreign_entities is 
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders Fogh Rasmussen"], words_of_document = [word for line in open("/home/erisos/Desktop/Fogh_eks", 'r') for word in util.split_and_delete_special_characters(line)]):
-    start = time.time()
-    reference_keyphrases = References.References(wiki_tree_root)
-    end = time.time()
-    print("references" + str(end - start))
+def keyphrase_similarity(wiki_tree_root, entities, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent):
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
@@ -54,10 +48,6 @@ def keyphrase_similarity(wiki_tree_root, entities = ["Ritt Bjerregaard", "Anders
     link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root)
     end = time.time()
     print("link_anchor" + str(end - start))
-    start = time.time()
-    title_of_ent_linking_to_ent = links_to_me(wiki_tree_root)
-    end = time.time()
-    print("incoming_ent_titles" + str(end - start))
     keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
     for entity in entities:
