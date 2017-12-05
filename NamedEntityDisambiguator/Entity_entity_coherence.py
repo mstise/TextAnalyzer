@@ -11,16 +11,23 @@ NUM_WIKI_ARTICLES = 474017
 def cut_brackets(text):
     return re.sub(r'\{[^}]*\}', '', text)
 
-def find_link(search_term, text):
+def find_entities(text):
     if text == None:
         return []
-    search_term = search_term.lower()
     text = text.lower()
-    search_term = make_parentheses_for_regex_text(search_term)
     text = make_parentheses_for_regex_text(text)
-    with_split = re.findall(r'\[\[' + search_term + '\|[^\]]*\]\]', text)
-    without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
-    result = unmake_parentheses_for_regex_list(with_split + without_split)
+    with_split = re.findall(r'\[\[[^\]]*\|[^\]]*\]\]', text)
+    without_split = re.findall(r'\[\[[^\]]*\]\]', text)
+    both_split = unmake_parentheses_for_regex_list(with_split + without_split)
+    result = []
+    for entity in both_split:
+        entity = entity[2:-2]
+        if entity [:4] == 'fil:':
+            continue
+        if len(re.findall(r'.*\|', entity)) > 0:
+            entity = re.findall(r'.*\|', entity)[0][:-1]
+        if entity not in result:
+            result.append(entity)
     return result
 
 #def make_parentheses_for_regex(names):
@@ -49,24 +56,23 @@ def find_link(search_term, text):
 #    unmake_parentheses_for_regex(link_name)
 #    return [link_text, link_name]
 
-def entity_entity_coherence(entities, root):
+def create_entity_entity_dict(root):
     reference_dict = {}
-    entity_entity_coherences = []
-    for entity in entities:
-        reference_dict[entity] = set()
     for root_child in root:
         if cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
                 if cut_brackets(page_child.tag) == 'revision':
                     for text in page_child:
                         if cut_brackets(text.tag) == 'text':
-                            for entity in entities:
-                                result = find_link(entity, text.text)
-                                if len(result) != 0:
-                                    for child in root_child:
-                                        if cut_brackets(child.tag) == 'title':
+                            result = find_entities(text.text)
+                            if len(result) != 0:
+                                for child in root_child:
+                                    if cut_brackets(child.tag) == 'title':
+                                        for entity in result:
                                             reference_dict[entity].add(child.text)
 
+def entity_entity_coherence(entities, reference_dict):
+    entity_entity_coherences = []
     print("ent_ent_coh, first phase done")
     for two_combination in itertools.combinations(entities, 2):
         entity_links1 = reference_dict[two_combination[0]]
@@ -84,4 +90,6 @@ def entity_entity_coherence(entities, root):
 
     return entity_entity_coherences
 
-#print(entity_entity_coherence(["Skagen", "Norwegian", "Lufthavn"]))
+# tree = etree.parse(paths.get_wikipedia_article_path())
+# root = tree.getroot()
+# print(entity_entity_coherence(["Skagen", "Norwegian", "Lufthavn"], root))
