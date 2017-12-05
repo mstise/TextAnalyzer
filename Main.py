@@ -8,6 +8,7 @@ from NamedEntityDisambiguator.EvaluateEntityDisambiguator import ned_evaluator
 from lxml import etree
 import paths
 import os
+import copy
 
 def keyphrase_sim_speedup(wiki_tree_root):
     start = time.time()
@@ -36,16 +37,21 @@ def main():
         reference_keyphrases, title_of_ent_linking_to_ent = keyphrase_sim_speedup(root)
 
         G = construct_ME_graph("/home/duper/Desktop/entiti/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent)
-        mennr_entnr_list = graph_disambiguation_algorithm(G)
+        mennr_entnr_list = graph_disambiguation_algorithm(copy.deepcopy(G))
 
         with open('/home/duper/Desktop/out_folder/' + filename, 'w') as f:
             for mennr_entnr in mennr_entnr_list:
                 mention = G.node[mennr_entnr[0]]["key"]
-                matching_entity = G.node[mennr_entnr[1]]["key"]
+                if mennr_entnr[1] == None:
+                    matching_entity = "None"
+                else:
+                    matching_entity = "w." + str(G.node[mennr_entnr[1]]["key"])
 
                 f.write(mention + ", [u\'" + matching_entity + "\']\n")
-
         counter += 1
+
+    accuracy = ned_evaluator('/home/duper/Desktop/out_folder')
+    print("NED accuracy is: " + str(accuracy))
 
 
 
