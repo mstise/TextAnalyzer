@@ -20,10 +20,8 @@ def get_disambiguations(filename, path):
     return mentions
 
 
-def ner_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti"):
+def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti"):
     correct = 0
-    ground_truth_not_found = 0
-    excess_mentions = 0
     for filename in os.listdir(annotated_path):
         mentions = get_disambiguations(filename, disambiguated_path)
         for line in open(annotated_path + "/" + filename):
@@ -33,13 +31,8 @@ def ner_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
                 if groundtruth_string in mentions:
                     mentions.remove(groundtruth_string)
                     correct += 1
-                else:
-                    ground_truth_not_found += 1
-            excess_mentions += len(mentions)
-    num_ground_truth = correct + ground_truth_not_found
-    recall = (correct / num_ground_truth)
-    precision = (correct / (correct + excess_mentions))
+    precision_slash_accuracy = (correct / (correct + len(mentions)))
 
-    return precision, recall #recall = 73%: 73% of the ones annotated gets recognized, precision = 44%: Of the ones recognized, 44% should be recognized
+    return precision_slash_accuracy
 
-p, r = ner_evaluator()
+#precision_slash_accuracy = ner_evaluator()

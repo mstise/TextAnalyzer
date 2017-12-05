@@ -1,9 +1,10 @@
 import time
-from NamedEntityDisambiguator import Construct_mention_entity
+from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
 from NamedEntityDisambiguator import References
 from NamedEntityDisambiguator.LinksToEntity import links_to_me
 from NamedEntityDisambiguator.Graph_disambiguation_algorithm import graph_disambiguation_algorithm
+from NamedEntityDisambiguator.EvaluateEntityDisambiguator import ned_evaluator
 from lxml import etree
 import paths
 import os
@@ -24,18 +25,20 @@ def main():
     start = time.time()
 
     for filename in os.listdir("/home/duper/Desktop/entiti/"):
-        recognized_mentions = retrieve_ner_single_document("/home/erisos/Desktop/entitii/" + filename)
+        recognized_mentions = retrieve_ner_single_document("/home/duper/Desktop/Predicted_Disambiguations/" + filename)
 
         tree = etree.parse(paths.get_wikipedia_article_path())
         root = tree.getroot()
 
         reference_keyphrases, title_of_ent_linking_to_ent = keyphrase_sim_speedup(root)
 
-        G = Construct_mention_entity(filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent)
+        G = construct_ME_graph("/home/duper/Desktop/Predicted_Disambiguations/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent)
         mennr_entnr_list = graph_disambiguation_algorithm(G)
         for mennr_entnr in mennr_entnr_list:
             mention = G.node[mennr_entnr[0]]["key"]
             matching_entity = G.node[mennr_entnr[1]]["key"]
+
+            ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti")
 
 
 
