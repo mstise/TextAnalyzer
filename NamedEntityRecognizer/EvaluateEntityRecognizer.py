@@ -20,7 +20,7 @@ def get_mentions(filename, path):
     return mentions
 
 
-def ner_evaluator(entity_path=paths.get_external_disk_path(), annotated_path="/home/duper/Desktop/tmp2"):
+def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_path="/home/duper/Desktop/tmp2"):
     correct = 0
     ground_truth_not_found = 0
     excess_mentions = 0

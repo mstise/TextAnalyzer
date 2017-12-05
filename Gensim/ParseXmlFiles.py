@@ -29,7 +29,7 @@ for subdir, dirs, files in os.walk(paths.get_newest_news_path()):
                 readXML(xml.etree.ElementTree.parse(subdir + '/' + filename).getroot())
                 if body == "":
                     continue
-                with open(paths.get_external_disk_path() + "/" + str(filename[:-4]) + ".txt", "w") as text_file:
+                with open(paths.get_all_external_entities_path() + "/" + str(filename[:-4]) + ".txt", "w") as text_file:
                     text_file.write((header + " " + body))
                 body = ""
                 header = ""
