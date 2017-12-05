@@ -12,8 +12,8 @@ import paths
 
 dictionary = corpora.Dictionary()
 
-for filename in os.listdir(paths.get_external_disk_path()):
-    dictionary.add_documents(line.lower().split() for line in open(paths.get_external_disk_path() + "/" + filename))
+for filename in os.listdir(paths.get_all_external_entities_path()):
+    dictionary.add_documents(line.lower().split() for line in open(paths.get_all_external_entities_path() + "/" + filename))
 once_ids = [tokenid for tokenid, docfreq in iteritems(dictionary.dfs) if docfreq == 1]
 dictionary.filter_tokens(once_ids)  # remove stop words and words that appear only once
 dictionary.compactify()  # remove gaps in id sequence after words that were removed
@@ -21,8 +21,8 @@ dictionary.save("newsDict")
 
 class MyCorpus(object):
     def __iter__(self):
-        for filename in os.listdir(paths.get_external_disk_path()):
-            for string in open(paths.get_external_disk_path() + "/" + filename):
+        for filename in os.listdir(paths.get_all_external_entities_path()):
+            for string in open(paths.get_all_external_entities_path() + "/" + filename):
                 # there is one string per document, tokens separated by whitespace
                 yield dictionary.doc2bow(string.lower().split())
 

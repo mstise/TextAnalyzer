@@ -72,6 +72,7 @@ def create_entity_entity_dict(root):
                                             if entity not in reference_dict.keys():
                                                 reference_dict[entity] = set()
                                             reference_dict[entity].add(child.text)
+    return reference_dict
 
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []

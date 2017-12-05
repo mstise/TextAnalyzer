@@ -13,7 +13,7 @@ def clean_line(line):
     return cleaned_line
 
 
-def ner_set_retriever(path=paths.get_external_disk_path()):
+def ner_set_retriever(path=paths.get_all_external_entities_path()):
     counter = 0
     s = set()
     for filename in os.listdir(path):
@@ -25,7 +25,7 @@ def ner_set_retriever(path=paths.get_external_disk_path()):
             break
     return s
 
-def ner_lst_retriever(path=paths.get_external_disk_path()):
+def ner_lst_retriever(path=paths.get_all_external_entities_path()):
     counter = 0
     s = []
     for filename in os.listdir(path):

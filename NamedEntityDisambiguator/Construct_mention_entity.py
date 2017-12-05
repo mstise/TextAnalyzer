@@ -1,14 +1,14 @@
 from lxml import etree
 import paths
 from NamedEntityDisambiguator.Prior import popularityPrior
-from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coherence
 from NamedEntityDisambiguator.keyphrase_based_similarity import keyphrase_similarity
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
 from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_possibilities
+from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coherence
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 
-def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, alpha=0.45, beta=0.45, gamma=0.1):
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
 
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
@@ -55,7 +55,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #kp_sim_score = keyphrase_similarity(root, )
 
     print("Beginning on ent_ent_coh")
-    ent_ent_coh_triples = entity_entity_coherence(entities, root)
+    ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
 

@@ -50,7 +50,7 @@ def keyphrase_similarity(wiki_tree_root, entities, words_of_document, reference_
     print("link_anchor" + str(end - start))
     keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
-    print("word of document: " + str(words_of_document))
+    #print("word of document: " + str(words_of_document))
     for entity in entities:
         #print("beginning entitiy: " + entity)
         simscore = 0
