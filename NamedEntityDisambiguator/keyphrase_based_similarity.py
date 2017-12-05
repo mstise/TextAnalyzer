@@ -50,17 +50,17 @@ def keyphrase_similarity(wiki_tree_root, entities, words_of_document, reference_
     print("link_anchor" + str(end - start))
     keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
+    print("word of document: " + str(words_of_document))
     for entity in entities:
-
+        #print("beginning entitiy: " + entity)
         simscore = 0
 
-        print("keyphrases: " + str(keyphrases_dic[entity]))
+        #if len(keyphrases_dic[entity]) != 0:
+        #    print("keyphrases: " + str(keyphrases_dic[entity]))
         for kp in keyphrases_dic[entity]:
-            print("new kp: " + kp)
             indices = []
             kp_words = util.split_and_delete_special_characters(kp)
             maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
-            print("What is max words?: " + str(maximum_words_in_doc))
             if len(maximum_words_in_doc) == 0:
                 continue
             for word in maximum_words_in_doc:
@@ -68,7 +68,7 @@ def keyphrase_similarity(wiki_tree_root, entities, words_of_document, reference_
                 if len(word_idxs) > 0: #if empty, the word is not considered in the cover
                     indices.append(word_idxs)
             cover, cover_span = min_distance_indices(indices) #finds cover
-            print("indicies in cover: " + str(cover))
+            #print("indicies in cover: " + str(cover))
             if cover_span == 0:
                 continue
             #find here the keyphrases of IN_e (in the article)
@@ -77,7 +77,7 @@ def keyphrase_similarity(wiki_tree_root, entities, words_of_document, reference_
             mixed_keyphrases = set().union(keyphrases_dic[entity], foreign_keyphrases)
             z = len(maximum_words_in_doc) / cover_span
             nominator = sum([mutual_information(words_of_document[index], len(entities), mixed_keyphrases) for index in cover])
-            print("now go for denominator")
+            #print("now go for denominator")
             denominator = sum([mutual_information(word, len(entities), mixed_keyphrases) for word in kp_words])
             score = z * (nominator / denominator)**2
             simscore += score

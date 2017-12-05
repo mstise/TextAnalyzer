@@ -24,7 +24,10 @@ def keyphrase_sim_speedup(wiki_tree_root):
 def main():
     start = time.time()
 
+    num_files = len(os.listdir("/home/duper/Desktop/entiti/"))
+    counter = 0
     for filename in os.listdir("/home/duper/Desktop/entiti/"):
+        print("Beginning file " + str(counter) + " out of " + str(num_files))
         recognized_mentions = retrieve_ner_single_document("/home/duper/Desktop/Predicted_Disambiguations/" + filename)
 
         tree = etree.parse(paths.get_wikipedia_article_path())
@@ -32,13 +35,17 @@ def main():
 
         reference_keyphrases, title_of_ent_linking_to_ent = keyphrase_sim_speedup(root)
 
-        G = construct_ME_graph("/home/duper/Desktop/Predicted_Disambiguations/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent)
+        G = construct_ME_graph("/home/duper/Desktop/entiti/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent)
         mennr_entnr_list = graph_disambiguation_algorithm(G)
-        for mennr_entnr in mennr_entnr_list:
-            mention = G.node[mennr_entnr[0]]["key"]
-            matching_entity = G.node[mennr_entnr[1]]["key"]
 
-            ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti")
+        with open('/home/duper/Desktop/out_folder/' + filename, 'w') as f:
+            for mennr_entnr in mennr_entnr_list:
+                mention = G.node[mennr_entnr[0]]["key"]
+                matching_entity = G.node[mennr_entnr[1]]["key"]
+
+                f.write(mention + ", [u\'" + matching_entity + "\']\n")
+
+        counter += 1
 
 
 

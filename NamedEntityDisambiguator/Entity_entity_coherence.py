@@ -67,6 +67,7 @@ def entity_entity_coherence(entities, root):
                                         if cut_brackets(child.tag) == 'title':
                                             reference_dict[entity].add(child.text)
 
+    print("ent_ent_coh, first phase done")
     for two_combination in itertools.combinations(entities, 2):
         entity_links1 = reference_dict[two_combination[0]]
         entity_links2 = reference_dict[two_combination[1]]

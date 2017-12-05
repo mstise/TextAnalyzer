@@ -54,7 +54,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #kp_sim_score = keyphrase_similarity(root, )
 
-
+    print("Beginning on ent_ent_coh")
     ent_ent_coh_triples = entity_entity_coherence(entities, root)
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
