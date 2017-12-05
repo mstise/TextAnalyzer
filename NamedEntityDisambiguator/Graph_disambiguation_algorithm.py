@@ -1,6 +1,6 @@
 import networkx as nx
 import copy
-from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
+#from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
 
 
 # Calculates the weighted degrees for all non taboo nodes in the graph
@@ -102,7 +102,7 @@ def graph_disambiguation_algorithm(graph):
                 result_list.append([edge, result_graph.neighbors(edge)[0]])
     return result_list
 
-import time
+# import time
 
 # start = time.time()
 # G = construct_ME_graph()
@@ -111,17 +111,17 @@ import time
 # end = time.time()
 # print(mid-start)
 # print(end-mid)
-G = nx.Graph()
-G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
-G.add_edge(1, 0, weight=4.210)
-G.add_edge(2, 0, weight=0.001)
-G.add_edge(3, 0, weight=0.001)
-G.add_edge(5, 4, weight=1.078)
-G.add_edge(1, 5, weight=0.068)
-graph_disambiguation_algorithm(G)
+# G = nx.Graph()
+# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+# G.add_edge(1, 0, weight=4.210)
+# G.add_edge(2, 0, weight=0.001)
+# G.add_edge(3, 0, weight=0.001)
+# G.add_edge(5, 4, weight=1.078)
+# G.add_edge(1, 5, weight=0.068)
+# graph_disambiguation_algorithm(G)

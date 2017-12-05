@@ -1,8 +1,12 @@
 #Ignore .paths file
 .paths.txt
+.paths
 
 #Ignore logfiles
 *.log
 
 #Ignore IDE files
 .idea/
+
+ignore
+*/__pycache__/

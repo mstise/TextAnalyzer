@@ -8,12 +8,7 @@ from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_po
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 
-def construct_ME_graph(document = "/home/erisos/Desktop/Fogh_eks", alpha=0.4, beta=0.4, gamma=0.1):
-
-    recognized_mentions = retrieve_ner_single_document("/home/erisos/Desktop/entiti/Fogh_eks") #TODO: Husk at ændre denne så den passer med entitii
-
-    tree = etree.parse(paths.get_wikipedia_article_path()) #TODO: Flyt disse 2 linjer ud i Main!
-    root = tree.getroot()
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, alpha=0.45, beta=0.45, gamma=0.1):
 
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
@@ -25,13 +20,13 @@ def construct_ME_graph(document = "/home/erisos/Desktop/Fogh_eks", alpha=0.4, be
     G = nx.Graph()
 
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)])
+    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent)
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
         G.add_node(mention_nr, key=prior[0], entity=False, taboo=False)
         for entity_with_prior in prior[1]:
-            entity = entity_with_prior[0] #TODO: entity her er lowercased mens simscores ikke er
+            entity = entity_with_prior[0]
             entity_nr = G.number_of_nodes()
             G.add_node(entity_nr, key=entity, entity=True, taboo=False)
             G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
@@ -47,7 +42,6 @@ def construct_ME_graph(document = "/home/erisos/Desktop/Fogh_eks", alpha=0.4, be
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")
-
     return G
 '''import time
 start = time.time()
