@@ -24,7 +24,8 @@ def weighted_degree_calculations(graph):
         degree = 0
         for neighbor in graph.neighbors(n):
             degree += graph.get_edge_data(n, neighbor)['weight']
-        degrees.append([n, degree])
+        if degree != 0:
+            degrees.append([n, degree])
     if len(degrees) > 0:
         return sorted(degrees, key=lambda node: node[1])
     else: return [[0, 0]]
@@ -58,7 +59,8 @@ def graph_disambiguation_algorithm(graph):
             for x in graph.nodes_iter():
                 if not graph.node[x]["entity"]:
                     # Calculate distance to all mentions
-                    temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
+                    if nx.has_path(graph, n, x):
+                        temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
             distance = 0
             for x in temp_closest:
                 distance += x[2]*x[2]
@@ -91,32 +93,35 @@ def graph_disambiguation_algorithm(graph):
     # Post-processing phase
     result_degree, result_graph = min_degree_for_all_solutions(solution)
     result_list = []
+    for node in result_graph.nodes_iter():
+        if len(result_graph.neighbors(node)) == 0:
+            result_list.append([node, None])
     for edge in result_graph.edge:
         if not graph.node[edge]["entity"]:
-            result_list.append([edge, result_graph.neighbors(edge)[0]])
+            if len(result_graph.neighbors(edge)) > 0:
+                result_list.append([edge, result_graph.neighbors(edge)[0]])
     return result_list
 
-import time
+# import time
 
-#start = time.time()
-#G = construct_ME_graph()
-#mid = time.time()
-#test = graph_disambiguation_algorithm(G)
-#end = time.time()
-#print(mid-start)
-#print(end-mid)
-#G = nx.Graph()
-#G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-#G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-#G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-#G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-#G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-#G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-#G.add_edge(1, 0, weight=4.210)
-#G.add_edge(2, 0, weight=0.001)
-#G.add_edge(3, 0, weight=0.001)
-#G.add_edge(5, 4, weight=1.078)
-#G.add_edge(1, 5, weight=0.068)
-#var = graph_disambiguation_algorithm(G)
-#print(var)
-#print("Hello world!")
+# start = time.time()
+# G = construct_ME_graph()
+# mid = time.time()
+# test = graph_disambiguation_algorithm(G)
+# end = time.time()
+# print(mid-start)
+# print(end-mid)
+# G = nx.Graph()
+# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+# G.add_edge(1, 0, weight=4.210)
+# G.add_edge(2, 0, weight=0.001)
+# G.add_edge(3, 0, weight=0.001)
+# G.add_edge(5, 4, weight=1.078)
+# G.add_edge(1, 5, weight=0.068)
+# graph_disambiguation_algorithm(G)
