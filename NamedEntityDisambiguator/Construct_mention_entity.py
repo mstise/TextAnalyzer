@@ -11,6 +11,7 @@ import networkx as nx
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
 
     priors = popularityPrior(recognized_mentions, root)
+    print("these are old priors: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     counter = 0
@@ -35,6 +36,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
 
+    print("these are new priors: " + str(priors))
     entity_node_dict = {}
     G = nx.Graph()
 
