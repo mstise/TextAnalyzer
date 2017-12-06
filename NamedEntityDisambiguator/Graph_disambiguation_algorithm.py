@@ -6,7 +6,7 @@ import copy
 # Calculates the weighted degrees for all non taboo nodes in the graph
 def non_taboo_weighted_degree_calculations(graph):
     non_taboo_degrees = []
-    for n in graph.nodes_iter():
+    for n in graph.nodes():
         if graph.node[n]["entity"] and not graph.node[n]["taboo"]:
             degree = 0
             for neighbor in graph.neighbors(n):
@@ -20,7 +20,7 @@ def non_taboo_weighted_degree_calculations(graph):
 # Calculates the weighted degrees for all nodes in the graph
 def weighted_degree_calculations(graph):
     degrees = []
-    for n in graph.nodes_iter():
+    for n in graph.nodes():
         degree = 0
         for neighbor in graph.neighbors(n):
             degree += graph.get_edge_data(n, neighbor)['weight']
@@ -54,10 +54,10 @@ def graph_disambiguation_algorithm(graph):
     mentions = 0
     # Pre processing
     print(graph.nodes())
-    for n in graph.nodes_iter():
+    for n in graph.nodes():
         if graph.node[n]["entity"]:
             temp_closest = []
-            for x in graph.nodes_iter():
+            for x in graph.nodes():
                 if not graph.node[x]["entity"]:
                     # Calculate distance to all mentions
                     if nx.has_path(graph, n, x):
@@ -76,14 +76,14 @@ def graph_disambiguation_algorithm(graph):
     solution = copy.deepcopy(graph)
     min_degree = weighted_degree_calculations(graph)[0][1]
     # Determine taboo entity nodes
-    for n in graph.nodes_iter():
+    for n in graph.nodes():
         if not graph.node[n]["entity"] and len(graph.neighbors(n)) == 1 and not graph.node[graph.neighbors(n)[0]]["taboo"]:
             graph.node[graph.neighbors(n)[0]]["taboo"] = True
     while len([node for node in graph.node if graph.node[node]["entity"] and not graph.node[node]["taboo"]]) != 0:
         # Remove lowest weighted degree non taboo
         graph.remove_node(non_taboo_weighted_degree_calculations(graph)[0][0])
         # Determine taboo entity nodes
-        for n in graph.nodes_iter():
+        for n in graph.nodes():
             if not graph.node[n]["entity"] and len(graph.neighbors(n)) == 1 and not graph.node[graph.neighbors(n)[0]]["taboo"]:
                 graph.node[graph.neighbors(n)[0]]["taboo"] = True
         # Check if minimum weighted degree increased
@@ -94,7 +94,7 @@ def graph_disambiguation_algorithm(graph):
     # Post-processing phase
     result_degree, result_graph = min_degree_for_all_solutions(solution)
     result_list = []
-    for node in result_graph.nodes_iter():
+    for node in result_graph.nodes():
         if len(result_graph.neighbors(node)) == 0:
             result_list.append([node, None])
     for edge in result_graph.edge:
@@ -126,4 +126,4 @@ def graph_disambiguation_algorithm(graph):
 # G.add_edge(3, 0, weight=0.001)
 # G.add_edge(5, 4, weight=1.078)
 # G.add_edge(1, 5, weight=0.068)
-# graph_disambiguation_algorithm(G)
+# graph_disambiguation_algorithm(copy.deepcopy(G))
