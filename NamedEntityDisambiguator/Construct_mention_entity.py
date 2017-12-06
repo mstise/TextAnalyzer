@@ -63,7 +63,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     print("this is graph before: ")
     for node in G.nodes():
-        print(str(node["key"]))
+        print(str(G[node]["key"]))
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")

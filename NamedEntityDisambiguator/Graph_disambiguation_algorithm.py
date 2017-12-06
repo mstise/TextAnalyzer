@@ -104,7 +104,7 @@ def graph_disambiguation_algorithm(graph):
 
     print("this is graph AFTER: ")
     for node in graph.nodes():
-        print(str(node["key"]))
+        print(str(graph[node]["key"]))
 
     return result_list
 
