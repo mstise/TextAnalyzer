@@ -69,6 +69,8 @@ def create_entity_entity_dict(root):
                                 for child in root_child:
                                     if cut_brackets(child.tag) == 'title':
                                         for entity in result:
+                                            if entity not in reference_dict.keys():
+                                                reference_dict[entity] = set()
                                             reference_dict[entity].add(child.text)
     return reference_dict
 
