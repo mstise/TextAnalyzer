@@ -101,6 +101,11 @@ def graph_disambiguation_algorithm(graph):
             if len(result_graph.neighbors(edge)) > 0:
                 result_list.append([edge, result_graph.neighbors(edge)[0]])
     result_list.sort(key=lambda x: x[0])
+
+    print("this is graph AFTER: ")
+    for node in graph.nodes():
+        print(str(node["key"]))
+
     return result_list
 
 # import time

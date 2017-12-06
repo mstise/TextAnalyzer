@@ -11,7 +11,7 @@ import networkx as nx
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
 
     priors = popularityPrior(recognized_mentions, root)
-    print("these are old priors: " + str(priors))
+    print("these are priors: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     counter = 0
@@ -35,13 +35,14 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         for entities_AND_priors in new_priors_wo_mentions:
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
-
-    print("these are new priors: " + str(priors))
     entity_node_dict = {}
     G = nx.Graph()
 
+    print("these are entities: " + str(entities))
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
     simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent)
+
+    print("these are simscore keys: " + str(simscore_dic.keys()))
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
@@ -55,11 +56,14 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             entity_node_dict[entity] = entity_nr
 
     #kp_sim_score = keyphrase_similarity(root, )
-
     print("Beginning on ent_ent_coh")
     ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
+
+    print("this is graph before: ")
+    for node in G.nodes():
+        print(str(node["key"]))
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")
