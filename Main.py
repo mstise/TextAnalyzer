@@ -29,16 +29,16 @@ def keyphrase_sim_speedup(wiki_tree_root):
 def main():
     start = time.time()
 
+    tree = etree.parse(paths.get_wikipedia_article_path())
+    root = tree.getroot()
+
+    reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict = keyphrase_sim_speedup(root)
+
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
-
-        tree = etree.parse(paths.get_wikipedia_article_path())
-        root = tree.getroot()
-
-        reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict = keyphrase_sim_speedup(root)
 
         G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
         mennr_entnr_list = graph_disambiguation_algorithm(copy.deepcopy(G))
