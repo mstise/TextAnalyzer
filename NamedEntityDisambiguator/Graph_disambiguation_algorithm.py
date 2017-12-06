@@ -53,6 +53,7 @@ def graph_disambiguation_algorithm(graph):
     closest_entities = []
     mentions = 0
     # Pre processing
+    print(graph.nodes())
     for n in graph.nodes_iter():
         if graph.node[n]["entity"]:
             temp_closest = []
