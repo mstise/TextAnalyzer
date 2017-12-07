@@ -44,16 +44,22 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     print("these are simscore keys: " + str(simscore_dic.keys()))
 
+
     for prior in priors:
         mention_nr = G.number_of_nodes()
         G.add_node(mention_nr, key=prior[0], entity=False, taboo=False)
         for entity_with_prior in prior[1]:
             entity = entity_with_prior[0]
+            if entity in entity_node_dict.keys():
+                entity_nr = entity_node_dict[entity]
+                G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
+                continue
             entity_nr = G.number_of_nodes()
             G.add_node(entity_nr, key=entity, entity=True, taboo=False)
             G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
             #entities.append(entity)
             entity_node_dict[entity] = entity_nr
+
 
     #kp_sim_score = keyphrase_similarity(root, )
     print("Beginning on ent_ent_coh")

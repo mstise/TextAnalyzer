@@ -41,15 +41,15 @@ def main():
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
 
         G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
-        mennr_entnr_list = graph_disambiguation_algorithm(copy.deepcopy(G))
+        men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
 
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
-            for mennr_entnr in mennr_entnr_list:
-                mention = G.node[mennr_entnr[0]]["key"]
-                if mennr_entnr[1] == None:
+            for men_ent in men_ent_list:
+                mention = men_ent[0]
+                if men_ent[1] == None:
                     matching_entity = "None"
                 else:
-                    matching_entity = "w." + str(G.node[mennr_entnr[1]]["key"])
+                    matching_entity = "w." + str(men_ent[1])
 
                 f.write(mention + ", [u\'" + matching_entity + "\']\n")
         counter += 1

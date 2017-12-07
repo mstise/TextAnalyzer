@@ -95,11 +95,11 @@ def graph_disambiguation_algorithm(graph):
     result_list = []
     for node in result_graph.nodes():
         if len(result_graph.neighbors(node)) == 0:
-            result_list.append([node, None])
+            result_list.append([result_graph.node[node]["key"], None])
     for edge in result_graph.edge:
         if not graph.node[edge]["entity"]:
             if len(result_graph.neighbors(edge)) > 0:
-                result_list.append([edge, result_graph.neighbors(edge)[0]])
+                result_list.append([result_graph.node[edge]["key"], result_graph.node[result_graph.neighbors(edge)[0]]["key"]])
     result_list.sort(key=lambda x: x[0])
 
     print("this is graph AFTER: ")
