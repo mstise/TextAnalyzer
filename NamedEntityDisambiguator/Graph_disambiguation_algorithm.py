@@ -103,8 +103,8 @@ def graph_disambiguation_algorithm(graph):
     result_list.sort(key=lambda x: x[0])
 
     print("this is graph AFTER: ")
-    for node in graph.nodes():
-        print(str(graph.node[node]["key"]))
+    for node in solution.nodes():
+        print(str(solution.node[node]["key"]))
 
     return result_list
 
