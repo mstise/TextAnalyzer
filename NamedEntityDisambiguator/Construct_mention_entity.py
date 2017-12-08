@@ -70,9 +70,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
 
-    print("this is graph before: ")
-    for node in G.nodes():
-        print(str(G.node[node]["key"]))
+    # print("this is graph before: ")
+    # for node in G.nodes():
+    #     print(str(G.node[node]["key"]))
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")

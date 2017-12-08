@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
 from NamedEntityDisambiguator import References
@@ -39,11 +40,14 @@ def main():
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
         print("Beginning file " + str(counter) + " out of " + str(num_files))
+        print('Document started at: ' + str(datetime.now()))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
         G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
+        print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
+        print("Graph algorithm completed at:" + str(datetime.now()))
 
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
             for men_ent in men_ent_list:
