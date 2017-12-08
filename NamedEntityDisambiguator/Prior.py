@@ -36,7 +36,9 @@ def popularityPrior(names, wiki_tree_root):
                                 result = find_link(name, text.text)
                                 for link in result:
                                     link_names = get_link_names(link)
-                                    if len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:':
+                                    if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and\
+                                        (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and\
+                                            (len(link_names[1] < 8) or link_names[1][:8] != 'billede:'):
                                         reference_list.append(link_names)
 
     prior_return_list = []
