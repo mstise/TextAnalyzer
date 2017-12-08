@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
 from NamedEntityRecognizer.Retrieve_All_NER import retrieve_ner_single_document
 from NamedEntityDisambiguator import References
@@ -39,6 +40,7 @@ def main():
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
         print("Beginning file " + str(counter) + " out of " + str(num_files))
+        print('Document started at: ' + str(datetime.now()))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
