@@ -1,6 +1,7 @@
 import networkx as nx
 import copy
 #from NamedEntityDisambiguator.Construct_mention_entity import construct_ME_graph
+from datetime import datetime
 
 
 # Calculates the weighted degrees for all non taboo nodes in the graph
@@ -53,6 +54,7 @@ def graph_disambiguation_algorithm(graph):
     closest_entities = []
     mentions = 0
     # Pre processing
+    print('pre-processing started at: ' + str(datetime.now()))
     for n in graph.nodes():
         if graph.node[n]["entity"]:
             temp_closest = []
@@ -72,6 +74,7 @@ def graph_disambiguation_algorithm(graph):
     for node in closest_entities[:-(mentions * 5)]:
         graph.remove_node(node[0])
     # Main loop
+    print('main loop started at: ' + str(datetime.now()))
     solution = copy.deepcopy(graph)
     min_degree = weighted_degree_calculations(graph)[0][1]
     # Determine taboo entity nodes
@@ -80,6 +83,7 @@ def graph_disambiguation_algorithm(graph):
             graph.node[graph.neighbors(n)[0]]["taboo"] = True
     while len([node for node in graph.node if graph.node[node]["entity"] and not graph.node[node]["taboo"]]) != 0:
         # Remove lowest weighted degree non taboo
+        print('removed a node at: ' + str(datetime.now()))
         graph.remove_node(non_taboo_weighted_degree_calculations(graph)[0][0])
         # Determine taboo entity nodes
         for n in graph.nodes():
@@ -91,6 +95,7 @@ def graph_disambiguation_algorithm(graph):
             min_degree = new_min_degree
             solution = copy.deepcopy(graph)
     # Post-processing phase
+    print('post-processing started at: ' + str(datetime.now()))
     result_degree, result_graph = min_degree_for_all_solutions(solution)
     result_list = []
     for node in result_graph.nodes():
