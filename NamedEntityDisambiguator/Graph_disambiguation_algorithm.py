@@ -111,14 +111,6 @@ def graph_disambiguation_algorithm(graph):
             solution = copy.deepcopy(graph)
     # Post-processing phase
     # print('post-processing started at: ' + str(datetime.now()))
-    print("Graph mentions:")
-    for node in solution.nodes():
-        if not solution.node[node]["entity"]:
-            print("    " + solution.node[node]["key"])
-    print("Graph entities:")
-    for node in solution.nodes():
-        if solution.node[node]["entity"]:
-            print("    " + solution.node[node]["key"])
 
     for node in solution.nodes():
         if len(solution.neighbors(node)) == 0:
@@ -128,13 +120,9 @@ def graph_disambiguation_algorithm(graph):
         if not solution.node[node]["entity"]:
             if len(solution.neighbors(node)) > 0:
                 edges = solution.edges(node)
-                print ("edges: " + len(edges))
                 max_weight = 0
                 max_edge = None
-                counter = 0
                 for edge in edges:
-                    if counter % 100 == 0:
-                        print("edges gone through: " + counter)
                     weight = solution[edge[0]][edge[1]]["weight"]
                     if weight > max_weight:
                         max_weight = weight
