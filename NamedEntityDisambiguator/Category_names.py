@@ -128,7 +128,7 @@ def category_words(titles):
         #is_not_contained = lambda x: x
 #        tmp_phrase_lst = list(filter(is_not_banned, tmp_phrase_lst))
 #        phrase_dic[title.lower()] = tmp_phrase_lst
-
+    #print(str(threads[0].isAlive()))
     return phrase_dic
 
 #print("Here are results: " + str(category_words(["Ritt Bjerregaard", "ANDERS FOGH RASMUSSEN"])))

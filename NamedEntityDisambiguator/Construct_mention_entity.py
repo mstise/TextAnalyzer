@@ -14,12 +14,14 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     print("these are priors: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
+    entity_candidates_lst = []
     counter = 0
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+            entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             counter += 1
         else:
             if priors[counter][0][-1] == 's':
@@ -35,12 +37,13 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         for entities_AND_priors in new_priors_wo_mentions:
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+                entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
     entity_node_dict = {}
     G = nx.Graph()
 
     print("these are entities: " + str(entities))
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent)
+    simscore_dic = keyphrase_similarity(root, entities, entity_candidates_lst, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent)
 
     print("these are simscore keys: " + str(simscore_dic.keys()))
 
