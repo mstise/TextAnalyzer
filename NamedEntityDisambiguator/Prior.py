@@ -37,7 +37,7 @@ def popularityPrior(names, wiki_tree_root):
                                 for link in result:
                                     link_names = get_link_names(link)
                                     if len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:':
-                                        reference_list.append(get_link_names(link))
+                                        reference_list.append(link_names)
 
     prior_return_list = []
     for name in names:
@@ -56,3 +56,9 @@ def popularityPrior(names, wiki_tree_root):
             prior_return_list.append([name, []])
 
     return prior_return_list
+
+# from lxml import etree
+# import paths
+# tree = etree.parse(paths.get_wikipedia_article_path())
+# root = tree.getroot()
+# popularityPrior(['japan', 'japan'], root)

@@ -41,3 +41,15 @@ def split_and_delete_special_characters(string):
             new_string = strip_chars(new_string)
         result.append(new_string.lower())
     return result
+
+def convert_danish_letters(string):
+    string = string.replace('\\xe6', 'æ')
+    string = string.replace('\\xf8', 'ø')
+    string = string.replace('\\xc5', 'å')
+    return string
+
+def convert_danish_letters_list(strings):
+    resulting_list = []
+    for string in strings:
+        resulting_list.append(convert_danish_letters(string))
+    return resulting_list
