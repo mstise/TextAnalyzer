@@ -51,6 +51,21 @@ def min_degree_for_all_solutions(graph):
 
 
 def graph_disambiguation_algorithm(graph):
+    print("Graph mentions:")
+    for node in graph.nodes():
+        if not graph.node[node]["entity"]:
+            print("    " + graph[node]["key"])
+    print("Graph entities:")
+    for node in graph.nodes():
+        if graph.node[node]["entity"]:
+            print("    " + graph[node]["key"])
+
+    result_list = []
+    for node in graph.nodes():
+        if len(graph.neighbors(node)) == 0:
+            result_list.append([graph.node[node]["key"], None])
+            graph.remove_node(node)
+
     closest_entities = []
     mentions = 0
     # Pre processing
@@ -97,10 +112,10 @@ def graph_disambiguation_algorithm(graph):
     # Post-processing phase
     # print('post-processing started at: ' + str(datetime.now()))
     result_degree, result_graph = min_degree_for_all_solutions(solution)
-    result_list = []
     for node in result_graph.nodes():
         if len(result_graph.neighbors(node)) == 0:
             result_list.append([result_graph.node[node]["key"], None])
+            print("mention not found")
     for node in result_graph.nodes():
         if not result_graph.node[node]["entity"]:
             if len(result_graph.neighbors(node)) > 0:
@@ -113,6 +128,7 @@ def graph_disambiguation_algorithm(graph):
                         max_weight = weight
                         max_edge = edge
                 result_list.append([result_graph.node[max_edge[0]]["key"], result_graph.node[max_edge[1]]["key"]])
+                print("mention disambiguated")
 
     # for edge in result_graph.edge:
     #     if not graph.node[edge]["entity"]:
@@ -120,9 +136,9 @@ def graph_disambiguation_algorithm(graph):
     #             result_list.append([result_graph.node[edge]["key"], result_graph.node[result_graph.neighbors(edge)[0]]["key"]])
     result_list.sort(key=lambda x: x[0])
 
-    print("this is graph AFTER: ")
-    for node in solution.nodes():
-        print(str(solution.node[node]["key"]))
+    # print("this is graph AFTER: ")
+    # for node in solution.nodes():
+    #     print(str(solution.node[node]["key"]))
 
     return result_list
 
@@ -135,17 +151,17 @@ def graph_disambiguation_algorithm(graph):
 # end = time.time()
 # print(mid-start)
 # print(end-mid)
-# G = nx.Graph()
-# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
-# G.add_edge(1, 0, weight=4.210)
-# G.add_edge(2, 0, weight=0.001)
-# G.add_edge(3, 0, weight=0.001)
-# G.add_edge(5, 4, weight=1.078)
-# G.add_edge(1, 5, weight=0.068)
-# graph_disambiguation_algorithm(copy.deepcopy(G))
+G = nx.Graph()
+G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+G.add_edge(1, 0, weight=4.210)
+G.add_edge(2, 0, weight=0.001)
+G.add_edge(3, 0, weight=0.001)
+G.add_edge(5, 4, weight=1.078)
+G.add_edge(1, 5, weight=0.068)
+graph_disambiguation_algorithm(copy.deepcopy(G))
