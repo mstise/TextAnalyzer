@@ -54,11 +54,11 @@ def graph_disambiguation_algorithm(graph):
     print("Graph mentions:")
     for node in graph.nodes():
         if not graph.node[node]["entity"]:
-            print("    " + graph[node]["key"])
+            print("    " + graph.node[node]["key"])
     print("Graph entities:")
     for node in graph.nodes():
         if graph.node[node]["entity"]:
-            print("    " + graph[node]["key"])
+            print("    " + graph.node[node]["key"])
 
     result_list = []
     for node in graph.nodes():
@@ -151,17 +151,17 @@ def graph_disambiguation_algorithm(graph):
 # end = time.time()
 # print(mid-start)
 # print(end-mid)
-G = nx.Graph()
-G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
-G.add_edge(1, 0, weight=4.210)
-G.add_edge(2, 0, weight=0.001)
-G.add_edge(3, 0, weight=0.001)
-G.add_edge(5, 4, weight=1.078)
-G.add_edge(1, 5, weight=0.068)
-graph_disambiguation_algorithm(copy.deepcopy(G))
+# G = nx.Graph()
+# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+# G.add_edge(1, 0, weight=4.210)
+# G.add_edge(2, 0, weight=0.001)
+# G.add_edge(3, 0, weight=0.001)
+# G.add_edge(5, 4, weight=1.078)
+# G.add_edge(1, 5, weight=0.068)
+# graph_disambiguation_algorithm(copy.deepcopy(G))
