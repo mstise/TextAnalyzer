@@ -45,7 +45,9 @@ def main():
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
         G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
+        print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
+        print("Graph algorithm completed at:" + str(datetime.now()))
 
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
             for men_ent in men_ent_list:
