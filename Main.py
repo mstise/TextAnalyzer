@@ -6,6 +6,7 @@ from NamedEntityDisambiguator.LinksToEntity import links_to_me
 from NamedEntityDisambiguator.Graph_disambiguation_algorithm import graph_disambiguation_algorithm
 from NamedEntityDisambiguator.EvaluateEntityDisambiguator import ned_evaluator
 from NamedEntityDisambiguator.Entity_entity_coherence import create_entity_entity_dict
+from NamedEntityDisambiguator.Utilities import convert_danish_letters_list
 from lxml import etree
 import paths
 import os
@@ -39,6 +40,7 @@ def main():
     for filename in os.listdir(paths.get_external_annotated()):
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
+        recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
         G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
