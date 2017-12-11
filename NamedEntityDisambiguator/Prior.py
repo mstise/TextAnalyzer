@@ -1,10 +1,19 @@
 import re
 from NamedEntityDisambiguator import Utilities
 
-def find_link(text):
+# def find_link(text):
+#     if text == None:
+#         return []
+#     return re.findall(r'\[\[[^\]]*\]\]', text)
+
+def find_link(search_term, text):
     if text == None:
         return []
-    return re.findall(r'\[\[[^\]]*\]\]', text)
+    search_term = search_term.lower()
+    text = text.lower()
+    with_split = re.findall(r'\[\[[^\]]*\|' + search_term + '\]\]', text)
+    without_split = re.findall(r'\[\[' + search_term + '\]\]', text)
+    return with_split + without_split
 
 def get_link_names(name):
     if '|' in name:
@@ -40,7 +49,7 @@ def popularityPrior(names, wiki_tree_root):
                             #                     reference_list.append(link_names)
 
                             for name in u_names:
-                                result = find_link(text.text)
+                                result = find_link(name, text.text)
                                 for link in result:
                                     link_names = get_link_names(link)
                                     if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and\
@@ -60,7 +69,7 @@ def popularityPrior(names, wiki_tree_root):
                 sub_list_length = len(first_match)
                 matches = [x for x in matches if x not in first_match]
                 sub_list.append([first_match[0][1], sub_list_length/list_length])
-            prior_return_list.append([first_match[0][0], sub_list.sort(key=lambda x: x[1])[:-20]])
+            prior_return_list.append([first_match[0][0], sorted(sub_list, key=lambda x: x[1])[-20:]])
         else:
             prior_return_list.append([name, []])
 
@@ -70,4 +79,4 @@ def popularityPrior(names, wiki_tree_root):
 # import paths
 # tree = etree.parse(paths.get_wikipedia_article_path())
 # root = tree.getroot()
-# popularityPrior(['japan', 'japan'], root)
+# popularityPrior(['København'], root)
