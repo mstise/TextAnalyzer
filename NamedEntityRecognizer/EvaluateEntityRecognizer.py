@@ -20,7 +20,7 @@ def get_mentions(filename, path):
     return mentions
 
 
-def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_path="/home/duper/Desktop/tmp2"):
+def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_path=paths.get_external_annotated()):
     correct = 0
     ground_truth_not_found = 0
     excess_mentions = 0
@@ -43,3 +43,5 @@ def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_
     return precision, recall #recall = 73%: 73% of the ones annotated gets recognized, precision = 44%: Of the ones recognized, 44% should be recognized
 
 p, r = ner_evaluator()
+print('Precision: ' + str(p))
+print('Recall: ' + str(r))
