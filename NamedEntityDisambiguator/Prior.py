@@ -60,15 +60,16 @@ def popularityPrior(names, wiki_tree_root):
                 sub_list_length = len(first_match)
                 matches = [x for x in matches if x not in first_match]
                 sub_list.append([first_match[0][1], sub_list_length/list_length])
-            if sub_list != []:
+                print(sub_list)
+                print(sub_list.sort(key=lambda x: x[1]))
                 prior_return_list.append([first_match[0][0], sub_list.sort(key=lambda x: x[1])[-20:]])
         else:
             prior_return_list.append([name, []])
 
     return prior_return_list
 
-# from lxml import etree
-# import paths
-# tree = etree.parse(paths.get_wikipedia_article_path())
-# root = tree.getroot()
-# popularityPrior(['japan', 'japan'], root)
+from lxml import etree
+import paths
+tree = etree.parse(paths.get_wikipedia_article_path())
+root = tree.getroot()
+popularityPrior(['København'], root)
