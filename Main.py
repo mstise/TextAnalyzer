@@ -21,9 +21,7 @@ class myThread1 (threading.Thread):
         self.threadID = threadID
         self.root = root
     def run(self):
-        tree = etree.parse(paths.get_wikipedia_article_path())
-        root = tree.getroot()
-        self.result = References.References(root)
+        self.result = References.References(self.root)
 class myThread2 (threading.Thread):
     phrase_dic = {}
     def __init__(self, threadID, root):
@@ -31,9 +29,7 @@ class myThread2 (threading.Thread):
         self.threadID = threadID
         self.root = root
     def run(self):
-        tree = etree.parse(paths.get_wikipedia_article_path())
-        root = tree.getroot()
-        self.result = links_to_me(root)
+        self.result = links_to_me(self.root)
 class myThread3 (threading.Thread):
     phrase_dic = {}
     def __init__(self, threadID, root):

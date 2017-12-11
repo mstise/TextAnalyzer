@@ -60,7 +60,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     return entity_count / NUM_WIKI_ARTICLES
 
 def npmi(word, entities, mixed_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
-    print("new word: " + word)
+    #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
@@ -126,7 +126,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
                 z = len(maximum_words_in_doc) / cover_span
                 denominator = sum([npmi(word, entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word in kp_words])
                 if denominator == 0.0:
-                    print("denom is zero")
+                    #print("denom is zero")
                     continue
                 numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_num) for index in cover])
                 score = z * (numerator / denominator)**2
