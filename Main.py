@@ -12,20 +12,50 @@ from lxml import etree
 import paths
 import os
 import copy
+import threading
+
+class myThread1 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        self.result = References.References(self.root)
+class myThread2 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        self.result = links_to_me(self.root)
+class myThread3 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        self.result = create_entity_entity_dict(self.root)
 
 def keyphrase_sim_speedup(wiki_tree_root):
     start = time.time()
-    reference_keyphrases = References.References(wiki_tree_root)
+    threads = []
+    threads.append(myThread1(1, wiki_tree_root))
+    threads.append(myThread2(2, wiki_tree_root))
+    threads.append(myThread3(3, wiki_tree_root))
+
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    reference_keyphrases = threads[0].result
+    title_of_ent_linking_to_ent = threads[1].result
+    ent_ent_coh_dict = threads[2].result
     end = time.time()
-    print("references" + str(end - start))
-    start = time.time()
-    title_of_ent_linking_to_ent = links_to_me(wiki_tree_root)
-    end = time.time()
-    print("incoming_ent_titles" + str(end - start))
-    start = time.time()
-    ent_ent_coh_dict = create_entity_entity_dict(wiki_tree_root)
-    end = time.time()
-    print("ent_ent_coh_dict" + str(end - start))
+    print("references, incoming & ent_ent_coh_dict" + str(end - start))
     return reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict
 
 def main():

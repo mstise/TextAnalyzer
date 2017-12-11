@@ -25,12 +25,12 @@ def min_distance_indices(indices):
 def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent):
     entity_to_keyphrases = {}
     for entity in entities:
-        entity_to_keyphrases[entity] = []
-        entity_to_keyphrases[entity].extend(reference_keyphrases.get(entity, []))
-        entity_to_keyphrases[entity].extend(category_kps.get(entity, []))
-        entity_to_keyphrases[entity].extend(link_anchors_of_entity.get(entity, []))
-        entity_to_keyphrases[entity].extend(title_of_ent_linking_to_ent.get(entity, []))
-
+        tmp_set = set()
+        tmp_set = tmp_set.union(reference_keyphrases.get(entity, []))
+        tmp_set = tmp_set.union(category_kps.get(entity, []))
+        tmp_set = tmp_set.union(link_anchors_of_entity.get(entity, []))
+        tmp_set = tmp_set.union(title_of_ent_linking_to_ent.get(entity, []))
+        entity_to_keyphrases[entity] = list(tmp_set)
     return entity_to_keyphrases
 
 def word_probability(word, entities, keyphrases_dic):
@@ -45,25 +45,43 @@ def word_probability(word, entities, keyphrases_dic):
     return encountered_kps / num_kps
 
 def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary containing only 1 entry
-    w_count = 0
-    for kp in mixed_keyphrases:
-        w_count += kp.count(word)
-    return w_count / NUM_WIKI_ARTICLES
+    entity_count = 0
+    #print("nums mixed entitie: " + str(len(mixed_keyphrases.keys())))
+    for entity in mixed_keyphrases.keys():
+        w_count = 0
+        for kp in mixed_keyphrases[entity]:
+            kp_words = util.split_and_delete_special_characters(kp)
+            w_count += 1 if word in kp_words else 0
+            if w_count > 0:
+                entity_count += 1
+                #print("entity count: " + str(entity_count))
+                break
 
-def npmi(word, entities, mixed_keyphrases, keyphrases_dic): #foreign_entities is a dictionary containing only 1 entry
+    return entity_count / NUM_WIKI_ARTICLES
+
+def npmi(word, entities, mixed_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
+    print("new word: " + word)
+    result = npmi_speedup_dict.get(word, -1)
+    if result != -1 or word.isdigit():
+        return 0
     joint_prob = joint_probability(word, mixed_keyphrases)
-    ent_prob = 1 / len(entities)
+    ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
     word_prob = word_probability(word, entities, keyphrases_dic)
     denominator = ent_prob * word_prob
     if denominator <= 0.0 or joint_prob <= 0.0: #security check if division by zero occurs
+        npmi_speedup_dict[word] = 0
         return 0
     else:
         pmi = math.log10(joint_prob / denominator)
-        return pmi/-math.log10(joint_prob) if pmi/-math.log10(joint_prob) > 0 else 0
+        result = pmi/-math.log10(joint_prob) if pmi/-math.log10(joint_prob) > 0 else 0
+        npmi_speedup_dict[word] = result
+        return result
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent):
+    npmi_speedup_dict_num = {}
+    npmi_speedup_dict_den = {}
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
@@ -75,13 +93,22 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
+    start = time.time()
     for entity_candidates in entity_candidates_lst:
         for entity in entity_candidates:
             #print("beginning entitiy: " + entity)
             simscore = 0
+            if simscore_dic.get(entity, -1) != -1:
+                continue
+            # find here the keyphrases of IN_e (in the article)
+            #print("entity is: " + entity)
+            foreign_keyphrases = mk_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
+            foreign_keyphrases[entity] = keyphrases_dic[entity]
 
             #if len(keyphrases_dic[entity]) != 0:
             #    print("keyphrases: " + str(keyphrases_dic[entity]))
+
+            #print(str(entity) + "has kp total of: " + str(len(keyphrases_dic[entity])))
             for kp in keyphrases_dic[entity]:
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
@@ -96,21 +123,23 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
                 #print("indicies in cover: " + str(cover))
                 if cover_span == 0:
                     continue
-                #find here the keyphrases of IN_e (in the article)
-                foreign_keyphrases = mk_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps,
-                                                             link_anchors_of_entity, title_of_ent_linking_to_ent)
-                mixed_keyphrases = set().union(keyphrases_dic[entity], foreign_keyphrases)
                 z = len(maximum_words_in_doc) / cover_span
-                nominator = sum([npmi(words_of_document[index], entity_candidates, mixed_keyphrases, keyphrases_dic) for index in cover])
-                #print("now go for denominator")
-                denominator = sum([npmi(word, entity_candidates, mixed_keyphrases, keyphrases_dic) for word in kp_words])
-                score = z * (nominator / denominator)**2
+                denominator = sum([npmi(word, entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word in kp_words])
+                if denominator == 0.0:
+                    print("denom is zero")
+                    continue
+                numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_num) for index in cover])
+                score = z * (numerator / denominator)**2
                 simscore += score
+            npmi_speedup_dict_num = {}
+            npmi_speedup_dict_den = {}
+            #print("simscore is : " + str(simscore))
             simscore_dic[entity] = simscore
-
+    end = time.time()
+    print("keyphrase_similarity" + str(end - start))
     return simscore_dic
 
-'''import threading
+import threading
 print(threading.active_count())
 from lxml import etree
 import paths
@@ -127,4 +156,4 @@ title_of_ent_linking_to_ent = links_to_me(root)
 end = time.time()
 print("incoming_ent_titles" + str(end - start))
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"], reference_keyphrases, title_of_ent_linking_to_ent)))
-'''
+#"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
