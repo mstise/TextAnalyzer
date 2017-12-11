@@ -60,7 +60,8 @@ def popularityPrior(names, wiki_tree_root):
                 sub_list_length = len(first_match)
                 matches = [x for x in matches if x not in first_match]
                 sub_list.append([first_match[0][1], sub_list_length/list_length])
-            prior_return_list.append([first_match[0][0], sub_list.sort(key=lambda x: x[1])[:-20]])
+            if sub_list != []:
+                prior_return_list.append([first_match[0][0], sub_list.sort(key=lambda x: x[1])[-20:]])
         else:
             prior_return_list.append([name, []])
 
