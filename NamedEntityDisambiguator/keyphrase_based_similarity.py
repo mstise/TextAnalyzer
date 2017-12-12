@@ -112,6 +112,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             for kp in keyphrases_dic[entity]:
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
+                kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
                 maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
                 if len(maximum_words_in_doc) == 0:
                     continue
@@ -139,7 +140,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
 
-'''import threading
+import threading
 print(threading.active_count())
 from lxml import etree
 import paths
@@ -155,6 +156,5 @@ start = time.time()
 title_of_ent_linking_to_ent = links_to_me(root)
 end = time.time()
 print("incoming_ent_titles" + str(end - start))
-print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"], reference_keyphrases, title_of_ent_linking_to_ent)))
+print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], reference_keyphrases, title_of_ent_linking_to_ent)))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
-'''
