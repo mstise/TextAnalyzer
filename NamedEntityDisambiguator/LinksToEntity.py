@@ -45,7 +45,7 @@ def links_to_me(wiki_tree_root):
 
     link_dictionary.close()
     f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "w")
-    f.write(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py"))
+    f.write(str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")))
     f.close()
     return "NamedEntityDisambiguator/dbs/link_dic"
 

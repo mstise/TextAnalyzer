@@ -44,7 +44,7 @@ def find_link_anchor_texts(wiki_tree_root):
 
     new_anchor_texts.close()
     f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "w")
-    f.write(os.path.getmtime("NamedEntityDisambiguator/Link_anchor_text.py"))
+    f.write(str(os.path.getmtime("NamedEntityDisambiguator/Link_anchor_text.py")))
     f.close()
     return "NamedEntityDisambiguator/dbs/link_anchor_dic"
     return new_anchor_texts
