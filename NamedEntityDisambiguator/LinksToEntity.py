@@ -1,5 +1,7 @@
 import re
 from NamedEntityDisambiguator import Utilities
+import shelve
+import os
 
 def find_links(text):
     if text == None:
@@ -10,7 +12,7 @@ def find_links(text):
 
 def links_to_me(wiki_tree_root):
     title = ''
-    link_dictionary = {}
+    link_dictionary = shelve.open("NamedEntityDisambiguator/dbs/link_dic", writeback=True)
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
@@ -41,7 +43,11 @@ def links_to_me(wiki_tree_root):
     #         links.append(match[1])
     #     linking_return_list[new_name.lower()] = links
 
-    return link_dictionary
+    link_dictionary.close()
+    f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "w")
+    f.write(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py"))
+    f.close()
+    return "NamedEntityDisambiguator/dbs/link_dic"
 
 '''from lxml import etree
 import paths

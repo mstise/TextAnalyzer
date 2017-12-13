@@ -1,5 +1,7 @@
 import re
 from NamedEntityDisambiguator import Utilities
+import shelve
+import os
 
 def lat(text):
     if text == None:
@@ -9,7 +11,7 @@ def lat(text):
     without_split = re.findall(r'\[\[[^\]]\]\]', text)
     return with_split + without_split
 
-def find_link_anchor_texts(names, wiki_tree_root):
+def find_link_anchor_texts(wiki_tree_root):
     title = ''
     anchor_texts = []
     for root_child in wiki_tree_root:
@@ -17,14 +19,16 @@ def find_link_anchor_texts(names, wiki_tree_root):
             for page_child in root_child:
                 if Utilities.cut_brackets(page_child.tag) == 'title':
                     title = page_child.text.lower()
-                if title in names:
+                #if title in names:
                     if Utilities.cut_brackets(page_child.tag) == 'revision':
                         for text in page_child:
                             if Utilities.cut_brackets(text.tag) == 'text':
                                 result = lat(text.text)
                                 if len(result) > 0:
                                     anchor_texts.append([title, result])
-    new_anchor_texts = {}
+
+    new_anchor_texts = shelve.open("NamedEntityDisambiguator/dbs/link_anchor_dic")
+    #new_anchor_texts = {}
     for entity_with_lat in anchor_texts:
         new_entity_with_lat = [entity_with_lat[0], []]
         for text in entity_with_lat[1]:
@@ -38,6 +42,11 @@ def find_link_anchor_texts(names, wiki_tree_root):
             new_entity_with_lat[1].append(text)
         new_anchor_texts[new_entity_with_lat[0].lower()] = new_entity_with_lat[1]
 
+    new_anchor_texts.close()
+    f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "w")
+    f.write(os.path.getmtime("NamedEntityDisambiguator/Link_anchor_text.py"))
+    f.close()
+    return "NamedEntityDisambiguator/dbs/link_anchor_dic"
     return new_anchor_texts
 
 #from lxml import etree

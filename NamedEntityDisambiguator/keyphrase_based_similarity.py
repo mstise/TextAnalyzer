@@ -5,6 +5,8 @@ from NamedEntityDisambiguator.Link_anchor_text import find_link_anchor_texts
 import NamedEntityDisambiguator.Utilities as util
 import time
 import math
+import gc
+import shelve
 
 NUM_WIKI_ARTICLES = 474017
 
@@ -33,6 +35,34 @@ def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_a
         entity_to_keyphrases[entity] = list(tmp_set)
     return entity_to_keyphrases
 
+def uniqueify_grouped_kps(grouped_kps):
+    already_found = {}
+    new_kpwords = []
+    new_grouped_kps = []
+    for kp_words in grouped_kps:
+        for word in kp_words:
+            if already_found.get(word, False):
+                continue
+            else:
+                new_kpwords.append(word)
+                already_found[word] = True
+        new_grouped_kps.append(new_kpwords)
+    return new_grouped_kps
+
+def mk_unique_foreign_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent, wiki_tree_root):
+    entity_to_keyphrases = {}
+    for entity in entities:
+        tmp_set = set()
+        #tmp_set = tmp_set.union(reference_keyphrases.get(entity, []))
+        #tmp_set = tmp_set.union(category_kps.get(entity, []))
+        tmp_set = tmp_set.union(link_anchors_of_entity.get(entity, []))
+        #tmp_set = tmp_set.union(title_of_ent_linking_to_ent.get(entity, []))
+
+        grouped_kps = [util.split_and_delete_special_characters(kp) for kp in list(tmp_set)]
+
+        entity_to_keyphrases[entity] = grouped_kps#uniqueify_grouped_kps(grouped_kps)
+    return entity_to_keyphrases
+
 def word_probability(word, entities, keyphrases_dic):
     num_kps = 0
     encountered_kps = 0
@@ -49,8 +79,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     #print("nums mixed entitie: " + str(len(mixed_keyphrases.keys())))
     for entity in mixed_keyphrases.keys():
         w_count = 0
-        for kp in mixed_keyphrases[entity]:
-            kp_words = util.split_and_delete_special_characters(kp)
+        for kp_words in mixed_keyphrases[entity]:
             w_count += 1 if word in kp_words else 0
             if w_count > 0:
                 entity_count += 1
@@ -59,12 +88,12 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
 
     return entity_count / NUM_WIKI_ARTICLES
 
-def npmi(word, entities, mixed_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
-    #print("new word: " + word)
+def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
+    print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
-    joint_prob = joint_probability(word, mixed_keyphrases)
+    joint_prob = joint_probability(word, mixed_grouped_keyphrases)
     ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
     word_prob = word_probability(word, entities, keyphrases_dic)
     denominator = ent_prob * word_prob
@@ -79,31 +108,32 @@ def npmi(word, entities, mixed_keyphrases, keyphrases_dic, npmi_speedup_dict): #
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent):
-    npmi_speedup_dict_num = {}
-    npmi_speedup_dict_den = {}
+def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
+    print("starting")
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
     print("categories" + str(end - start))
-    start = time.time()
-    link_anchors_of_entity = find_link_anchor_texts(entities, wiki_tree_root)
-    end = time.time()
-    print("link_anchor" + str(end - start))
-    keyphrases_dic = mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
     for entity_candidates in entity_candidates_lst:
+        keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
+                                                 title_of_ent_linking_to_ent)
         for entity in entity_candidates:
-            #print("beginning entitiy: " + entity)
+            npmi_speedup_dict_num = {}
+            npmi_speedup_dict_den = {}
+            print("beginning entitiy: " + entity)
             simscore = 0
             if simscore_dic.get(entity, -1) != -1:
                 continue
             # find here the keyphrases of IN_e (in the article)
             #print("entity is: " + entity)
-            foreign_keyphrases = mk_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent)
-            foreign_keyphrases[entity] = keyphrases_dic[entity]
+            foreign_grouped_keyphrases = {}
+            #gc.collect()
+            foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, wiki_tree_root)
+            grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
+            foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
 
             #if len(keyphrases_dic[entity]) != 0:
             #    print("keyphrases: " + str(keyphrases_dic[entity]))
@@ -125,11 +155,11 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
                 if cover_span == 0:
                     continue
                 z = len(maximum_words_in_doc) / cover_span
-                denominator = sum([npmi(word, entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word in kp_words])
+                denominator = sum([npmi(word, entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word in kp_words])
                 if denominator == 0.0:
                     #print("denom is zero")
                     continue
-                numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_keyphrases, keyphrases_dic, npmi_speedup_dict_num) for index in cover])
+                numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_num) for index in cover])
                 score = z * (numerator / denominator)**2
                 simscore += score
             npmi_speedup_dict_num = {}
@@ -140,22 +170,12 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
 
-'''import threading
+
+import threading
 print(threading.active_count())
 from lxml import etree
 import paths
 tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
-start = time.time()
-from NamedEntityDisambiguator.References import References
-from NamedEntityDisambiguator.LinksToEntity import links_to_me
-reference_keyphrases = References(root)
-end = time.time()
-print("references" + str(end - start))
-start = time.time()
-title_of_ent_linking_to_ent = links_to_me(root)
-end = time.time()
-print("incoming_ent_titles" + str(end - start))
-print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], reference_keyphrases, title_of_ent_linking_to_ent)))
+print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
-'''

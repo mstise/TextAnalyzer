@@ -5,6 +5,8 @@ import re
 import itertools
 import math
 from NamedEntityDisambiguator.Utilities import make_parentheses_for_regex_text, unmake_parentheses_for_regex_list
+import shelve
+import os
 
 NUM_WIKI_ARTICLES = 474017
 
@@ -57,7 +59,7 @@ def find_entities(text):
 #    return [link_text, link_name]
 
 def create_entity_entity_dict(root):
-    reference_dict = {}
+    reference_dict = shelve.open("NamedEntityDisambiguator/dbs/ent_coh_dic", writeback=True)
     for root_child in root:
         if cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
@@ -72,7 +74,11 @@ def create_entity_entity_dict(root):
                                             if entity not in reference_dict.keys():
                                                 reference_dict[entity] = set()
                                             reference_dict[entity].add(child.text)
-    return reference_dict
+    reference_dict.close()
+    f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "w")
+    f.write(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py"))
+    f.close()
+    return "NamedEntityDisambiguator/dbs/ent_coh_dic"
 
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []
