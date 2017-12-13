@@ -7,8 +7,9 @@ from NamedEntityDisambiguator.Mention_entity_finder import get_mention_entity_po
 from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coherence
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
+import shelve
 
-def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
 
     priors = popularityPrior(recognized_mentions, root)
     print("these are priors: " + str(priors))
@@ -42,11 +43,18 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     G = nx.Graph()
 
     print("these are entities: " + str(entities))
+
+    reference_keyphrases = shelve.open(reference_keyphrases)
+    title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
+    link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, entity_candidates_lst, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent)
+    simscore_dic = keyphrase_similarity(root, entities, entity_candidates_lst, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
 
     print("these are simscore keys: " + str(simscore_dic.keys()))
 
+    reference_keyphrases.close()
+    title_of_ent_linking_to_ent.close()
+    link_anchors_of_ent.close()
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
@@ -66,7 +74,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #kp_sim_score = keyphrase_similarity(root, )
     print("Beginning on ent_ent_coh")
+    ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
     ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
+    ent_ent_coh_dict.close()
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
 

@@ -1,5 +1,7 @@
 import re
 from NamedEntityDisambiguator import Utilities
+import shelve
+import os
 
 def find_references(text):
     if text == None:
@@ -37,7 +39,8 @@ def find_references(text):
     return final_references
 
 def References(wiki_tree_root):
-    result = {}
+    result = shelve.open("NamedEntityDisambiguator/dbs/references_dic")
+    #result = {}
     for root_child in wiki_tree_root:
         if Utilities.cut_brackets(root_child.tag) == 'page':
             for page_child in root_child:
@@ -49,7 +52,11 @@ def References(wiki_tree_root):
                             references = find_references(text.text)
                             if references:
                                 result[title.lower()] = references
-    return result
+    result.close()
+    f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "w")
+    f.write(str(os.path.getmtime("NamedEntityDisambiguator/References.py")))
+    f.close()
+    return "NamedEntityDisambiguator/dbs/references_dic"
 
 '''from lxml import etree
 import paths

@@ -8,25 +8,85 @@ from NamedEntityDisambiguator.Graph_disambiguation_algorithm import graph_disamb
 from NamedEntityDisambiguator.EvaluateEntityDisambiguator import ned_evaluator
 from NamedEntityDisambiguator.Entity_entity_coherence import create_entity_entity_dict
 from NamedEntityDisambiguator.Utilities import convert_danish_letters_list
+from NamedEntityDisambiguator.Link_anchor_text import find_link_anchor_texts
 from lxml import etree
 import paths
 import os
 import copy
+import threading
+import shelve
+
+class myThread1 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "r")
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py")):
+            self.result = References.References(self.root)
+        else:
+            self.result = "NamedEntityDisambiguator/dbs/references_dic"
+class myThread2 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "r")
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
+            self.result = self.result = links_to_me(self.root)
+        else:
+            self.result = "NamedEntityDisambiguator/dbs/link_dic"
+class myThread3 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "r")
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")):
+            self.result = create_entity_entity_dict(self.root)
+        else:
+            self.result = "NamedEntityDisambiguator/dbs/ent_coh_dic"
+
+class myThread4 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, root):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.root = root
+    def run(self):
+        f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "r")
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
+            self.result = find_link_anchor_texts(self.root)
+        else:
+            self.result = "NamedEntityDisambiguator/dbs/link_anchor_dic"
 
 def keyphrase_sim_speedup(wiki_tree_root):
     start = time.time()
-    reference_keyphrases = References.References(wiki_tree_root)
+    threads = []
+    threads.append(myThread1(1, wiki_tree_root))
+    threads.append(myThread2(2, wiki_tree_root))
+    threads.append(myThread3(3, wiki_tree_root))
+    threads.append(myThread4(4, wiki_tree_root))
+
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    reference_keyphrases = threads[0].result
+    title_of_ent_linking_to_ent = threads[1].result
+    ent_ent_coh_dict = threads[2].result
+    link_anchors_of_ent = threads[3].result
+
     end = time.time()
-    print("references" + str(end - start))
-    start = time.time()
-    title_of_ent_linking_to_ent = links_to_me(wiki_tree_root)
-    end = time.time()
-    print("incoming_ent_titles" + str(end - start))
-    start = time.time()
-    ent_ent_coh_dict = create_entity_entity_dict(wiki_tree_root)
-    end = time.time()
-    print("ent_ent_coh_dict" + str(end - start))
-    return reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict
+    print("references, incoming & ent_ent_coh_dict" + str(end - start))
+    return reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent
 
 def main():
     start = time.time()
@@ -34,7 +94,7 @@ def main():
     tree = etree.parse(paths.get_wikipedia_article_path())
     root = tree.getroot()
 
-    reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict = keyphrase_sim_speedup(root)
+    reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent = keyphrase_sim_speedup(root)
 
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
@@ -44,7 +104,7 @@ def main():
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
-        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict)
+        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict)
         print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
