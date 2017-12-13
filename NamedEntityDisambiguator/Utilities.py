@@ -46,6 +46,7 @@ def convert_danish_letters(string):
     string = string.replace('\\xe6', 'æ')
     string = string.replace('\\xf8', 'ø')
     string = string.replace('\\xc5', 'å')
+    string = string.replace('\\xf4', 'ô')
     return string
 
 def convert_danish_letters_list(strings):
