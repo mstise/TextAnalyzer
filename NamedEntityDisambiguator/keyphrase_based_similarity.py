@@ -89,7 +89,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     return entity_count / NUM_WIKI_ARTICLES
 
 def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
-    print("new word: " + word)
+    #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
@@ -109,7 +109,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
-    print("starting")
+    #print("starting")
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
@@ -123,7 +123,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
         for entity in entity_candidates:
             npmi_speedup_dict_num = {}
             npmi_speedup_dict_den = {}
-            print("beginning entitiy: " + entity)
+            #print("beginning entitiy: " + entity)
             simscore = 0
             if simscore_dic.get(entity, -1) != -1:
                 continue
@@ -171,7 +171,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     return simscore_dic
 
 
-import threading
+'''import threading
 print(threading.active_count())
 from lxml import etree
 import paths
@@ -179,3 +179,4 @@ tree = etree.parse(paths.get_wikipedia_article_path())
 root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
+'''
