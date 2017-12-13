@@ -111,7 +111,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
     mem_observor = psutil.Process(os.getpid())
-    print("starting-similarity at mem: " + str(mem_observor.memory_full_info() / 1024 / 1024 / 1024))
+    print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
@@ -136,7 +136,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, wiki_tree_root)
             grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
             foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
-            print("mem after foreign: " + str(mem_observor.memory_full_info() / 1024 / 1024 / 1024))
+            print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
 
             #if len(keyphrases_dic[entity]) != 0:
             #    print("keyphrases: " + str(keyphrases_dic[entity]))
