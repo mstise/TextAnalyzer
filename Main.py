@@ -24,7 +24,7 @@ class myThread1 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py")):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py") or True):
             self.result = References.References(self.root)
         else:
             self.result = "NamedEntityDisambiguator/dbs/references_dic"
@@ -36,7 +36,7 @@ class myThread2 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py") or True):
             self.result = self.result = links_to_me(self.root)
         else:
             self.result = "NamedEntityDisambiguator/dbs/link_dic"
@@ -48,7 +48,7 @@ class myThread3 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py") or True):
             self.result = create_entity_entity_dict(self.root)
         else:
             self.result = "NamedEntityDisambiguator/dbs/ent_coh_dic"
@@ -61,7 +61,7 @@ class myThread4 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py") or True):
             self.result = find_link_anchor_texts(self.root)
         else:
             self.result = "NamedEntityDisambiguator/dbs/link_anchor_dic"
@@ -99,9 +99,9 @@ def main():
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
-        #if counter != 6:
-        #    counter += 1
-        #    continue
+        if counter != 9:
+            counter += 1
+            continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         print('Document started at: ' + str(datetime.now()))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
