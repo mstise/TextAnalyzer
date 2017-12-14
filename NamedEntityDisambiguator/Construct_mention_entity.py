@@ -42,7 +42,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     entity_node_dict = {}
     G = nx.Graph()
 
-    print("these are entities: " + str(entities))
+    #print("these are entities: " + str(entities))
 
     reference_keyphrases = shelve.open(reference_keyphrases)
     title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
