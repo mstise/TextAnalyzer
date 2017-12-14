@@ -54,7 +54,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     title_of_ent_linking_to_ent.close()
     link_anchors_of_ent.close()
 
-    print("sim before normalisation: " + str(simscore_dic))
+    #print("sim before normalisation: " + str(simscore_dic))
     #normalise simscore to sum to 1 between candidates
     mention_entities_sim = {}
     for prior in priors:
@@ -64,8 +64,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             overall_score += simscore_dic[entities_comma_props[0]]
         for entities_comma_props in prior[1]:
             if overall_score == 0:
-                print("Overall zero at entity: " + str(entities_comma_props[0]))
-                mention_entities_sim[prior[0]][entities_comma_props[0]]
+                mention_entities_sim[prior[0]][entities_comma_props[0]] = 0
                 continue
             mention_entities_sim[prior[0]][entities_comma_props[0]] = simscore_dic[entities_comma_props[0]] / overall_score
 
