@@ -100,6 +100,7 @@ def main():
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
         if counter != 6:
+            counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         print('Document started at: ' + str(datetime.now()))
