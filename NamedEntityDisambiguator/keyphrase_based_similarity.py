@@ -144,6 +144,8 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
 
             print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
             for kp in keyphrases_dic[entity]:
+                if str(entity) == "sjælland (skib, 1860)":
+                    print(kp)
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
                 if len(kp_words) > 10:
