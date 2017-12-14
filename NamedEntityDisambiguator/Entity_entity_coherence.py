@@ -78,7 +78,7 @@ def create_entity_entity_dict(root):
     f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "w")
     f.write(str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")))
     f.close()
-    return "NamedEntityDisambiguator/dbs/ent_coh_dic"
+    return reference_dict
 
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []

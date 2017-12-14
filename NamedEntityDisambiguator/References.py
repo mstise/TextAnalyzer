@@ -56,7 +56,7 @@ def References(wiki_tree_root):
     f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "w")
     f.write(str(os.path.getmtime("NamedEntityDisambiguator/References.py")))
     f.close()
-    return "NamedEntityDisambiguator/dbs/references_dic"
+    return result
 
 '''from lxml import etree
 import paths
