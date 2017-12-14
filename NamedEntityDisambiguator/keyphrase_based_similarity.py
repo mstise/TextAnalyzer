@@ -128,6 +128,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             #print("beginning entitiy: " + entity)
             simscore = 0
             if simscore_dic.get(entity, -1) != -1:
+                print("no go: " + str(entity))
                 continue
             # find here the keyphrases of IN_e (in the article)
             #print("entity is: " + entity)
@@ -138,10 +139,10 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
             print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
 
-            #if len(keyphrases_dic[entity]) != 0:
-            #    print("keyphrases: " + str(keyphrases_dic[entity]))
+            if len(keyphrases_dic[entity]) != 0:
+                print("keyphrases: " + str(keyphrases_dic[entity]))
 
-            print(str(entity) + "has kp total of: " + str(len(keyphrases_dic[entity])))
+            print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
             for kp in keyphrases_dic[entity]:
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
