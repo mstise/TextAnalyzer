@@ -24,7 +24,7 @@ class myThread1 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py") or True):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py")):
             References.References(self.root)
         self.result = "NamedEntityDisambiguator/dbs/references_dic"
 class myThread2 (threading.Thread):
@@ -35,7 +35,7 @@ class myThread2 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py") or True):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
             links_to_me(self.root)
         self.result = "NamedEntityDisambiguator/dbs/link_dic"
 class myThread3 (threading.Thread):
@@ -46,7 +46,7 @@ class myThread3 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py") or True):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")):
             create_entity_entity_dict(self.root)
         self.result = "NamedEntityDisambiguator/dbs/ent_coh_dic"
 
@@ -58,7 +58,7 @@ class myThread4 (threading.Thread):
         self.root = root
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "r")
-        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py") or True):
+        if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
             find_link_anchor_texts(self.root)
         self.result = "NamedEntityDisambiguator/dbs/link_anchor_dic"
 
