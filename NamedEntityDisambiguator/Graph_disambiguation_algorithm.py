@@ -115,7 +115,7 @@ def graph_disambiguation_algorithm(graph):
     for node in solution.nodes():
         if len(solution.neighbors(node)) == 0:
             result_list.append([solution.node[node]["key"], None])
-            print("mention not found")
+            #print("mention not found")
     for node in solution.nodes():
         if not solution.node[node]["entity"]:
             if len(solution.neighbors(node)) > 0:
@@ -128,7 +128,7 @@ def graph_disambiguation_algorithm(graph):
                         max_weight = weight
                         max_edge = edge
                 result_list.append([solution.node[max_edge[0]]["key"], solution.node[max_edge[1]]["key"]])
-                print("mention disambiguated")
+                #print("mention disambiguated")
 
     # result_degree, result_graph = min_degree_for_all_solutions(solution)
     # for edge in result_graph.edge:
