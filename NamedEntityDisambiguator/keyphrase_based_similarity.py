@@ -115,7 +115,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
-    print("categories" + str(end - start))
+    print("categories time: " + str(end - start))
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()

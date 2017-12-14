@@ -112,6 +112,7 @@ def main():
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
 
+        print("These are the disambiguations: ")
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
             for men_ent in men_ent_list:
                 mention = men_ent[0]
@@ -121,6 +122,7 @@ def main():
                     matching_entity = "w." + str(men_ent[1])
 
                 f.write(mention + ", [u\'" + matching_entity + "\']\n")
+                print(mention + ", [u\'" + matching_entity + "\']")
         counter += 1
 
     accuracy = ned_evaluator(paths.get_external_disambiguated_outputs(), paths.get_external_annotated())
