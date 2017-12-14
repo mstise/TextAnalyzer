@@ -146,7 +146,10 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             for kp in keyphrases_dic[entity]:
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
+                if len(kp_words) > 10:
+                    kp_words = list(kp_words[:10])
                 kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
+
                 maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
                 if len(maximum_words_in_doc) == 0:
                     continue
