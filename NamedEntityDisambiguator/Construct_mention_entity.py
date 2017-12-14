@@ -62,6 +62,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         for entities_comma_props in prior[1]:
             overall_score += simscore_dic[entities_comma_props[0]]
         for entities_comma_props in prior[1]:
+            if overall_score == 0:
+                mention_entities_sim[prior[0]][entities_comma_props[0]]
+                continue
             mention_entities_sim[prior[0]][entities_comma_props[0]] = simscore_dic[entities_comma_props[0]] / overall_score
 
     print("similarity_scores: " + str(mention_entities_sim))
