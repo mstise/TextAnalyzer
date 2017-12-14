@@ -110,8 +110,8 @@ def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
-    mem_observor = psutil.Process(os.getpid())
-    print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
+    #mem_observor = psutil.Process(os.getpid())
+    #print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
@@ -127,22 +127,21 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             npmi_speedup_dict_den = {}
             #print("beginning entitiy: " + entity)
             simscore = 0
-            if simscore_dic.get(entity, -1) != -1:
-                print("no go: " + str(entity))
-                continue
+            #if simscore_dic.get(entity, -1) != -1:
+            #    print("no go: " + str(entity))
+            #    continue
             # find here the keyphrases of IN_e (in the article)
-            #print("entity is: " + entity)
             foreign_grouped_keyphrases = {}
             #gc.collect()
             foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, wiki_tree_root)
             grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
             foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
-            print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
+            #print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
 
-            if len(keyphrases_dic[entity]) != 0:
-                print("keyphrases: " + str(keyphrases_dic[entity]))
+            #if len(keyphrases_dic[entity]) != 0:
+            #    print("keyphrases: " + str(keyphrases_dic[entity]))
 
-            print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
+            #print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
             for kp in keyphrases_dic[entity]:
                 if str(entity) == "sjælland (skib, 1860)":
                     print(kp)
@@ -175,8 +174,17 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             npmi_speedup_dict_den = {}
             #print("simscore is : " + str(simscore))
             simscore_dic[entity] = simscore
+
+    for entity_candidates in entity_candidates_lst:
+        overall_score = 0
+        for entity in entity_candidates:
+            overall_score += simscore_dic[entity]
+        for entity in entity_candidates:
+            simscore_dic[entity] /= overall_score
+
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
+    print("similarity_scores: " + str(simscore_dic))
     return simscore_dic
 
 
