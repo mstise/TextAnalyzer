@@ -8,8 +8,33 @@ import math
 import os
 import shelve
 import psutil
+import threading
 
 NUM_WIKI_ARTICLES = 474017
+
+class myThread (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+                                    reference_keyphrases, title_of_ent_linking_to_ent, words_of_document):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.category_kps = category_kps
+        self.entity = entity
+        self.entity_candidates = entity_candidates
+        self.keyphrases_dic = keyphrases_dic
+        self.link_anchors_of_ent = link_anchors_of_ent
+        self.reference_keyphrases = reference_keyphrases
+        self.title_of_ent_linking_to_ent = title_of_ent_linking_to_ent
+        self.words_of_document = words_of_document
+    def run(self):
+        self.simscore = get_simscore(self.category_kps, self.entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
+                                    self.reference_keyphrases, self.title_of_ent_linking_to_ent,
+                                    self.words_of_document)
+
+def split_list(lst, parts=1):
+    length = len(lst)
+    return [lst[i * length // parts: (i + 1) * length // parts]
+            for i in range(parts)]
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
@@ -50,7 +75,7 @@ def uniqueify_grouped_kps(grouped_kps):
         new_grouped_kps.append(new_kpwords)
     return new_grouped_kps
 
-def mk_unique_foreign_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent, wiki_tree_root):
+def mk_unique_foreign_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent):
     entity_to_keyphrases = {}
     for entity in entities:
         tmp_set = set()
@@ -122,62 +147,87 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     for entity_candidates in entity_candidates_lst:
         keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
                                                  title_of_ent_linking_to_ent)
-        for entity in entity_candidates:
-            npmi_speedup_dict_num = {}
-            npmi_speedup_dict_den = {}
-            #print("beginning entitiy: " + entity)
-            simscore = 0.0
-            #if simscore_dic.get(entity, -1) != -1:
-            #    print("no go: " + str(entity))
-            #    continue
-            # find here the keyphrases of IN_e (in the article)
-            foreign_grouped_keyphrases = {}
-            #gc.collect()
-            foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, wiki_tree_root)
-            grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
-            foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
-            #print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
+        split_candidates = split_list(entity_candidates, parts=8)
+        threads = []
+        counter = 1
+        for entity in split_candidates:
+            threads.append(myThread(counter, category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+                                    reference_keyphrases, title_of_ent_linking_to_ent,
+                                    words_of_document))
+            counter += 1
 
-            #if len(keyphrases_dic[entity]) != 0:
-            #    print("keyphrases: " + str(keyphrases_dic[entity]))
+        # Start new Threads
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
 
-            #print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
-            for kp in keyphrases_dic[entity]:
-                #if str(entity) == "sjælland (skib, 1860)":
-                #    print(kp)
-                indices = []
-                kp_words = util.split_and_delete_special_characters(kp)
-                if len(kp_words) > 10:
-                    kp_words = list(kp_words[:10])
-                kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
-
-                maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
-                if len(maximum_words_in_doc) == 0:
-                    continue
-                for word in maximum_words_in_doc:
-                    word_idxs = [i for i, x in enumerate(words_of_document) if x == word] #Get indicies of all occurences of a kp-word
-                    if len(word_idxs) > 0: #if empty, the word is not considered in the cover
-                        indices.append(word_idxs)
-                cover, cover_span = min_distance_indices(indices) #finds cover
-                #print("indicies in cover: " + str(cover))
-                if cover_span == 0:
-                    continue
-                z = len(maximum_words_in_doc) / cover_span
-                denominator = sum([npmi(word, entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word in kp_words])
-                if denominator == 0.0:
-                    #print("denom is zero")
-                    continue
-                numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_num) for index in cover])
-                score = z * (numerator / denominator)**2
-                simscore += score
-            npmi_speedup_dict_num = {}
-            npmi_speedup_dict_den = {}
-            #print("simscore is : " + str(simscore))
-            simscore_dic[entity] = simscore
-
+        for thread in threads:
+            simscore_dic[thread.entity] = thread.simscore
+            
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
+
+
+def get_simscore(category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent, reference_keyphrases,
+                 title_of_ent_linking_to_ent, words_of_document):
+    npmi_speedup_dict_num = {}
+    npmi_speedup_dict_den = {}
+    # print("beginning entitiy: " + entity)
+    simscore = 0.0
+    # if simscore_dic.get(entity, -1) != -1:
+    #    print("no go: " + str(entity))
+    #    continue
+    # find here the keyphrases of IN_e (in the article)
+    foreign_grouped_keyphrases = {}
+    # gc.collect()
+    foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],
+                                                                        reference_keyphrases, category_kps,
+                                                                        link_anchors_of_ent,
+                                                                        title_of_ent_linking_to_ent)
+    grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
+    foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
+    # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
+    # if len(keyphrases_dic[entity]) != 0:
+    #    print("keyphrases: " + str(keyphrases_dic[entity]))
+    # print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
+    for kp in keyphrases_dic[entity]:
+        # if str(entity) == "sjælland (skib, 1860)":
+        #    print(kp)
+        indices = []
+        kp_words = util.split_and_delete_special_characters(kp)
+        if len(kp_words) > 10:
+            kp_words = list(kp_words[:10])
+        kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
+
+        maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
+        if len(maximum_words_in_doc) == 0:
+            continue
+        for word in maximum_words_in_doc:
+            word_idxs = [i for i, x in enumerate(words_of_document) if
+                         x == word]  # Get indicies of all occurences of a kp-word
+            if len(word_idxs) > 0:  # if empty, the word is not considered in the cover
+                indices.append(word_idxs)
+        cover, cover_span = min_distance_indices(indices)  # finds cover
+        # print("indicies in cover: " + str(cover))
+        if cover_span == 0:
+            continue
+        z = len(maximum_words_in_doc) / cover_span
+        denominator = sum(
+            [npmi(word, entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word
+             in kp_words])
+        if denominator == 0.0:
+            # print("denom is zero")
+            continue
+        numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, keyphrases_dic,
+                              npmi_speedup_dict_num) for index in cover])
+        score = z * (numerator / denominator) ** 2
+        simscore += score
+    npmi_speedup_dict_num = {}
+    npmi_speedup_dict_den = {}
+    # print("simscore is : " + str(simscore))
+    return simscore
 
 
 '''import threading
