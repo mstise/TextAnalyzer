@@ -202,4 +202,4 @@ def graph_disambiguation_algorithm(graph):
 # nx.draw_networkx_labels(G, nx.circular_layout(G), node_labels, font_size=16)
 # plt.axis('off')
 # plt.show()
-graph_disambiguation_algorithm(copy.deepcopy(G))
+# graph_disambiguation_algorithm(copy.deepcopy(G))
