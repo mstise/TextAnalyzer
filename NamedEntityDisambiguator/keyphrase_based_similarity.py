@@ -109,7 +109,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
                 entity_count += 1
                 #print("entity count: " + str(entity_count))
                 break
-    print("entity_count: " + entity_count)
+    print("entity_count: " + str(entity_count))
     return entity_count / NUM_WIKI_ARTICLES
 
 def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
