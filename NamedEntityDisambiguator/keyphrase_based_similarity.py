@@ -14,20 +14,22 @@ NUM_WIKI_ARTICLES = 474017
 
 class myThread (threading.Thread):
     phrase_dic = {}
-    def __init__(self, threadID, category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+    def __init__(self, threadID, category_kps, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                                     reference_keyphrases, title_of_ent_linking_to_ent, words_of_document):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.category_kps = category_kps
-        self.entity = entity
+        self.entities = entities
         self.entity_candidates = entity_candidates
         self.keyphrases_dic = keyphrases_dic
         self.link_anchors_of_ent = link_anchors_of_ent
         self.reference_keyphrases = reference_keyphrases
         self.title_of_ent_linking_to_ent = title_of_ent_linking_to_ent
         self.words_of_document = words_of_document
+        self.simscore = {}
     def run(self):
-        self.simscore = get_simscore(self.category_kps, self.entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
+        for entity in self.entities:
+            self.simscore[entity] = get_simscore(self.category_kps, entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
                                     self.reference_keyphrases, self.title_of_ent_linking_to_ent,
                                     self.words_of_document)
 
@@ -150,8 +152,8 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
         split_candidates = split_list(entity_candidates, parts=8)
         threads = []
         counter = 1
-        for entity in split_candidates:
-            threads.append(myThread(counter, category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+        for entities in split_candidates:
+            threads.append(myThread(counter, category_kps, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                                     reference_keyphrases, title_of_ent_linking_to_ent,
                                     words_of_document))
             counter += 1
@@ -163,8 +165,9 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             thread.join()
 
         for thread in threads:
-            simscore_dic[thread.entity] = thread.simscore
-            
+            for entity in thread.simscore.keys():
+                simscore_dic[entity] = thread.simscore[entity]
+
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
