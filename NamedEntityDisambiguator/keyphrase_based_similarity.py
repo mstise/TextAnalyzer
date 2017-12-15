@@ -164,7 +164,6 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
         for thread in threads:
             for entity in thread.simscore.keys():
                 simscore_dic[entity] = thread.simscore[entity]
-
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic

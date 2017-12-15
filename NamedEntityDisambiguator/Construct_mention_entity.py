@@ -8,14 +8,18 @@ from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coher
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 import shelve
+import time
 
 def column(matrix, i):
     return [row[i] for row in matrix]
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
-
+    start = time.time()
     priors = popularityPrior(recognized_mentions, root)
-    print("these are priors: " + str(priors))
+    end = time.time()
+    print("prior time: " + str(end - start))
+    for prior in priors:
+        print("Entity: " + str(prior[0]) + " has these priors: " + str(prior[1]))
     priors_wo_mentions = [prior[1] for prior in priors]
     candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
     for entity in candidates_dic.keys():
