@@ -36,7 +36,7 @@ def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
                     mentions.remove(groundtruth_string)
                     correct += 1
         print("These are num_correct: " + str(correct - ear_correct) + " where correct is: " + str(correct))
-        ear_correct += correct
+        ear_correct = correct
 
     precision_slash_accuracy = (correct / (correct + len(mentions)))
 
