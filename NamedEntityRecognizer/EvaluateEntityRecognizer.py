@@ -31,6 +31,23 @@ def get_undisambiguated_mentions(filename, path):
             ud_mentions.append(new_line)
     return ud_mentions
 
+def correctly_recognized(entity_path=paths.get_all_external_entities_path(), annotated_path=paths.get_external_annotated()):
+    correct = 0
+    for filename in os.listdir(annotated_path):
+        mentions = get_mentions(filename, entity_path)
+        danish_mentions = []
+        for mention in mentions:
+            danish_mentions.append(Utilities.convert_danish_letters(mention))
+        mentions = [x.lower() for x in danish_mentions]
+        for line in open(annotated_path + "/" + filename):
+            ground_truths = re.findall(r'\[\*\[[^\|]*\|', line)
+            for ground_truth in ground_truths:
+                groundtruth_string = str(ground_truth[3:-1])
+                if groundtruth_string.lower() in mentions:
+                    mentions.remove(groundtruth_string.lower())
+                    correct += 1
+    return correct
+
 def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_path=paths.get_external_annotated()):
     correct = 0
     imperfect_correct = 0
