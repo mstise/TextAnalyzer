@@ -18,8 +18,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     print("these are priors: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
-    for entity in prior_dic.keys():
-        candidates_dic[entity] = [doble[0] for doble in prior_dic[entity]]
+    for entity in candidates_dic.keys():
+        candidates_dic[entity] = [doble[0] for doble in candidates_dic[entity]]
 
     entities = []
     #entity_candidates_lst = []
