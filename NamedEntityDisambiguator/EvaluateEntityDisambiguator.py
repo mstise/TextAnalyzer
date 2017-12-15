@@ -29,17 +29,17 @@ def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
         mentions = get_disambiguations(filename, disambiguated_path)
         mentions = list([mention.lower() for mention in mentions])
         #overall_mention_length += len(mentions)
-        print("these are mentions: " + str(mentions))
+        #print("these are mentions: " + str(mentions))
         for line in open(annotated_path + "/" + filename):
             ground_truths = re.findall(r'\|[^\]]*\]\*\]', line)
-            print("*These are ground_truths: " + str(ground_truths))
+            #print("*These are ground_truths: " + str(ground_truths))
             for ground_truth in ground_truths:
                 groundtruth_string = str(ground_truth[1:-3]).lower()
                 if groundtruth_string in mentions:
-                    print("*This found ground_truth: " + str(groundtruth_string))
+                    #print("*This found ground_truth: " + str(groundtruth_string))
                     mentions.remove(groundtruth_string)
                     correct += 1
-        print("These are num_correct: " + str(correct - ear_correct) + " where correct is: " + str(correct))
+        #print("These are num_correct: " + str(correct - ear_correct) + " where correct is: " + str(correct))
         ear_correct = correct
 
     return correct / num_correctly_recognized_mentions
