@@ -66,49 +66,49 @@ def graph_disambiguation_algorithm(graph):
             result_list.append([graph.node[node]["key"], None])
             graph.remove_node(node)
 
-    closest_entities = []
-    mentions = 0
-    # Pre processing
-    # print('pre-processing started at: ' + str(datetime.now()))
-    for n in graph.nodes():
-        if graph.node[n]["entity"]:
-            temp_closest = []
-            for x in graph.nodes():
-                if not graph.node[x]["entity"]:
-                    # Calculate distance to all mentions
-                    if nx.has_path(graph, n, x):
-                        temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
-            distance = 0
-            for x in temp_closest:
-                distance += x[2]*x[2]
-            closest_entities.append([n, distance])
-        else:
-            mentions += 1
-    # Keep the closest 5
-    closest_entities.sort(key=lambda x: x[1])
-    for node in closest_entities[:-(mentions * 5)]:
-        graph.remove_node(node[0])
+    # closest_entities = []
+    # mentions = 0
+    # # Pre processing
+    # # print('pre-processing started at: ' + str(datetime.now()))
+    # for n in graph.nodes():
+    #     if graph.node[n]["entity"]:
+    #         temp_closest = []
+    #         for x in graph.nodes():
+    #             if not graph.node[x]["entity"]:
+    #                 # Calculate distance to all mentions
+    #                 if nx.has_path(graph, n, x):
+    #                     temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
+    #         distance = 0
+    #         for x in temp_closest:
+    #             distance += x[2]*x[2]
+    #         closest_entities.append([n, distance])
+    #     else:
+    #         mentions += 1
+    # # Keep the closest 5
+    # closest_entities.sort(key=lambda x: x[1])
+    # for node in closest_entities[:-(mentions * 2)]:
+    #     graph.remove_node(node[0])
 
 
         
-    # Test
-    import warnings
-    import matplotlib.pyplot as plt
-    warnings.filterwarnings("ignore")
-    node_labels = {}
-    counter = 0
-    for node in graph.nodes():
-        if graph.node[node]["entity"]:
-            node_labels[counter] = ("ENTITY: " + graph.node[node]['key'])
-        else:
-            node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
-        counter += 1
-
-    nx.draw(graph, nx.circular_layout(graph))
-    nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels)
-    nx.draw_networkx_edge_labels(G, nx.circular_layout(graph))
-    plt.axis('off')
-    plt.show()
+    # # Test
+    # import warnings
+    # import matplotlib.pyplot as plt
+    # warnings.filterwarnings("ignore")
+    # node_labels = {}
+    # counter = 0
+    # for node in graph.nodes():
+    #     if graph.node[node]["entity"]:
+    #         node_labels[counter] = ("ENTITY: " + graph.node[node]['key'])
+    #     else:
+    #         node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
+    #     counter += 1
+    #
+    # nx.draw(graph, nx.circular_layout(graph))
+    # nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels)
+    # nx.draw_networkx_edge_labels(G, nx.circular_layout(graph))
+    # plt.axis('off')
+    # plt.show()
 
 
 
@@ -176,19 +176,19 @@ def graph_disambiguation_algorithm(graph):
 # end = time.time()
 # print(mid-start)
 # print(end-mid)
-G = nx.Graph()
-G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
-G.add_edge(1, 0, weight=4.210)
-G.add_edge(2, 0, weight=0.001)
-G.add_edge(3, 0, weight=0.001)
-G.add_edge(5, 4, weight=1.078)
-G.add_edge(1, 5, weight=0.068)
+# G = nx.Graph()
+# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+# G.add_edge(1, 0, weight=4.210)
+# G.add_edge(2, 0, weight=0.001)
+# G.add_edge(3, 0, weight=0.001)
+# G.add_edge(5, 4, weight=1.078)
+# G.add_edge(1, 5, weight=0.068)
 # import matplotlib.pyplot as plt
 # node_labels = {}
 # counter = 0
