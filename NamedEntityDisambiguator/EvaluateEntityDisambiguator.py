@@ -33,7 +33,7 @@ def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
             ground_truths = re.findall(r'\|[^\]]*\]\*\]', line)
             print("*These are ground_truths: " + str(ground_truths))
             for ground_truth in ground_truths:
-                groundtruth_string = str(ground_truth[1:-3])
+                groundtruth_string = str(ground_truth[1:-3]).lower()
                 if groundtruth_string in mentions:
                     print("*This found ground_truth: " + str(groundtruth_string))
                     mentions.remove(groundtruth_string)
