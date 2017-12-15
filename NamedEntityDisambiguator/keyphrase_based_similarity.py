@@ -115,7 +115,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
-    print("categories" + str(end - start))
+    print("categories time: " + str(end - start))
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
@@ -126,7 +126,7 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             npmi_speedup_dict_num = {}
             npmi_speedup_dict_den = {}
             #print("beginning entitiy: " + entity)
-            simscore = 0
+            simscore = 0.0
             #if simscore_dic.get(entity, -1) != -1:
             #    print("no go: " + str(entity))
             #    continue
@@ -143,8 +143,8 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
 
             #print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
             for kp in keyphrases_dic[entity]:
-                if str(entity) == "sjælland (skib, 1860)":
-                    print(kp)
+                #if str(entity) == "sjælland (skib, 1860)":
+                #    print(kp)
                 indices = []
                 kp_words = util.split_and_delete_special_characters(kp)
                 if len(kp_words) > 10:
@@ -175,16 +175,8 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
             #print("simscore is : " + str(simscore))
             simscore_dic[entity] = simscore
 
-    for entity_candidates in entity_candidates_lst:
-        overall_score = 0
-        for entity in entity_candidates:
-            overall_score += simscore_dic[entity]
-        for entity in entity_candidates:
-            simscore_dic[entity] /= overall_score
-
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
-    print("similarity_scores: " + str(simscore_dic))
     return simscore_dic
 
 

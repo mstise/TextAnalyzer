@@ -25,9 +25,8 @@ class myThread1 (threading.Thread):
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/references_dic.txt", "r")
         if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/References.py")):
-            self.result = References.References(self.root)
-        else:
-            self.result = "NamedEntityDisambiguator/dbs/references_dic"
+            References.References(self.root)
+        self.result = "NamedEntityDisambiguator/dbs/references_dic"
 class myThread2 (threading.Thread):
     phrase_dic = {}
     def __init__(self, threadID, root):
@@ -37,9 +36,8 @@ class myThread2 (threading.Thread):
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "r")
         if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
-            self.result = self.result = links_to_me(self.root)
-        else:
-            self.result = "NamedEntityDisambiguator/dbs/link_dic"
+            links_to_me(self.root)
+        self.result = "NamedEntityDisambiguator/dbs/link_dic"
 class myThread3 (threading.Thread):
     phrase_dic = {}
     def __init__(self, threadID, root):
@@ -49,9 +47,8 @@ class myThread3 (threading.Thread):
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "r")
         if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")):
-            self.result = create_entity_entity_dict(self.root)
-        else:
-            self.result = "NamedEntityDisambiguator/dbs/ent_coh_dic"
+            create_entity_entity_dict(self.root)
+        self.result = "NamedEntityDisambiguator/dbs/ent_coh_dic"
 
 class myThread4 (threading.Thread):
     phrase_dic = {}
@@ -62,9 +59,8 @@ class myThread4 (threading.Thread):
     def run(self):
         f = open("NamedEntityDisambiguator/dbs/link_anchor_dic.txt", "r")
         if f.readline() != str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")):
-            self.result = find_link_anchor_texts(self.root)
-        else:
-            self.result = "NamedEntityDisambiguator/dbs/link_anchor_dic"
+            find_link_anchor_texts(self.root)
+        self.result = "NamedEntityDisambiguator/dbs/link_anchor_dic"
 
 def keyphrase_sim_speedup(wiki_tree_root):
     start = time.time()
@@ -99,9 +95,9 @@ def main():
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
-        #if counter != 6:
-        #    counter += 1
-        #    continue
+        if counter < 26:
+            counter += 1
+            continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         print('Document started at: ' + str(datetime.now()))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
@@ -112,6 +108,7 @@ def main():
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
 
+        print("These are the disambiguations: ")
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
             for men_ent in men_ent_list:
                 mention = men_ent[0]
@@ -121,6 +118,7 @@ def main():
                     matching_entity = "w." + str(men_ent[1])
 
                 f.write(mention + ", [u\'" + matching_entity + "\']\n")
+                print(mention + ", [u\'" + matching_entity + "\']")
         counter += 1
 
     accuracy = ned_evaluator(paths.get_external_disambiguated_outputs(), paths.get_external_annotated())

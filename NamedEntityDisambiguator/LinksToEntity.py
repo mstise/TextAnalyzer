@@ -47,7 +47,7 @@ def links_to_me(wiki_tree_root):
     f = open("NamedEntityDisambiguator/dbs/link_dic.txt", "w")
     f.write(str(os.path.getmtime("NamedEntityDisambiguator/LinksToEntity.py")))
     f.close()
-    return "NamedEntityDisambiguator/dbs/link_dic"
+    return link_dictionary
 
 '''from lxml import etree
 import paths

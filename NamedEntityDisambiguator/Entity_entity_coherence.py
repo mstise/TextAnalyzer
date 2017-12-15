@@ -78,14 +78,16 @@ def create_entity_entity_dict(root):
     f = open("NamedEntityDisambiguator/dbs/ent_coh_dic.txt", "w")
     f.write(str(os.path.getmtime("NamedEntityDisambiguator/Entity_entity_coherence.py")))
     f.close()
-    return "NamedEntityDisambiguator/dbs/ent_coh_dic"
+    return reference_dict
 
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []
     print("ent_ent_coh, first phase done")
     for two_combination in itertools.combinations(entities, 2):
-        entity_links1 = reference_dict[two_combination[0]]
-        entity_links2 = reference_dict[two_combination[1]]
+        entity_links1 = reference_dict.get(two_combination[0], -1)
+        entity_links2 = reference_dict.get(two_combination[1], -1)
+        if entity_links1 == -1 or entity_links2 == -1:
+            continue
         shared_links = entity_links1 & entity_links2 #& er intersection operator
         if len(shared_links) == 0:
             continue

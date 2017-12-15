@@ -50,11 +50,25 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
     simscore_dic = keyphrase_similarity(root, entities, entity_candidates_lst, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
 
-    print("these are simscore keys: " + str(simscore_dic.keys()))
-
     reference_keyphrases.close()
     title_of_ent_linking_to_ent.close()
     link_anchors_of_ent.close()
+
+    #print("sim before normalisation: " + str(simscore_dic))
+    #normalise simscore to sum to 1 between candidates
+    mention_entities_sim = {}
+    for prior in priors:
+        mention_entities_sim[prior[0]] = {}
+        overall_score = 0
+        for entities_comma_props in prior[1]:
+            overall_score += simscore_dic[entities_comma_props[0]]
+        for entities_comma_props in prior[1]:
+            if overall_score == 0:
+                mention_entities_sim[prior[0]][entities_comma_props[0]] = 1
+                continue
+            mention_entities_sim[prior[0]][entities_comma_props[0]] = simscore_dic[entities_comma_props[0]] / overall_score
+
+    print("similarity_scores: " + str(mention_entities_sim))
 
     for prior in priors:
         mention_nr = G.number_of_nodes()
@@ -63,11 +77,11 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             entity = entity_with_prior[0]
             if entity in entity_node_dict.keys():
                 entity_nr = entity_node_dict[entity]
-                G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
+                G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * mention_entities_sim[prior[0]][entity])
                 continue
             entity_nr = G.number_of_nodes()
             G.add_node(entity_nr, key=entity, entity=True, taboo=False)
-            G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * simscore_dic[entity])
+            G.add_edge(entity_nr, mention_nr, weight=alpha * entity_with_prior[1] + beta * mention_entities_sim[prior[0]][entity])
             #entities.append(entity)
             entity_node_dict[entity] = entity_nr
 
