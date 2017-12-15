@@ -109,7 +109,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
                 entity_count += 1
                 #print("entity count: " + str(entity_count))
                 break
-
+    print("entity_count: " + entity_count)
     return entity_count / NUM_WIKI_ARTICLES
 
 def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
@@ -200,8 +200,6 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
-        if len(maximum_words_in_doc) > 0:
-            print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc))
         if len(maximum_words_in_doc) == 0:
             continue
         for word in maximum_words_in_doc:
@@ -211,7 +209,9 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                 indices.append(word_idxs)
         cover, cover_span = min_distance_indices(indices)  # finds cover
         # print("indicies in cover: " + str(cover))
-        if cover_span == 0:
+        if len(maximum_words_in_doc) > 0:
+            print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc) + " and span_len: " + str(cover_span))
+        if cover_span == 0: #TODO: Hvordan kan denne blive 0 når der er 1 i maximum_words_in_doc? (Bliver den lige nu)
             continue
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
