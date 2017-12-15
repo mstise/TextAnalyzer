@@ -199,7 +199,8 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
-        print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc))
+        if maximum_words_in_doc > 0:
+            print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc))
         if len(maximum_words_in_doc) == 0:
             continue
         for word in maximum_words_in_doc:
