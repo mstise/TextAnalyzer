@@ -19,7 +19,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     end = time.time()
     print("prior time: " + str(end - start))
     for prior in priors:
-        print("Entity: " + str(prior[0]) + " has " + str(len(prior[1])) + " priors: " + str(prior[1]))
+        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + " priors: " + str(prior[1]))
     priors_wo_mentions = [prior[1] for prior in priors]
     candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
     for entity in candidates_dic.keys():
