@@ -150,9 +150,8 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
         counter = 1
         #print("these are the split candidates: " + str(split_candidates))
         for entities in split_candidates:
-            threads.append(myThread(counter, category_kps, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
-                                    reference_keyphrases, title_of_ent_linking_to_ent,
-                                    words_of_document))
+            threads.append(myThread(counter, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+                                    title_of_ent_linking_to_ent, words_of_document))
             counter += 1
 
         # Start new Threads
