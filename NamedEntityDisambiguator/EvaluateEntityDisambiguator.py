@@ -22,6 +22,7 @@ def get_disambiguations(filename, path):
 
 def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti"):
     correct = 0
+    ear_correct = 0
     for filename in os.listdir(annotated_path):
         mentions = get_disambiguations(filename, disambiguated_path)
         print("these are mentions: " + str(mentions))
@@ -33,6 +34,9 @@ def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
                 if groundtruth_string in mentions:
                     mentions.remove(groundtruth_string)
                     correct += 1
+        print("These are num_correct: " + str(correct - ear_correct))
+        ear_correct += correct
+
     precision_slash_accuracy = (correct / (correct + len(mentions)))
 
     return precision_slash_accuracy
