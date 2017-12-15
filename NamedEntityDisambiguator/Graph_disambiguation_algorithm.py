@@ -88,6 +88,26 @@ def graph_disambiguation_algorithm(graph):
     closest_entities.sort(key=lambda x: x[1])
     for node in closest_entities[:-(mentions * 5)]:
         graph.remove_node(node[0])
+
+
+        
+    # Test
+    import matplotlib.pyplot as plt
+    node_labels = {}
+    counter = 0
+    for node in graph.nodes():
+        if graph.node[node]["entity"]:
+            node_labels[counter] = ("ENTITY: " + graph.node[node]['key'])
+        else:
+            node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
+        counter += 1
+    nx.draw(graph, nx.circular_layout(graph))
+    nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels, font_size=16)
+    plt.axis('off')
+    plt.show()
+
+
+
     # Main loop
     # print('main loop started at: ' + str(datetime.now()))
     solution = copy.deepcopy(graph)
@@ -165,4 +185,17 @@ def graph_disambiguation_algorithm(graph):
 # G.add_edge(3, 0, weight=0.001)
 # G.add_edge(5, 4, weight=1.078)
 # G.add_edge(1, 5, weight=0.068)
+# import matplotlib.pyplot as plt
+# node_labels = {}
+# counter = 0
+# for node in G.nodes():
+#     if G.node[node]["entity"]:
+#         node_labels[counter] = ("ENTITY: " + G.node[node]['key'])
+#     else:
+#         node_labels[counter] = ("MENTION: " + G.node[node]['key'])
+#     counter += 1
+# nx.draw(G, nx.circular_layout(G))
+# nx.draw_networkx_labels(G, nx.circular_layout(G), node_labels, font_size=16)
+# plt.axis('off')
+# plt.show()
 # graph_disambiguation_algorithm(copy.deepcopy(G))
