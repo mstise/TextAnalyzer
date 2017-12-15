@@ -92,7 +92,9 @@ def graph_disambiguation_algorithm(graph):
 
         
     # Test
+    import warnings
     import matplotlib.pyplot as plt
+    warnings.filterwarnings("ignore")
     node_labels = {}
     counter = 0
     for node in graph.nodes():
@@ -101,8 +103,10 @@ def graph_disambiguation_algorithm(graph):
         else:
             node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
         counter += 1
+
     nx.draw(graph, nx.circular_layout(graph))
-    nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels, font_size=16)
+    nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels)
+    nx.draw_networkx_edge_labels(G, nx.circular_layout(graph))
     plt.axis('off')
     plt.show()
 
@@ -172,19 +176,19 @@ def graph_disambiguation_algorithm(graph):
 # end = time.time()
 # print(mid-start)
 # print(end-mid)
-# G = nx.Graph()
-# G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
-# G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
-# G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
-# G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
-# G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
-# G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
-# G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
-# G.add_edge(1, 0, weight=4.210)
-# G.add_edge(2, 0, weight=0.001)
-# G.add_edge(3, 0, weight=0.001)
-# G.add_edge(5, 4, weight=1.078)
-# G.add_edge(1, 5, weight=0.068)
+G = nx.Graph()
+G.add_node(0, key='anders fogh rasmussen', entity=False, taboo=False)
+G.add_node(1, key='anders fogh rasmussen', entity=True, taboo=False)
+G.add_node(2, key=':no:anders fogh rasmussen', entity=True, taboo=False)
+G.add_node(3, key='anders fogh rasmussen#rådgiver for den ukrainske præsident', entity=True, taboo=False)
+G.add_node(4, key='ritt bjerregaard', entity=False, taboo=False)
+G.add_node(5, key='ritt bjerregaard', entity=True, taboo=False)
+G.add_node(6, key='i have no neighbors', entity=False, taboo=False)
+G.add_edge(1, 0, weight=4.210)
+G.add_edge(2, 0, weight=0.001)
+G.add_edge(3, 0, weight=0.001)
+G.add_edge(5, 4, weight=1.078)
+G.add_edge(1, 5, weight=0.068)
 # import matplotlib.pyplot as plt
 # node_labels = {}
 # counter = 0
@@ -198,4 +202,4 @@ def graph_disambiguation_algorithm(graph):
 # nx.draw_networkx_labels(G, nx.circular_layout(G), node_labels, font_size=16)
 # plt.axis('off')
 # plt.show()
-# graph_disambiguation_algorithm(copy.deepcopy(G))
+graph_disambiguation_algorithm(copy.deepcopy(G))
