@@ -121,6 +121,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speed
     print(str(entity) + " join prob is: " + str(joint_prob))
     ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
     word_prob = word_probability(word, entities, entity_keyphrases)
+    print(str(entity) + " word prob is: " + str(word_prob))
     denominator = ent_prob * word_prob
     if denominator <= 0.0 or joint_prob <= 0.0: #security check if division by zero occurs
         npmi_speedup_dict[word] = 0
@@ -199,7 +200,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
-        if maximum_words_in_doc > 0:
+        if len(maximum_words_in_doc) > 0:
             print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc))
         if len(maximum_words_in_doc) == 0:
             continue
