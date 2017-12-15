@@ -66,45 +66,49 @@ def graph_disambiguation_algorithm(graph):
             result_list.append([graph.node[node]["key"], None])
             graph.remove_node(node)
 
-    closest_entities = []
-    mentions = 0
-    # Pre processing
-    # print('pre-processing started at: ' + str(datetime.now()))
-    for n in graph.nodes():
-        if graph.node[n]["entity"]:
-            temp_closest = []
-            for x in graph.nodes():
-                if not graph.node[x]["entity"]:
-                    # Calculate distance to all mentions
-                    if nx.has_path(graph, n, x):
-                        temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
-            distance = 0
-            for x in temp_closest:
-                distance += x[2]*x[2]
-            closest_entities.append([n, distance])
-        else:
-            mentions += 1
-    # Keep the closest 5
-    closest_entities.sort(key=lambda x: x[1])
-    for node in closest_entities[:-(mentions * 5)]:
-        graph.remove_node(node[0])
+    # closest_entities = []
+    # mentions = 0
+    # # Pre processing
+    # # print('pre-processing started at: ' + str(datetime.now()))
+    # for n in graph.nodes():
+    #     if graph.node[n]["entity"]:
+    #         temp_closest = []
+    #         for x in graph.nodes():
+    #             if not graph.node[x]["entity"]:
+    #                 # Calculate distance to all mentions
+    #                 if nx.has_path(graph, n, x):
+    #                     temp_closest.append([n, x, nx.dijkstra_path_length(graph, n, x)])
+    #         distance = 0
+    #         for x in temp_closest:
+    #             distance += x[2]*x[2]
+    #         closest_entities.append([n, distance])
+    #     else:
+    #         mentions += 1
+    # # Keep the closest 5
+    # closest_entities.sort(key=lambda x: x[1])
+    # for node in closest_entities[:-(mentions * 2)]:
+    #     graph.remove_node(node[0])
 
 
         
-    # Test
-    import matplotlib.pyplot as plt
-    node_labels = {}
-    counter = 0
-    for node in graph.nodes():
-        if graph.node[node]["entity"]:
-            node_labels[counter] = ("ENTITY: " + graph.node[node]['key'])
-        else:
-            node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
-        counter += 1
-    nx.draw(graph, nx.circular_layout(graph))
-    nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels, font_size=16)
-    plt.axis('off')
-    plt.show()
+    # # Test
+    # import warnings
+    # import matplotlib.pyplot as plt
+    # warnings.filterwarnings("ignore")
+    # node_labels = {}
+    # counter = 0
+    # for node in graph.nodes():
+    #     if graph.node[node]["entity"]:
+    #         node_labels[counter] = ("ENTITY: " + graph.node[node]['key'])
+    #     else:
+    #         node_labels[counter] = ("MENTION: " + graph.node[node]['key'])
+    #     counter += 1
+    #
+    # nx.draw(graph, nx.circular_layout(graph))
+    # nx.draw_networkx_labels(graph, nx.circular_layout(graph), node_labels)
+    # nx.draw_networkx_edge_labels(G, nx.circular_layout(graph))
+    # plt.axis('off')
+    # plt.show()
 
 
 
