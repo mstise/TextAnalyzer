@@ -27,7 +27,7 @@ def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguati
     ear_correct = 0
     for filename in os.listdir(annotated_path):
         mentions = get_disambiguations(filename, disambiguated_path)
-        mentions = list([mention.lower for mention in mentions])
+        mentions = list([mention.lower() for mention in mentions])
         #overall_mention_length += len(mentions)
         print("these are mentions: " + str(mentions))
         for line in open(annotated_path + "/" + filename):
