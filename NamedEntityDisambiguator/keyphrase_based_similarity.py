@@ -136,7 +136,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
+def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
     #mem_observor = psutil.Process(os.getpid())
     #print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     start = time.time()
@@ -146,12 +146,13 @@ def keyphrase_similarity(wiki_tree_root, entities, entity_candidates_lst, words_
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    for entity_candidates in entity_candidates_lst:
+    for entity_candidates in candidates_dic.values():
         keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
                                                  title_of_ent_linking_to_ent)
         split_candidates = split_list(entity_candidates, parts=8)
         threads = []
         counter = 1
+        #print("these are the split candidates: " + str(split_candidates))
         for entities in split_candidates:
             threads.append(myThread(counter, category_kps, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                                     reference_keyphrases, title_of_ent_linking_to_ent,
@@ -177,7 +178,7 @@ def get_simscore(category_kps, entity, entity_candidates, keyphrases_dic, link_a
                  title_of_ent_linking_to_ent, words_of_document):
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
-    # print("beginning entitiy: " + entity)
+    #print("beginning entitiy: " + entity)
     simscore = 0.0
     # if simscore_dic.get(entity, -1) != -1:
     #    print("no go: " + str(entity))
