@@ -109,7 +109,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
                 entity_count += 1
                 #print("entity count: " + str(entity_count))
                 break
-    print("entity_count: " + str(entity_count))
+    print(str(word) + " has entity_count: " + str(entity_count))
     return entity_count / NUM_WIKI_ARTICLES
 
 def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
@@ -135,6 +135,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speed
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
+    print("words_of_doc: " + str(words_of_document))
     #mem_observor = psutil.Process(os.getpid())
     #print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     start = time.time()
