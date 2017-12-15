@@ -9,29 +9,26 @@ import os
 import shelve
 import psutil
 import threading
+import copy
 
 NUM_WIKI_ARTICLES = 474017
 
 class myThread (threading.Thread):
     phrase_dic = {}
-    def __init__(self, threadID, category_kps, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
-                                    reference_keyphrases, title_of_ent_linking_to_ent, words_of_document):
+    def __init__(self, threadID, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
         threading.Thread.__init__(self)
         self.threadID = threadID
-        self.category_kps = category_kps
         self.entities = entities
         self.entity_candidates = entity_candidates
         self.keyphrases_dic = keyphrases_dic
         self.link_anchors_of_ent = link_anchors_of_ent
-        self.reference_keyphrases = reference_keyphrases
         self.title_of_ent_linking_to_ent = title_of_ent_linking_to_ent
         self.words_of_document = words_of_document
         self.simscore = {}
     def run(self):
         for entity in self.entities:
-            self.simscore[entity] = get_simscore(self.category_kps, entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
-                                    self.reference_keyphrases, self.title_of_ent_linking_to_ent,
-                                    self.words_of_document)
+            self.simscore[entity] = get_simscore(entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
+                                    self.title_of_ent_linking_to_ent, copy.deepcopy(self.words_of_document))
 
 def split_list(lst, parts=1):
     length = len(lst)
@@ -77,7 +74,7 @@ def uniqueify_grouped_kps(grouped_kps):
         new_grouped_kps.append(new_kpwords)
     return new_grouped_kps
 
-def mk_unique_foreign_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent):
+def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
     entity_to_keyphrases = {}
     for entity in entities:
         tmp_set = set()
@@ -91,13 +88,12 @@ def mk_unique_foreign_entity_to_keyphrases(entities, reference_keyphrases, categ
         entity_to_keyphrases[entity] = grouped_kps#uniqueify_grouped_kps(grouped_kps)
     return entity_to_keyphrases
 
-def word_probability(word, entities, keyphrases_dic):
+def word_probability(word, entities, entity_keyphrases):
     num_kps = 0
     encountered_kps = 0
     for entity in entities:
-        keyphrases = keyphrases_dic[entity]
-        num_kps += len(keyphrases)
-        for kp in keyphrases:
+        num_kps += len(entity_keyphrases)
+        for kp in entity_keyphrases:
             kp_words = util.split_and_delete_special_characters(kp)
             encountered_kps += 1 if word in kp_words else 0
     return encountered_kps / num_kps
@@ -116,14 +112,14 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
 
     return entity_count / NUM_WIKI_ARTICLES
 
-def npmi(word, entities, mixed_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
+def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
     joint_prob = joint_probability(word, mixed_grouped_keyphrases)
     ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
-    word_prob = word_probability(word, entities, keyphrases_dic)
+    word_prob = word_probability(word, entities, entity_keyphrases)
     denominator = ent_prob * word_prob
     if denominator <= 0.0 or joint_prob <= 0.0: #security check if division by zero occurs
         npmi_speedup_dict[word] = 0
@@ -174,10 +170,11 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     return simscore_dic
 
 
-def get_simscore(category_kps, entity, entity_candidates, keyphrases_dic, link_anchors_of_ent, reference_keyphrases,
+def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                  title_of_ent_linking_to_ent, words_of_document):
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
+    entity_keyphrases = keyphrases_dic[entity]
     #print("beginning entitiy: " + entity)
     simscore = 0.0
     # if simscore_dic.get(entity, -1) != -1:
@@ -186,17 +183,14 @@ def get_simscore(category_kps, entity, entity_candidates, keyphrases_dic, link_a
     # find here the keyphrases of IN_e (in the article)
     foreign_grouped_keyphrases = {}
     # gc.collect()
-    foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],
-                                                                        reference_keyphrases, category_kps,
-                                                                        link_anchors_of_ent,
-                                                                        title_of_ent_linking_to_ent)
-    grouped_kps = [util.split_and_delete_special_characters(kp) for kp in keyphrases_dic[entity]]
+    foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], link_anchors_of_ent)
+    grouped_kps = [util.split_and_delete_special_characters(kp) for kp in entity_keyphrases]
     foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
     # print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
-    for kp in keyphrases_dic[entity]:
+    for kp in entity_keyphrases:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
         indices = []
@@ -219,12 +213,12 @@ def get_simscore(category_kps, entity, entity_candidates, keyphrases_dic, link_a
             continue
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
-            [npmi(word, entity_candidates, foreign_grouped_keyphrases, keyphrases_dic, npmi_speedup_dict_den) for word
+            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den) for word
              in kp_words])
         if denominator == 0.0:
             # print("denom is zero")
             continue
-        numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, keyphrases_dic,
+        numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, entity_keyphrases,
                               npmi_speedup_dict_num) for index in cover])
         score = z * (numerator / denominator) ** 2
         simscore += score
