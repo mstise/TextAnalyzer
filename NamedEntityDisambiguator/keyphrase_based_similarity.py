@@ -112,12 +112,13 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
 
     return entity_count / NUM_WIKI_ARTICLES
 
-def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict): #foreign_entities is a dictionary containing only 1 entry
+def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
     joint_prob = joint_probability(word, mixed_grouped_keyphrases)
+    print(str(entity) + " join prob is: " + str(joint_prob))
     ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
     word_prob = word_probability(word, entities, entity_keyphrases)
     denominator = ent_prob * word_prob
@@ -187,7 +188,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
-    # print(str(entity) + " has kp total of: " + str(len(keyphrases_dic[entity])))
+    print(str(entity) + " has " + str(len(entity_keyphrases)) + "keyphrases")
     for kp in entity_keyphrases:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
@@ -198,6 +199,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
+        print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc))
         if len(maximum_words_in_doc) == 0:
             continue
         for word in maximum_words_in_doc:
@@ -211,13 +213,15 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
             continue
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
-            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den) for word
+            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity) for word
              in kp_words])
+        print(str(entity) + ": denom = " + str(denominator))
         if denominator == 0.0:
-            # print("denom is zero")
+            #print(str(entity) + ": denom is zero")
             continue
         numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, entity_keyphrases,
-                              npmi_speedup_dict_num) for index in cover])
+                              npmi_speedup_dict_num, entity) for index in cover])
+        print(str(entity) + ": numerator = " + str(numerator))
         score = z * (numerator / denominator) ** 2
         simscore += score
     npmi_speedup_dict_num = {}
