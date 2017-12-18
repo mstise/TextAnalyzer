@@ -170,6 +170,31 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
 
+def find_num_ent_in_kps(entity_keyphrases, mixed_keyphrases):
+    num_ent_in_kps_dic = {}
+    num_kp_in_kps_dic = {}
+    for kp in entity_keyphrases:
+        kp_words = util.split_and_delete_special_characters(kp)
+        if len(kp_words) > 10:
+            kp_words = list(kp_words[:10])
+        for word in kp_words:
+            num_ent_in_kps_dic[word] = 0
+            num_kp_in_kps_dic[word] = 0
+    for entity in mixed_keyphrases.keys():
+        for ent_kp in mixed_keyphrases[entity]:
+            ent_kp_words = util.split_and_delete_special_characters(ent_kp)
+            for word in num_kp_in_kps_dic.keys():
+                if word in ent_kp_words:
+                    num_kp_in_kps_dic[word] += 1
+        for word in num_ent_in_kps_dic.keys():
+            if num_kp_in_kps_dic[word] > 0:
+                num_ent_in_kps_dic[word] += 1
+                num_kp_in_kps_dic[word] = 0
+
+    return num_ent_in_kps_dic
+
+
+
 
 def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                  title_of_ent_linking_to_ent, words_of_document):
@@ -191,6 +216,11 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
     print(str(entity) + " has " + str(len(entity_keyphrases)) + "keyphrases")
+    start = time.time()
+    num_ent_in_kps_dic = find_num_ent_in_kps(entity_keyphrases, foreign_grouped_keyphrases)
+    end = time.time()
+    print("num_ent_in_kps_dic time: " + str(end - start))
+    exit()
     for kp in entity_keyphrases:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
@@ -213,10 +243,8 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
         # print("indicies in cover: " + str(cover))
         if len(maximum_words_in_doc) > 0:
             print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc) + " and span_len: " + str(cover_span))
-        if cover_span == 0: #TODO: Hvordan kan denne blive 0 når der er 1 i maximum_words_in_doc? (Bliver den lige nu)
+        if cover_span == 0:
             continue
-
-
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
             [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity) for word
@@ -245,3 +273,6 @@ root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
+
+#dic = find_num_ent_in_kps(["I am a big snotty boy", "you suck"], {"ent1": ["snotty is not so bad", "suck indeed i do"], "ent2": ["big i am"]})
+#print("hal")
