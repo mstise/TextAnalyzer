@@ -10,6 +10,7 @@ import shelve
 import psutil
 import threading
 import copy
+from sortedcontainers import SortedList
 
 NUM_WIKI_ARTICLES = 474017
 
@@ -85,7 +86,7 @@ def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
 
         grouped_kps = [util.split_and_delete_special_characters(kp) for kp in list(tmp_set)]
 
-        entity_to_keyphrases[entity] = grouped_kps#uniqueify_grouped_kps(grouped_kps)
+        entity_to_keyphrases[entity] = SortedList(list(grouped_kps))#uniqueify_grouped_kps(grouped_kps)
     return entity_to_keyphrases
 
 def word_probability(word, entities, entity_keyphrases):
@@ -210,7 +211,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     # gc.collect()
     foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], link_anchors_of_ent)
     grouped_kps = [util.split_and_delete_special_characters(kp) for kp in entity_keyphrases]
-    foreign_grouped_keyphrases[entity] = uniqueify_grouped_kps(grouped_kps)
+    foreign_grouped_keyphrases[entity] = SortedList(grouped_kps)# uniqueify_grouped_kps(grouped_kps)
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
@@ -273,3 +274,8 @@ root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
+
+l = SortedList(["åbenrå", "æv", "banan", "abe", "t-bone", "isbjørn"])
+print(str(l))
+
+print(str("t-bone" in l))
