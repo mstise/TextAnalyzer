@@ -113,12 +113,12 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     print(str(word) + " has entity_count: " + str(entity_count))
     return entity_count / len(mixed_keyphrases.keys())
 
-def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
+def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity, num_ent_in_kps_dic): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
-    joint_prob = joint_probability(word, mixed_grouped_keyphrases)
+    joint_prob = num_ent_in_kps_dic[word] / len(mixed_grouped_keyphrases.keys())#joint_probability(word, mixed_grouped_keyphrases)
     print(str(entity) + " join prob is: " + str(joint_prob))
     ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
     word_prob = word_probability(word, entities, entity_keyphrases)
@@ -219,9 +219,8 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     start = time.time()
     num_ent_in_kps_dic = find_num_ent_in_kps(entity_keyphrases, foreign_grouped_keyphrases)
     end = time.time()
-    print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
-    return {}
-'''
+    #print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
+
     for kp in entity_keyphrases:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
@@ -248,14 +247,14 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
             continue
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
-            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity) for word
+            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity, num_ent_in_kps_dic) for word
              in kp_words])
         print(str(entity) + ": denom = " + str(denominator))
         if denominator == 0.0:
             #print(str(entity) + ": denom is zero")
             continue
         numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, entity_keyphrases,
-                              npmi_speedup_dict_num, entity) for index in cover])
+                              npmi_speedup_dict_num, entity, num_ent_in_kps_dic) for index in cover])
         print(str(entity) + ": numerator = " + str(numerator))
         score = z * (numerator / denominator) ** 2
         simscore += score
@@ -263,7 +262,6 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     npmi_speedup_dict_den = {}
     # print("simscore is : " + str(simscore))
     return simscore
-'''
 
 '''import threading
 print(threading.active_count())
@@ -275,7 +273,7 @@ print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lem
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
 
-l = SortedList(["åbenrå", "æv", "banan", "abe", "t-bone", "isbjørn"])
-print(str(l))
+#l = SortedList(["åbenrå", "æv", "banan", "abe", "t-bone", "isbjørn"])
+#print(str(l))
 
-print(str("t-bone" in l))
+#print(str("t-bone" in l))
