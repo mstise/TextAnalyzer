@@ -181,8 +181,7 @@ def find_num_ent_in_kps(entity_keyphrases, mixed_keyphrases):
             num_ent_in_kps_dic[word] = 0
             num_kp_in_kps_dic[word] = 0
     for entity in mixed_keyphrases.keys():
-        for ent_kp in mixed_keyphrases[entity]:
-            ent_kp_words = util.split_and_delete_special_characters(ent_kp)
+        for ent_kp_words in mixed_keyphrases[entity]:
             for word in num_kp_in_kps_dic.keys():
                 if word in ent_kp_words:
                     num_kp_in_kps_dic[word] += 1
