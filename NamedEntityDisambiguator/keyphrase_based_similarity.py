@@ -219,7 +219,8 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     num_ent_in_kps_dic = find_num_ent_in_kps(entity_keyphrases, foreign_grouped_keyphrases)
     end = time.time()
     print("num_ent_in_kps_dic time: " + str(end - start))
-    exit()
+    return {}
+'''
     for kp in entity_keyphrases:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
@@ -261,7 +262,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     npmi_speedup_dict_den = {}
     # print("simscore is : " + str(simscore))
     return simscore
-
+'''
 
 '''import threading
 print(threading.active_count())
@@ -272,6 +273,3 @@ root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
-
-#dic = find_num_ent_in_kps(["I am a big snotty boy", "you suck"], {"ent1": ["snotty is not so bad", "suck indeed i do"], "ent2": ["big i am"]})
-#print("hal")
