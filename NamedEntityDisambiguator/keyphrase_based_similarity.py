@@ -151,7 +151,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    split_set_of_candidates = split_list(candidates_dic.values(), parts=8)
+    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=8)
     threads = []
     counter = 1
     for set_of_entity_candidates in split_set_of_candidates:
@@ -219,8 +219,6 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     #    print("no go: " + str(entity))
     #    continue
     # find here the keyphrases of IN_e (in the article)
-    foreign_grouped_keyphrases = {}
-    # gc.collect()
     foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], link_anchors_of_ent)
     foreign_grouped_keyphrases[entity] = SortedList(grouped_entity_kps)# uniqueify_grouped_kps(grouped_kps)
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
@@ -270,8 +268,6 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         print(str(entity) + ": numerator = " + str(numerator))
         score = z * (numerator / denominator) ** 2
         simscore += score
-    npmi_speedup_dict_num = {}
-    npmi_speedup_dict_den = {}
     # print("simscore is : " + str(simscore))
     return simscore
 
