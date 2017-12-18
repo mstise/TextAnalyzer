@@ -10,7 +10,7 @@ import shelve
 import psutil
 import threading
 import copy
-from sortedcontainers import SortedList
+from sortedcontainers import SortedList, SortedDict
 
 NUM_WIKI_ARTICLES = 474017
 
@@ -172,7 +172,8 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     return simscore_dic
 
 def find_num_ent_in_kps(entity_keyphrases, mixed_keyphrases):
-    num_ent_in_kps_dic = {}
+    num_ent_in_kps_dic = SortedDict()
+    #num_ent_in_kps_dic = {}
     num_kp_in_kps_dic = {}
     for kp in entity_keyphrases:
         kp_words = util.split_and_delete_special_characters(kp)
