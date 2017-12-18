@@ -110,7 +110,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
                 #print("entity count: " + str(entity_count))
                 break
     print(str(word) + " has entity_count: " + str(entity_count))
-    return entity_count / NUM_WIKI_ARTICLES
+    return entity_count / len(mixed_keyphrases.keys())
 
 def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
@@ -215,6 +215,8 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
             print(str(entity) + " has max_words in doc: " + str(maximum_words_in_doc) + " and span_len: " + str(cover_span))
         if cover_span == 0: #TODO: Hvordan kan denne blive 0 når der er 1 i maximum_words_in_doc? (Bliver den lige nu)
             continue
+
+
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
             [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity) for word
@@ -243,6 +245,3 @@ root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
-
-cover, span = min_distance_indices([[57, 78]])
-print("hal")
