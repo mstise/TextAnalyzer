@@ -218,7 +218,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     start = time.time()
     num_ent_in_kps_dic = find_num_ent_in_kps(entity_keyphrases, foreign_grouped_keyphrases)
     end = time.time()
-    print("num_ent_in_kps_dic time: " + str(end - start))
+    print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
     return {}
 '''
     for kp in entity_keyphrases:
