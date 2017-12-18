@@ -16,20 +16,24 @@ NUM_WIKI_ARTICLES = 474017
 
 class myThread (threading.Thread):
     phrase_dic = {}
-    def __init__(self, threadID, entities, entity_candidates, grouped_keyphrases, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
+    def __init__(self, threadID, set_of_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
         threading.Thread.__init__(self)
         self.threadID = threadID
-        self.entities = entities
-        self.entity_candidates = entity_candidates
-        self.grouped_keyphrases = grouped_keyphrases
+        self.set_of_candidates = set_of_candidates
+        self.reference_keyphrases = reference_keyphrases
+        self.category_kps = category_kps
         self.link_anchors_of_ent = link_anchors_of_ent
         self.title_of_ent_linking_to_ent = title_of_ent_linking_to_ent
-        self.words_of_document = words_of_document
+        self.words_of_document = copy.deepcopy(words_of_document)
         self.simscore = {}
     def run(self):
-        for entity in self.entities:
-            self.simscore[entity] = get_simscore(entity, self.entity_candidates, self.grouped_keyphrases, self.link_anchors_of_ent,
-                                    self.title_of_ent_linking_to_ent, copy.deepcopy(self.words_of_document))
+        for entity_candidates in self.set_of_candidates:
+            grouped_keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, self.reference_keyphrases, self.category_kps,
+                                                             self.link_anchors_of_ent, self.title_of_ent_linking_to_ent)
+
+            for entity in entity_candidates:
+                self.simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, self.link_anchors_of_ent,
+                                                    self.title_of_ent_linking_to_ent, self.words_of_document)
 
 def split_list(lst, parts=1):
     length = len(lst)
@@ -147,27 +151,22 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    for entity_candidates in candidates_dic.values():
-        grouped_keyphrases= mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
-                                                 title_of_ent_linking_to_ent)
-        split_candidates = split_list(entity_candidates, parts=8)
-        threads = []
-        counter = 1
-        #print("these are the split candidates: " + str(split_candidates))
-        for entities in split_candidates:
-            threads.append(myThread(counter, entities, entity_candidates, grouped_keyphrases, link_anchors_of_ent,
-                                    title_of_ent_linking_to_ent, words_of_document))
-            counter += 1
+    split_set_of_candidates = split_list(candidates_dic.values(), parts=8)
+    threads = []
+    counter = 1
+    for set_of_entity_candidates in split_set_of_candidates:
+        threads.append(myThread(counter, set_of_entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document))
+        counter += 1
 
-        # Start new Threads
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
+    #Start new Threads
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
-        for thread in threads:
-            for entity in thread.simscore.keys():
-                simscore_dic[entity] = thread.simscore[entity]
+    for thread in threads:
+        for entity in thread.simscore.keys():
+            simscore_dic[entity] = thread.simscore[entity]
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
@@ -195,16 +194,16 @@ def find_num_ent_in_kps(num_kp_in_kps_dic, num_ent_in_kps_dic, mixed_keyphrases)
             if num_kp_in_kps_dic[word] > 0:
                 num_ent_in_kps_dic[word] += 1
                 num_kp_in_kps_dic[word] = 0
-
+    num_kp_in_kps_dic = {}
     return num_ent_in_kps_dic
 
-def find_num_kp_in_candidate_kps(grouped_keyphrases, entity_candidates, num_kp_in_candidate_kps_dic):
+def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
     num_kps_in_candidates = 0
     for entity in entity_candidates:
-        num_kps_in_candidates += len(grouped_keyphrases[entity])
-        for ent_kp_words in grouped_keyphrases[entity]:
+        num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
+        for kp_words in grouped_keyphrases_dic[entity]:
             for word in num_kp_in_candidate_kps_dic.keys():
-                if word in ent_kp_words:
+                if word in kp_words:
                     num_kp_in_candidate_kps_dic[word] += 1
     return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
 
