@@ -43,7 +43,7 @@ def min_distance_indices(indices):
     sorted_combinations = [sorted(x) for x in combinations]
     min_dist = sys.maxsize
     for i in range(0, len(sorted_combinations)):
-        new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0]
+        new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0] + 1
         if new_dist < min_dist:
             min_dist = new_dist
             min_dist_index = i
@@ -243,3 +243,6 @@ root = tree.getroot()
 print(str(keyphrase_similarity(root, ["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], [["paris", "paris (supertramp)", "paris (lemvig kommune)"], ["anders fogh rasmussen"]], ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 '''
+
+cover, span = min_distance_indices([[57, 78]])
+print("hal")
