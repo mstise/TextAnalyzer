@@ -208,6 +208,7 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
                          x == word]  # Get indicies of all occurences of a kp-word
             if len(word_idxs) > 0:  # if empty, the word is not considered in the cover
                 indices.append(word_idxs)
+        print("These are indices: " + str(indices) + " of words: " + str(maximum_words_in_doc))
         cover, cover_span = min_distance_indices(indices)  # finds cover
         # print("indicies in cover: " + str(cover))
         if len(maximum_words_in_doc) > 0:
