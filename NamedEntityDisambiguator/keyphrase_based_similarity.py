@@ -16,19 +16,19 @@ NUM_WIKI_ARTICLES = 474017
 
 class myThread (threading.Thread):
     phrase_dic = {}
-    def __init__(self, threadID, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
+    def __init__(self, threadID, entities, entity_candidates, grouped_keyphrases, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.entities = entities
         self.entity_candidates = entity_candidates
-        self.keyphrases_dic = keyphrases_dic
+        self.grouped_keyphrases = grouped_keyphrases
         self.link_anchors_of_ent = link_anchors_of_ent
         self.title_of_ent_linking_to_ent = title_of_ent_linking_to_ent
         self.words_of_document = words_of_document
         self.simscore = {}
     def run(self):
         for entity in self.entities:
-            self.simscore[entity] = get_simscore(entity, self.entity_candidates, self.keyphrases_dic, self.link_anchors_of_ent,
+            self.simscore[entity] = get_simscore(entity, self.entity_candidates, self.grouped_keyphrases, self.link_anchors_of_ent,
                                     self.title_of_ent_linking_to_ent, copy.deepcopy(self.words_of_document))
 
 def split_list(lst, parts=1):
@@ -58,7 +58,8 @@ def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_a
         tmp_set = tmp_set.union(category_kps.get(entity, []))
         tmp_set = tmp_set.union(link_anchors_of_entity.get(entity, []))
         tmp_set = tmp_set.union(title_of_ent_linking_to_ent.get(entity, []))
-        entity_to_keyphrases[entity] = list(tmp_set)
+        grouped_kps = [util.split_and_delete_special_characters(kp) for kp in list(tmp_set)]
+        entity_to_keyphrases[entity] = SortedList(list(grouped_kps))#list(tmp_set)
     return entity_to_keyphrases
 
 def uniqueify_grouped_kps(grouped_kps):
@@ -89,15 +90,15 @@ def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
         entity_to_keyphrases[entity] = SortedList(list(grouped_kps))#uniqueify_grouped_kps(grouped_kps)
     return entity_to_keyphrases
 
-def word_probability(word, entities, entity_keyphrases):
+def word_probability(word, entities, grouped_keyphrases, num_kp_in_candidate_kps_dic):
     num_kps = 0
-    encountered_kps = 0
+    #encountered_kps = 0
     for entity in entities:
-        num_kps += len(entity_keyphrases)
-        for kp in entity_keyphrases:
-            kp_words = util.split_and_delete_special_characters(kp)
-            encountered_kps += 1 if word in kp_words else 0
-    return encountered_kps / num_kps
+        num_kps += len(grouped_keyphrases[entity])
+    #     num_kp_in_candidate_kps_dic[word]
+    #     for kp_words in grouped_keyphrases[entity]:
+    #         encountered_kps = encountered_kps + 1 if word in kp_words else encountered_kps
+    return num_kp_in_candidate_kps_dic[word] / num_kps
 
 def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary containing only 1 entry
     entity_count = 0
@@ -105,7 +106,7 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     for entity in mixed_keyphrases.keys():
         w_count = 0
         for kp_words in mixed_keyphrases[entity]:
-            w_count += 1 if word in kp_words else 0
+            w_count = w_count + 1 if word in kp_words else w_count
             if w_count > 0:
                 entity_count += 1
                 #print("entity count: " + str(entity_count))
@@ -113,15 +114,15 @@ def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary
     print(str(word) + " has entity_count: " + str(entity_count))
     return entity_count / len(mixed_keyphrases.keys())
 
-def npmi(word, entities, mixed_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict, entity, num_ent_in_kps_dic): #foreign_entities is a dictionary containing only 1 entry
+def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_speedup_dict, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
     joint_prob = num_ent_in_kps_dic[word] / len(mixed_grouped_keyphrases.keys())#joint_probability(word, mixed_grouped_keyphrases)
     print(str(entity) + " join prob is: " + str(joint_prob))
-    ent_prob = 1 / NUM_WIKI_ARTICLES#len(entities)
-    word_prob = word_probability(word, entities, entity_keyphrases)
+    ent_prob = 1 / len(entities) #NUM_WIKI_ARTICLES
+    word_prob = num_kp_in_candidate_kps_dic[word] / num_kps_in_candidates#= word_probability(word, entities, grouped_keyphrases_dic, num_kp_in_candidate_kps_dic)
     print(str(entity) + " word prob is: " + str(word_prob))
     denominator = ent_prob * word_prob
     if denominator <= 0.0 or joint_prob <= 0.0: #security check if division by zero occurs
@@ -147,14 +148,14 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     #print("word of document: " + str(words_of_document))
     start = time.time()
     for entity_candidates in candidates_dic.values():
-        keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
+        grouped_keyphrases= mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent,
                                                  title_of_ent_linking_to_ent)
         split_candidates = split_list(entity_candidates, parts=8)
         threads = []
         counter = 1
         #print("these are the split candidates: " + str(split_candidates))
         for entities in split_candidates:
-            threads.append(myThread(counter, entities, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+            threads.append(myThread(counter, entities, entity_candidates, grouped_keyphrases, link_anchors_of_ent,
                                     title_of_ent_linking_to_ent, words_of_document))
             counter += 1
 
@@ -171,17 +172,20 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
 
-def find_num_ent_in_kps(entity_keyphrases, mixed_keyphrases):
+def init_word_dics(grouped_entity_kps):
     num_ent_in_kps_dic = SortedDict()
-    #num_ent_in_kps_dic = {}
-    num_kp_in_kps_dic = {}
-    for kp in entity_keyphrases:
-        kp_words = util.split_and_delete_special_characters(kp)
+    num_kp_in_kps_dic = SortedDict()
+    word_dict3 = SortedDict()
+    for kp_words in grouped_entity_kps:
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
         for word in kp_words:
             num_ent_in_kps_dic[word] = 0
             num_kp_in_kps_dic[word] = 0
+            word_dict3[word] = 0
+    return (num_kp_in_kps_dic, num_ent_in_kps_dic, word_dict3)
+
+def find_num_ent_in_kps(num_kp_in_kps_dic, num_ent_in_kps_dic, mixed_keyphrases):
     for entity in mixed_keyphrases.keys():
         for ent_kp_words in mixed_keyphrases[entity]:
             for word in num_kp_in_kps_dic.keys():
@@ -194,14 +198,22 @@ def find_num_ent_in_kps(entity_keyphrases, mixed_keyphrases):
 
     return num_ent_in_kps_dic
 
+def find_num_kp_in_candidate_kps(grouped_keyphrases, entity_candidates, num_kp_in_candidate_kps_dic):
+    num_kps_in_candidates = 0
+    for entity in entity_candidates:
+        num_kps_in_candidates += len(grouped_keyphrases[entity])
+        for ent_kp_words in grouped_keyphrases[entity]:
+            for word in num_kp_in_candidate_kps_dic.keys():
+                if word in ent_kp_words:
+                    num_kp_in_candidate_kps_dic[word] += 1
+    return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
 
 
-
-def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
+def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                  title_of_ent_linking_to_ent, words_of_document):
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
-    entity_keyphrases = keyphrases_dic[entity]
+    grouped_entity_kps = grouped_keyphrases_dic[entity]
     #print("beginning entitiy: " + entity)
     simscore = 0.0
     # if simscore_dic.get(entity, -1) != -1:
@@ -211,22 +223,22 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
     foreign_grouped_keyphrases = {}
     # gc.collect()
     foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], link_anchors_of_ent)
-    grouped_kps = [util.split_and_delete_special_characters(kp) for kp in entity_keyphrases]
-    foreign_grouped_keyphrases[entity] = SortedList(grouped_kps)# uniqueify_grouped_kps(grouped_kps)
+    foreign_grouped_keyphrases[entity] = SortedList(grouped_entity_kps)# uniqueify_grouped_kps(grouped_kps)
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
-    print(str(entity) + " has " + str(len(entity_keyphrases)) + "keyphrases")
+    print(str(entity) + " has " + str(len(grouped_entity_kps)) + "keyphrases")
     start = time.time()
-    num_ent_in_kps_dic = find_num_ent_in_kps(entity_keyphrases, foreign_grouped_keyphrases)
+    word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
+    num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
+    num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
     end = time.time()
     #print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
 
-    for kp in entity_keyphrases:
+    for kp_words in grouped_entity_kps:
         # if str(entity) == "sjælland (skib, 1860)":
         #    print(kp)
         indices = []
-        kp_words = util.split_and_delete_special_characters(kp)
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
@@ -248,14 +260,14 @@ def get_simscore(entity, entity_candidates, keyphrases_dic, link_anchors_of_ent,
             continue
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
-            [npmi(word, entity_candidates, foreign_grouped_keyphrases, entity_keyphrases, npmi_speedup_dict_den, entity, num_ent_in_kps_dic) for word
+            [npmi(word, entity_candidates, foreign_grouped_keyphrases, grouped_keyphrases_dic, npmi_speedup_dict_den, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates) for word
              in kp_words])
         print(str(entity) + ": denom = " + str(denominator))
         if denominator == 0.0:
             #print(str(entity) + ": denom is zero")
             continue
-        numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, entity_keyphrases,
-                              npmi_speedup_dict_num, entity, num_ent_in_kps_dic) for index in cover])
+        numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, grouped_keyphrases_dic,
+                              npmi_speedup_dict_num, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates) for index in cover])
         print(str(entity) + ": numerator = " + str(numerator))
         score = z * (numerator / denominator) ** 2
         simscore += score
