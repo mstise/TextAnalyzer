@@ -66,19 +66,19 @@ def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_a
         entity_to_keyphrases[entity] = SortedList(list(grouped_kps))#list(tmp_set)
     return entity_to_keyphrases
 
-def uniqueify_grouped_kps(grouped_kps):
-    already_found = {}
-    new_kpwords = []
-    new_grouped_kps = []
-    for kp_words in grouped_kps:
-        for word in kp_words:
-            if already_found.get(word, False):
-                continue
-            else:
-                new_kpwords.append(word)
-                already_found[word] = True
-        new_grouped_kps.append(new_kpwords)
-    return new_grouped_kps
+#def uniqueify_grouped_kps(grouped_kps):
+#    already_found = {}
+#    new_kpwords = []
+#    new_grouped_kps = []
+#    for kp_words in grouped_kps:
+#        for word in kp_words:
+#            if already_found.get(word, False):
+#                continue
+#            else:
+#                new_kpwords.append(word)
+#                already_found[word] = True
+#        new_grouped_kps.append(new_kpwords)
+#    return new_grouped_kps
 
 def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
     entity_to_keyphrases = {}
@@ -94,29 +94,29 @@ def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
         entity_to_keyphrases[entity] = SortedList(list(grouped_kps))#uniqueify_grouped_kps(grouped_kps)
     return entity_to_keyphrases
 
-def word_probability(word, entities, grouped_keyphrases, num_kp_in_candidate_kps_dic):
-    num_kps = 0
+#def word_probability(word, entities, grouped_keyphrases, num_kp_in_candidate_kps_dic):
+#    num_kps = 0
     #encountered_kps = 0
-    for entity in entities:
-        num_kps += len(grouped_keyphrases[entity])
+#    for entity in entities:
+#        num_kps += len(grouped_keyphrases[entity])
     #     num_kp_in_candidate_kps_dic[word]
     #     for kp_words in grouped_keyphrases[entity]:
     #         encountered_kps = encountered_kps + 1 if word in kp_words else encountered_kps
-    return num_kp_in_candidate_kps_dic[word] / num_kps
+#    return num_kp_in_candidate_kps_dic[word] / num_kps
 
-def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary containing only 1 entry
-    entity_count = 0
+#def joint_probability(word, mixed_keyphrases): #foreign_entities is a dictionary containing only 1 entry
+#    entity_count = 0
     #print("nums mixed entitie: " + str(len(mixed_keyphrases.keys())))
-    for entity in mixed_keyphrases.keys():
-        w_count = 0
-        for kp_words in mixed_keyphrases[entity]:
-            w_count = w_count + 1 if word in kp_words else w_count
-            if w_count > 0:
-                entity_count += 1
+#    for entity in mixed_keyphrases.keys():
+#        w_count = 0
+#        for kp_words in mixed_keyphrases[entity]:
+#            w_count = w_count + 1 if word in kp_words else w_count
+#            if w_count > 0:
+#                entity_count += 1
                 #print("entity count: " + str(entity_count))
-                break
-    print(str(word) + " has entity_count: " + str(entity_count))
-    return entity_count / len(mixed_keyphrases.keys())
+#                break
+#    print(str(word) + " has entity_count: " + str(entity_count))
+#    return entity_count / len(mixed_keyphrases.keys())
 
 def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_speedup_dict, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates): #foreign_entities is a dictionary containing only 1 entry
     #print("new word: " + word)
@@ -251,11 +251,11 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     num_kps_in_candidates = 0
     for entity in entity_candidates:
         num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
-        print("inner has " + str(len(grouped_keyphrases_dic[entity])) + " for " + str(entity))
-        if len(grouped_entity_kps) > 10000 and len(grouped_keyphrases_dic[entity]) > 1000:
-            num_kp_in_candidate_kps_dic = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
-        else:
-            num_kp_in_candidate_kps_dic = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
+        #print("inner has " + str(len(grouped_keyphrases_dic[entity])) + " for " + str(entity))
+        #if len(grouped_entity_kps) > 10000 and len(grouped_keyphrases_dic[entity]) > 1000:
+        #    num_kp_in_candidate_kps_dic = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
+        #else:
+        num_kp_in_candidate_kps_dic = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
     end = time.time()
     if len(grouped_entity_kps) > 5000:
         print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
