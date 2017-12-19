@@ -27,17 +27,18 @@ def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link
                                             title_of_ent_linking_to_ent, words_of_document)
     q.put(simscore)
 
-def threaded_func2(q, set_of_words, kp_words):
-    num_kp_in_candidate_kps_dic = defaultdict(int) #defaults at zero
-    for word in set_of_words:
-        if word in kp_words:
-            num_kp_in_candidate_kps_dic[word] += 1
-    q.put(num_kp_in_candidate_kps_dic)
+def threaded_func2(q, num_kp_in_candidate_kps_dic, grouped_kp_words):
+    num_kp_in_candidate_kps_dic_tmp = defaultdict(int)
+    for kp_words in grouped_kp_words:
+        for word in num_kp_in_candidate_kps_dic.keys():
+            if word in kp_words:
+                num_kp_in_candidate_kps_dic_tmp[word] += 1
+    q.put(num_kp_in_candidate_kps_dic_tmp)
 
 def split_list(lst, parts=1):
     length = len(lst)
-    return [lst[i * length // parts: (i + 1) * length // parts]
-            for i in range(parts)]
+    return SortedList(list([lst[i * length // parts: (i + 1) * length // parts]
+            for i in range(parts)]))
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
@@ -197,40 +198,34 @@ def find_num_ent_in_kps(num_kp_in_kps_dic, num_ent_in_kps_dic, mixed_keyphrases)
     num_kp_in_kps_dic = {}
     return num_ent_in_kps_dic
 
-def tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
-    num_kps_in_candidates = 0
-    for entity in entity_candidates:
-        num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
-        for kp_words in grouped_keyphrases_dic[entity]:
-            split_set_of_words = split_list(list(num_kp_in_candidate_kps_dic.keys()), parts=2)
-            threads = []
-            q = Queue()
-            for word_set in split_set_of_words:
-                threads.append(Process(target=threaded_func2, args=(q, word_set, kp_words)))
+def tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps_dic, entity):
+    grouped_keyphrases_entity = grouped_keyphrases_dic[entity]
+    split_set_of_kp_words = split_list(grouped_keyphrases_entity, parts=2)
+    threads = []
+    q = Queue()
+    for kp_words_set in split_set_of_kp_words:
+        threads.append(Process(target=threaded_func2, args=(q, num_kp_in_candidate_kps_dic, kp_words_set)))
 
-            # Start new Threads
-            for thread in threads:
-                thread.start()
-            for thread in threads:
-                thread.join()
+    # Start new Threads
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
-            while not q.empty():
-                thread_item = q.get()
-                for key in thread_item.keys():
-                    num_kp_in_candidate_kps_dic[key] += thread_item[key]
-    return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
+    while not q.empty():
+        thread_item = q.get()
+        for key in thread_item.keys():
+            num_kp_in_candidate_kps_dic[key] += thread_item[key]
+    return num_kp_in_candidate_kps_dic
 
-def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
-    num_kps_in_candidates = 0
-    for entity in entity_candidates:
-        num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
-        for kp_words in grouped_keyphrases_dic[entity]:
-            for word in num_kp_in_candidate_kps_dic.keys():
-                if word in kp_words:
-                    num_kp_in_candidate_kps_dic[word] += 1
+def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps_dic, entity):
+    for kp_words in grouped_keyphrases_dic[entity]:
+        for word in num_kp_in_candidate_kps_dic.keys():
+            if word in kp_words:
+                num_kp_in_candidate_kps_dic[word] += 1
 
 
-    return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
+    return num_kp_in_candidate_kps_dic
 
 
 def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
@@ -253,13 +248,17 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     start = time.time()
     word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
-    if len(grouped_entity_kps) > 10000:
-        num_kp_in_candidate_kps_dic, num_kps_in_candidates = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
-    else:
-        num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
+    num_kps_in_candidates = 0
+    for entity in entity_candidates:
+        num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
+        print("inner has " + str(len(grouped_keyphrases_dic[entity])) + " for " + str(entity))
+        if len(grouped_entity_kps) > 10000 and len(grouped_keyphrases_dic[entity]) > 1000:
+            num_kp_in_candidate_kps_dic = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
+        else:
+            num_kp_in_candidate_kps_dic = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity)
     end = time.time()
-    #if len(grouped_entity_kps) > 2000:
-    print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
+    if len(grouped_entity_kps) > 5000:
+        print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
 
     for kp_words in grouped_entity_kps:
         # if str(entity) == "sjælland (skib, 1860)":

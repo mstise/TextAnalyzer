@@ -25,7 +25,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
     for entity in candidates_dic.keys():
         candidates_dic[entity] = [doble[0] for doble in candidates_dic[entity]]
-
+    start = time.time()
     entities = []
     #entity_candidates_lst = []
     counter = 0
@@ -51,6 +51,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
                 #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+
+    end = time.time()
+    print("Prior second-round-time: " + str(end - start))
     entity_node_dict = {}
     G = nx.Graph()
 
