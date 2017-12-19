@@ -251,13 +251,13 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
-    #print(str(entity) + " has " + str(len(grouped_entity_kps)) + "keyphrases")
-    #start = time.time()
+    print(str(entity) + " has " + str(len(grouped_entity_kps)) + "keyphrases")
+    start = time.time()
     word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
     num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
-    #end = time.time()
-    #print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
+    end = time.time()
+    print("num_ent_in_kps_dic for " + str(entity) + " at time: " + str(end - start))
 
     for kp_words in grouped_entity_kps:
         # if str(entity) == "sjælland (skib, 1860)":
