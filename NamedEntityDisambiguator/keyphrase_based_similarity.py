@@ -27,7 +27,7 @@ def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link
                                             title_of_ent_linking_to_ent, words_of_document)
     q.put(simscore)
 
-def threaded_func2(q, set_of_words, kp_words)
+def threaded_func2(q, set_of_words, kp_words):
     num_kp_in_candidate_kps_dic = defaultdict(int) #defaults at zero
     for word in set_of_words:
         if word in kp_words:
