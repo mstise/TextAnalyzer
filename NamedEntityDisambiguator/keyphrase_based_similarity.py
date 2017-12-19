@@ -197,7 +197,7 @@ def find_num_ent_in_kps(num_kp_in_kps_dic, num_ent_in_kps_dic, mixed_keyphrases)
     num_kp_in_kps_dic = {}
     return num_ent_in_kps_dic
 
-def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
+def tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
     num_kps_in_candidates = 0
     for entity in entity_candidates:
         num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
@@ -218,6 +218,18 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_
                 thread_item = q.get()
                 for key in thread_item.keys():
                     num_kp_in_candidate_kps_dic[key] += thread_item[key]
+    return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
+
+def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_kp_in_candidate_kps_dic):
+    num_kps_in_candidates = 0
+    for entity in entity_candidates:
+        num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
+        for kp_words in grouped_keyphrases_dic[entity]:
+            for word in num_kp_in_candidate_kps_dic.keys():
+                if word in kp_words:
+                    num_kp_in_candidate_kps_dic[word] += 1
+
+
     return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
 
 
@@ -241,7 +253,10 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     start = time.time()
     word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
-    num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
+    if len(grouped_entity_kps) > 2000:
+        num_kp_in_candidate_kps_dic, num_kps_in_candidates = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
+    else:
+        num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
     end = time.time()
     #if len(grouped_entity_kps) > 2000:
     print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
