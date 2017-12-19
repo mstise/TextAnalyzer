@@ -8,21 +8,33 @@ from NamedEntityDisambiguator.Entity_entity_coherence import entity_entity_coher
 import NamedEntityDisambiguator.Utilities as util
 import networkx as nx
 import shelve
+import time
+
+def column(matrix, i):
+    return [row[i] for row in matrix]
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
-
+    start = time.time()
     priors = popularityPrior(recognized_mentions, root)
-    print("these are priors: " + str(priors))
+    end = time.time()
+    print("prior time: " + str(end - start) + "********************************************************priors start")
+    for prior in priors:
+        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
+    print("priors end*********************************************************************************priors end")
     priors_wo_mentions = [prior[1] for prior in priors]
+    candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
+    for entity in candidates_dic.keys():
+        candidates_dic[entity] = [doble[0] for doble in candidates_dic[entity]]
+
     entities = []
-    entity_candidates_lst = []
+    #entity_candidates_lst = []
     counter = 0
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
-            entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+            #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             counter += 1
         else:
             if priors[counter][0][-1] == 's':
@@ -38,7 +50,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         for entities_AND_priors in new_priors_wo_mentions:
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
-                entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
+                #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
     entity_node_dict = {}
     G = nx.Graph()
 
@@ -48,7 +60,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, entity_candidates_lst, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+    simscore_dic = keyphrase_similarity(root, entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
 
     reference_keyphrases.close()
     title_of_ent_linking_to_ent.close()
@@ -101,11 +113,20 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")
     return G
-'''import time
-start = time.time()
+#import time
+#start = time.time()
 
-G = construct_ME_graph()
+#G = construct_ME_graph()
 
-end = time.time()
-print(end - start)
-print("hello!")'''
+#end = time.time()
+#print(end - start)
+#print("hello!")'''
+
+#priors = [['København', [['København', 0.8], ["dør", 0.333], ["ø", 0.00009]]], ['Fyn', [['Fyn', 0.8], ["dr", 0.333], ["Karen", 0.00009]]]]
+
+#prior_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
+
+#for entity in prior_dic.keys():
+#    prior_dic[entity] = [doble[0] for doble in prior_dic[entity]]
+
+#print(str(prior_dic.values()))
