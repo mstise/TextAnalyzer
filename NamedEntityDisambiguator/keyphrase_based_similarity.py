@@ -150,7 +150,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=2)
+    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=8)
     threads = []
     q = Queue()
     for set_of_entity_candidates in split_set_of_candidates:
@@ -253,10 +253,10 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     start = time.time()
     word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
-    if len(grouped_entity_kps) > 2000:
-        num_kp_in_candidate_kps_dic, num_kps_in_candidates = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
-    else:
-        num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
+    #if len(grouped_entity_kps) > 2000:
+    #    num_kp_in_candidate_kps_dic, num_kps_in_candidates = tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
+    #else:
+    num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
     end = time.time()
     #if len(grouped_entity_kps) > 2000:
     print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
