@@ -166,7 +166,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=4)
+    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=2)
     threads = []
     counter = 1
     for set_of_entity_candidates in split_set_of_candidates:
@@ -217,7 +217,7 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_
     for entity in entity_candidates:
         num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
         for kp_words in grouped_keyphrases_dic[entity]:
-            split_set_of_words = split_list(list(num_kp_in_candidate_kps_dic.keys()), parts=2)
+            split_set_of_words = split_list(list(num_kp_in_candidate_kps_dic.keys()), parts=4)
             threads = []
             counter = 1
             for word_set in split_set_of_words:
