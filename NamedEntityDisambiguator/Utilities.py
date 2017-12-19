@@ -50,6 +50,10 @@ def convert_danish_letters(string):
     string = string.replace('\\xe5', 'å')
     string = string.replace('\\xc5', 'Å')
     string = string.replace('\\xf4', 'ô')
+    string = string.replace('\\xfc', 'ü')
+    string = string.replace('\\xdc', 'Ü')
+    string = string.replace('\\xf6', 'ö')
+    string = string.replace('\\xd6', 'Ö')
     return string
 
 def convert_danish_letters_list(strings):
