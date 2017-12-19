@@ -221,7 +221,7 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_
             threads = []
             counter = 1
             for word_set in split_set_of_words:
-                threads.append(myThread(counter, word_set, kp_words))
+                threads.append(myThread2(counter, word_set, kp_words))
                 counter += 1
             # Start new Threads
             for thread in threads:
