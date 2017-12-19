@@ -226,7 +226,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
     grouped_entity_kps = grouped_keyphrases_dic[entity]
-    #print("beginning entitiy: " + entity)
+    print("beginning entitiy: " + entity)
     simscore = 0.0
     # if simscore_dic.get(entity, -1) != -1:
     #    print("no go: " + str(entity))
@@ -243,8 +243,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
     num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, word_dict3)
     end = time.time()
-    if len(grouped_entity_kps) > 2000:
-        print("num_ent_in_kps_dic over 2000 for " + str(entity) + " at time: " + str(end - start))
+    #if len(grouped_entity_kps) > 2000:
+    print("num_ent_in_kps_dic over 2000 for " + str(entity) + " at time: " + str(end - start))
 
     for kp_words in grouped_entity_kps:
         # if str(entity) == "sjælland (skib, 1860)":
