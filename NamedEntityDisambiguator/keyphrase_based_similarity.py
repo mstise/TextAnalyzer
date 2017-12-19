@@ -10,6 +10,7 @@ import shelve
 import psutil
 import threading
 import copy
+from collections import defaultdict
 from sortedcontainers import SortedList, SortedDict
 
 NUM_WIKI_ARTICLES = 474017
@@ -34,6 +35,20 @@ class myThread (threading.Thread):
             for entity in entity_candidates:
                 self.simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, self.link_anchors_of_ent,
                                                     self.title_of_ent_linking_to_ent, self.words_of_document)
+
+class myThread2 (threading.Thread):
+    phrase_dic = {}
+    def __init__(self, threadID, set_of_words, kp_words):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.set_of_words = set_of_words
+        self.kp_words = kp_words
+        self.num_kp_in_candidate_kps_dic = defaultdict(int) #defaults at zero
+
+    def run(self):
+        for word in self.set_of_words:
+            if word in self.kp_words:
+                self.num_kp_in_candidate_kps_dic[word] += 1
 
 def split_list(lst, parts=1):
     length = len(lst)
@@ -151,7 +166,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     simscore_dic = {}
     #print("word of document: " + str(words_of_document))
     start = time.time()
-    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=8)
+    split_set_of_candidates = split_list(list(candidates_dic.values()), parts=4)
     threads = []
     counter = 1
     for set_of_entity_candidates in split_set_of_candidates:
@@ -202,9 +217,21 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_
     for entity in entity_candidates:
         num_kps_in_candidates += len(grouped_keyphrases_dic[entity])
         for kp_words in grouped_keyphrases_dic[entity]:
-            for word in num_kp_in_candidate_kps_dic.keys():
-                if word in kp_words:
-                    num_kp_in_candidate_kps_dic[word] += 1
+            split_set_of_words = split_list(list(num_kp_in_candidate_kps_dic.keys()), parts=2)
+            threads = []
+            counter = 1
+            for word_set in split_set_of_words:
+                threads.append(myThread(counter, word_set, kp_words))
+                counter += 1
+            # Start new Threads
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+            for thread in threads:
+                for key in thread.num_kp_in_candidate_kps_dic.keys():
+                    num_kp_in_candidate_kps_dic[key] += thread.num_kp_in_candidate_kps_dic[key]
     return (num_kp_in_candidate_kps_dic, num_kps_in_candidates)
 
 
