@@ -162,7 +162,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     for thread in threads:
         thread.join()
 
-    while len(q) > 0:
+    while not q.empty():
         thread_item = q.get()
         for key in thread_item.keys():
             simscore_dic[key] = thread_item[key]
@@ -214,7 +214,7 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, entity_candidates, num_
             for thread in threads:
                 thread.join()
 
-            while len(q) > 0:
+            while not q.empty():
                 thread_item = q.get()
                 for key in thread_item.keys():
                     num_kp_in_candidate_kps_dic[key] += thread_item[key]
