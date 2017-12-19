@@ -95,7 +95,7 @@ def main():
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
-        if counter < 32:
+        if counter < 31:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
