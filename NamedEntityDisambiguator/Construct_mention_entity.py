@@ -24,6 +24,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
+        print("counter: " + str(counter))
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
