@@ -25,6 +25,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
         print("counter: " + str(counter))
+        print("with priors: " + str(entities_AND_priors))
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
@@ -35,9 +36,6 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
                 print("2nd_round_lst: " + str(second_round_list))
-                print("with priors: " + str(entities_AND_priors))
-
-    print("entities before 2nd round: " + str(entities))
 
     if len(second_round_list) != 0:
         new_priors = popularityPrior(second_round_list, root)
@@ -47,10 +45,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         for entities_AND_priors in new_priors_wo_mentions:
             if len(entities_AND_priors) != 0:
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
-                print("entities after extension: " + str(entities))
                 #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
-
-    print("entities end: " + str(entities))
 
     candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
     for entity in candidates_dic.keys():
