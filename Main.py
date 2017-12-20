@@ -15,6 +15,7 @@ import os
 import copy
 import threading
 import shelve
+import multiprocessing as mp
 
 class myThread1 (threading.Thread):
     phrase_dic = {}
@@ -85,6 +86,8 @@ def keyphrase_sim_speedup(wiki_tree_root):
     return reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent
 
 def main():
+    mp.set_start_method('fork')
+    print("Usable CPUs: " + str(len(os.sched_getaffinity(0))))
     start = time.time()
 
     tree = etree.parse(paths.get_wikipedia_article_path())
@@ -95,7 +98,7 @@ def main():
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
-        if counter < 31:
+        if counter < 6:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
