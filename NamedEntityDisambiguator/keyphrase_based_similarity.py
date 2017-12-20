@@ -134,7 +134,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
         return 0
     else:
         pmi = math.log10(joint_prob / denominator)
-        result = pmi/-math.log10(joint_prob) if pmi/-math.log10(joint_prob) > 0 else 0
+        result = pmi/-math.log10(joint_prob) if (joint_prob > 0 and pmi/-math.log10(joint_prob) > 0) else 0
         npmi_speedup_dict[word] = result
         return result
 
