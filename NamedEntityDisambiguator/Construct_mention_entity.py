@@ -40,6 +40,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
                 counter += 1
+                print("second_round_is_now: " + str(entities_AND_priors))
 
     if len(second_round_list) != 0:
         print("second_round_lst: " + str(second_round_list))
