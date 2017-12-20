@@ -36,10 +36,10 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             counter += 1
         else:
             print("oh damn i got in here :O: " + str(entities_AND_priors))
+            counter += 1
             if priors[counter][0][-1] == 's':
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
-                counter += 1
                 print("second_round_is_now: " + str(second_round_list))
 
     if len(second_round_list) != 0:
