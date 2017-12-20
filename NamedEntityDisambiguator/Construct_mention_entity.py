@@ -24,18 +24,18 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
-        print("counter: " + str(counter))
-        print("with priors: " + str(entities_AND_priors))
+        #print("counter: " + str(counter))
+        #print("with priors: " + str(entities_AND_priors))
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             counter += 1
         else:
-            counter += 1
             if priors[counter][0][-1] == 's':
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
-                print("2nd_round_lst: " + str(second_round_list))
+                #print("2nd_round_lst: " + str(second_round_list))
+            counter += 1
 
     if len(second_round_list) != 0:
         new_priors = popularityPrior(second_round_list, root)
