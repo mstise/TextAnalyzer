@@ -16,15 +16,7 @@ def column(matrix, i):
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, root)
-    end = time.time()
-    print("prior time: " + str(end - start) + "********************************************************priors start")
-    for prior in priors:
-        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
-    print("priors end*********************************************************************************priors end")
     priors_wo_mentions = [prior[1] for prior in priors]
-    candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
-    for entity in candidates_dic.keys():
-        candidates_dic[entity] = [doble[0] for doble in candidates_dic[entity]]
     start = time.time()
     entities = []
     #entity_candidates_lst = []
@@ -52,6 +44,15 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
                 entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
                 #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
 
+    candidates_dic = {key: value for key, value in zip(column(priors, 0), column(priors, 1))}
+    for entity in candidates_dic.keys():
+        candidates_dic[entity] = [doble[0] for doble in candidates_dic[entity]]
+    end = time.time()
+    print("prior time: " + str(end - start) + "********************************************************priors start")
+    for prior in priors:
+        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
+    print("priors end*********************************************************************************priors end")
+
     end = time.time()
     print("Prior second-round-time: " + str(end - start))
     entity_node_dict = {}
@@ -64,6 +65,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
     simscore_dic = keyphrase_similarity(root, entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+
+    simscore_dic[]
 
     reference_keyphrases.close()
     title_of_ent_linking_to_ent.close()
