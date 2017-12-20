@@ -17,7 +17,6 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     start = time.time()
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
-    start = time.time()
     entities = []
     #entity_candidates_lst = []
     counter = 0
@@ -56,8 +55,6 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
     print("priors end*********************************************************************************priors end")
 
-    end = time.time()
-    print("Prior second-round-time: " + str(end - start))
     entity_node_dict = {}
     G = nx.Graph()
 
