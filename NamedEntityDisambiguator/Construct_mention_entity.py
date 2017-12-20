@@ -18,6 +18,11 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
     start = time.time()
+    end = time.time()
+    print("prior time: " + str(end - start) + "********************************************************priors start")
+    for prior in priors:
+        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
+    print("priors end*********************************************************************************priors end")
     entities = []
     #entity_candidates_lst = []
     counter = 0
