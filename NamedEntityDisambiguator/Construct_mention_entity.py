@@ -18,32 +18,23 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
     start = time.time()
-    end = time.time()
-    print("prior time: " + str(end - start) + "********************************************************priors start")
-    for prior in priors:
-        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
-    print("priors end*********************************************************************************priors end")
     entities = []
     #entity_candidates_lst = []
     counter = 0
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
-        print("entities_AND_priors: " + str(entities_AND_priors))
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             counter += 1
         else:
-            print("oh damn i got in here :O: " + str(entities_AND_priors))
             counter += 1
             if priors[counter][0][-1] == 's':
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
-                print("second_round_is_now: " + str(second_round_list))
 
     if len(second_round_list) != 0:
-        print("second_round_lst: " + str(second_round_list))
         new_priors = popularityPrior(second_round_list, root)
         for i in range(0, len(new_priors)):
             priors[second_round_priors_id[i]] = new_priors[i]
