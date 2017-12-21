@@ -16,6 +16,7 @@ def column(matrix, i):
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, root)
+    print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     #entity_candidates_lst = []
@@ -33,6 +34,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             if priors[counter][0][-1] == 's':
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
+                print("second_round_list is now:" + str(second_round_list))
                 #print("2nd_round_lst: " + str(second_round_list))
             counter += 1
 
