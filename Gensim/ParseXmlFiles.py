@@ -3,6 +3,11 @@ import os
 import xml.etree.ElementTree
 import paths
 
+def format_text(text):
+    if text[-1] != '.' or text[-2] != '.':
+        text = text + '.'
+    return text
+
 def readXML(node):
     global body
     global header
@@ -11,9 +16,9 @@ def readXML(node):
         if (isinstance(node.text, str)):
             if len(body) > 0 and body[-1] != " ":
                 body += " "
-            body += node.text
+            body += format_text(str(node.text))
     if (tag == "hl1"):
-        header = node.text
+        header = format_text(str(node.text))
     for child in node:
         readXML(child)
 
@@ -29,7 +34,7 @@ for subdir, dirs, files in os.walk(paths.get_newest_news_path()):
                 readXML(xml.etree.ElementTree.parse(subdir + '/' + filename).getroot())
                 if body == "":
                     continue
-                with open(paths.get_all_external_entities_path() + "/" + str(filename[:-4]) + ".txt", "w") as text_file:
+                with open(paths.get_external_procesed_news() + "/" + str(filename[:-4]) + ".txt", "w") as text_file:
                     text_file.write((header + " " + body))
                 body = ""
                 header = ""

@@ -38,7 +38,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     if len(second_round_list) != 0:
         new_priors = popularityPrior(second_round_list, root)
+        print("new_priors: " + str(new_priors))
         for i in range(0, len(new_priors)):
+            print("new_priors[i]: " + str(new_priors[i]) + " and second_round_priors_id[i]: " + str(second_round_priors_id[i]) + "priors[second_round_priors_id[i]]: " + str(priors[second_round_priors_id[i]]))
             new_priors[i][0] = priors[second_round_priors_id[i]][0]
             priors[second_round_priors_id[i]] = new_priors[i][0]
         new_priors_wo_mentions = [prior[1] for prior in new_priors]
