@@ -112,7 +112,7 @@ def mk_unique_foreign_entity_to_keyphrases(entities, link_anchors_of_entity):
 #        for kp_words in mixed_keyphrases[entity]:
 #            w_count = w_count + 1 if word in kp_words else w_count
 #            if w_count > 0:
-#                entity_count += 1
+#                entityssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss_count += 1
                 #print("entity count: " + str(entity_count))
 #                break
 #    print(str(word) + " has entity_count: " + str(entity_count))
@@ -134,6 +134,7 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
         return 0
     else:
         pmi = math.log10(joint_prob / denominator)
+        print("joint_prob: " + str(joint_prob) + ", math.log10(joint_prob): " + str(math.log10(joint_prob)) + ", boolean = " + str(not math.log10(joint_prob) == 0))
         if not math.log10(joint_prob) == 0:
             return 0
         result = pmi/-math.log10(joint_prob) if pmi/-math.log10(joint_prob) > 0 else 0
