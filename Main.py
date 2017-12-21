@@ -98,9 +98,9 @@ def main():
     num_files = len(os.listdir(paths.get_external_annotated()))
     counter = 0
     for filename in os.listdir(paths.get_external_annotated()):
-        #if counter < 8:
-        #    counter += 1
-        #    continue
+        if counter < 8:
+            counter += 1
+            continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
         print('Document started at: ' + str(datetime.now()))
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
