@@ -134,9 +134,9 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
         return 0
     else:
         pmi = math.log10(joint_prob / denominator)
-        print("joint_prob: " + str(joint_prob) + ", math.log10(joint_prob): " + str(math.log10(joint_prob)) + ", boolean = " + str(not math.log10(joint_prob) == 0))
-        if not math.log10(joint_prob) == 0:
-            return 0
+        #print("joint_prob: " + str(joint_prob) + ", math.log10(joint_prob): " + str(math.log10(joint_prob)) + ", boolean = " + str(math.log10(joint_prob) == 0))
+        if math.log10(joint_prob) == 0:
+            return pmi
         result = pmi/-math.log10(joint_prob) if pmi/-math.log10(joint_prob) > 0 else 0
         npmi_speedup_dict[word] = result
         return result
