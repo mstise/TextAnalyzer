@@ -54,6 +54,7 @@ def convert_danish_letters(string):
     string = string.replace('\\xdc', 'Ü')
     string = string.replace('\\xf6', 'ö')
     string = string.replace('\\xd6', 'Ö')
+    string = string.replace('\\u2019', '\'')
     return string
 
 def convert_danish_letters_list(strings):
