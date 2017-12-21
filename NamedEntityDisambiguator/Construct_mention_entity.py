@@ -17,18 +17,14 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     start = time.time()
     priors = popularityPrior(recognized_mentions, root)
     priors_wo_mentions = [prior[1] for prior in priors]
-    start = time.time()
-    end = time.time()
-    print("prior time: " + str(end - start) + "********************************************************priors start")
-    for prior in priors:
-        print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
-    print("priors end*********************************************************************************priors end")
     entities = []
     #entity_candidates_lst = []
     counter = 0
     second_round_list = []
     second_round_priors_id = []
     for entities_AND_priors in priors_wo_mentions:
+        #print("counter: " + str(counter))
+        #print("with priors: " + str(entities_AND_priors))
         if len(entities_AND_priors) != 0:
             entities.extend([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
             #entity_candidates_lst.append([entities_AND_priors[0] for entities_AND_priors in entities_AND_priors])
@@ -37,7 +33,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             if priors[counter][0][-1] == 's':
                 second_round_list.append(str(priors[counter][0][0:-1]))
                 second_round_priors_id.append(counter)
-                counter += 1
+                #print("2nd_round_lst: " + str(second_round_list))
+            counter += 1
 
     if len(second_round_list) != 0:
         new_priors = popularityPrior(second_round_list, root)
@@ -58,8 +55,6 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
     print("priors end*********************************************************************************priors end")
 
-    end = time.time()
-    print("Prior second-round-time: " + str(end - start))
     entity_node_dict = {}
     G = nx.Graph()
 

@@ -14,38 +14,38 @@ def clean_line(line):
 
 
 def ner_set_retriever(path=paths.get_all_external_entities_path()):
-    counter = 0
+    #counter = 0
     s = set()
     for filename in os.listdir(path):
         for line in open(path + "/" + filename):
             new_line = clean_line(line)
             s.add(new_line)
-        counter += 1
-        if counter >= 25:
-            break
+        #counter += 1
+        #if counter >= 25:
+        #    break
     return s
 
 def ner_lst_retriever(path=paths.get_all_external_entities_path()):
-    counter = 0
+    #counter = 0
     s = []
     for filename in os.listdir(path):
         for line in open(path + "/" + filename):
             new_line = clean_line(line)
             s.append(new_line)
-        counter += 1
-        if counter >= 25:
-            break
+        #counter += 1
+        #if counter >= 25:
+        #    break
     return s
 
 def retrieve_ner_single_document(path_to_ner_document):
-    counter = 0
+    #counter = 0
     s = []
     for line in open(path_to_ner_document):
         new_line = clean_line(line)
         s.append(new_line)
-        counter += 1
-        if counter >= 25:
-            break
+        #counter += 1
+        #if counter >= 25:
+        #    break
     return s
 
 
