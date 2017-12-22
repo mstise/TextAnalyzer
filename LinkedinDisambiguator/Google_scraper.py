@@ -10,7 +10,7 @@ def google_scraper(mention, list_of_related_mentions):
 
     search_string = related_mentions + " " + mention + " " + site
 
-    return google.search(search_string, lang='dk')
+    return google.search(search_string, lang='dk', pause=5)
 
 #search_results = google.search('“FREDERIKSHAVN” OR “Poul” OR “Ole Damgaard Jensen” OR “Maritime Ship Supply” OR “Skibshandler Damsgaard” Poul-Ole Damgaard Jensen site:https://dk.linkedin.com/in OR site:https://dk.linkedin.com/company', lang='dk')
 #item = next(search_results)

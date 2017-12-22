@@ -49,13 +49,18 @@ def translate_to_danish(text):
     return text
 
 def run_local_disambiguator():
+    counter = 1
     for doc_name in os.listdir(paths.get_external_disambiguated_outputs()):
+        if os.path.isfile(paths.get_external_disambiguated_outputs() + '2/' + doc_name):
+            continue
         mention_entities = local_disambiguator(doc_name)
         with open(paths.get_external_disambiguated_outputs() + '2/' + doc_name, 'w') as f:
         #with open('/home/erisos/Desktop/Disambiguated/Disambiguated2/' + doc_name, 'w') as f:
             for line in mention_entities:
                 f.write(line + '\n')
                 print(line)
+        print('    Completed document ' + str(counter))
+        counter += 1
 
 def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs()):# entity_path=paths.get_all_external_entities_path(), disambiguated_path=paths.get_external_disambiguated_outputs()):
     #with open(doc_name) as f:
@@ -109,9 +114,9 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
                     result = translate_to_danish(result[0])
                     translated_results.append(result)
                 result = policy(translated_results, mention_to_disamb)
-                returned_results.append(mention_entity_list[i][0] + ', [l.' + result[24:] + ']')
+                returned_results.append(mention_entity_list[i][0] + ', [u\'l.' + result[24:] + '\']')
             else:
-                returned_results.append(mention_entity_list[i][0] + ', [None]')
+                returned_results.append(mention_entity_list[i][0] + ', [u\'None]\'')
         # except StopIteration:
         #     result = policy(results, mention_to_disamb)
         #     result = translate_to_danish(result)

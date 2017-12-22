@@ -3,7 +3,7 @@
 import os
 import re
 import paths
-from NamedEntityRecognizer.EvaluateEntityRecognizer import correctly_recognized
+from NamedEntityRecognizer.EvaluateEntityRecognizer import correctly_recognized_lists
 
 def clean_line(line):
     indices = [m.start() for m in re.finditer('\'', line)]
@@ -14,34 +14,42 @@ def clean_line(line):
     return cleaned_line
 
 def get_disambiguations(filename, path):
-    mentions = []
+    entities = []
     for line in open(path + "/" + filename):
         new_line = clean_line(line)
-        mentions.append(new_line)
-    return mentions
+        entities.append(new_line)
+    return entities
 
 
-def ned_evaluator(disambiguated_path="/home/duper/Desktop/Predicted_Disambiguations", annotated_path="/home/duper/Desktop/entiti"):
-    num_correctly_recognized_mentions = correctly_recognized(paths.get_all_external_entities_path(), annotated_path)
+def ned_evaluator(disambiguated_path=paths.get_external_disambiguated_outputs(), annotated_path=paths.get_external_annotated(), remove=[]):
     correct = 0
-    ear_correct = 0
+    incorrect = 0
     for filename in os.listdir(annotated_path):
-        mentions = get_disambiguations(filename, disambiguated_path)
-        mentions = list([mention.lower() for mention in mentions])
-        #overall_mention_length += len(mentions)
-        #print("these are mentions: " + str(mentions))
-        for line in open(annotated_path + "/" + filename):
-            ground_truths = re.findall(r'\|[^\]]*\]\*\]', line)
-            #print("*These are ground_truths: " + str(ground_truths))
-            for ground_truth in ground_truths:
-                groundtruth_string = str(ground_truth[1:-3]).lower()
-                if groundtruth_string in mentions:
-                    #print("*This found ground_truth: " + str(groundtruth_string))
-                    mentions.remove(groundtruth_string)
-                    correct += 1
-        #print("These are num_correct: " + str(correct - ear_correct) + " where correct is: " + str(correct))
-        ear_correct = correct
+        recognized_mentions = correctly_recognized_lists(filename, entity_path=paths.get_all_external_entities_path() + '2', remove=remove)
+        ent_men_disambiguated = []
+        for line in open(disambiguated_path + "/" + filename):
+            gt_mention = re.findall(r'.*, \[u', line)
+            gt_entity = re.findall(r'\[u\'.*\'\]', line)
+            do_continue = False
+            for rem in remove:
+                if '[u\'' + rem in gt_entity:
+                    do_continue = True
+            if do_continue:
+                continue
+            ent_men_disambiguated.append([gt_mention[0][:-4].lower(), gt_entity[0][3:-2].lower()])
 
-    return correct / num_correctly_recognized_mentions
+        for mention in recognized_mentions:
+            if mention in ent_men_disambiguated:
+                ent_men_disambiguated.remove(mention)
+                correct += 1
+            else:
+                incorrect += 1
 
-#precision_slash_accuracy = ner_evaluator()
+    return correct / (correct+incorrect)
+
+accuracy_for_everything = ned_evaluator()
+accuracy_without_linkedin = ned_evaluator(remove=['l.'])
+accuracy_without_none_and_linkedin = ned_evaluator(remove=['None', 'l.'])
+print('Accuracy for wikipedia disambiguator: ' + str(accuracy_for_everything))
+print('Accuracy for wikipedia disambiguator not including LinkedIn entities: ' + str(accuracy_without_linkedin))
+print('Accuracy for wikipedia disambiguator not including LinkedIn or None entities: ' + str(accuracy_without_none_and_linkedin))
