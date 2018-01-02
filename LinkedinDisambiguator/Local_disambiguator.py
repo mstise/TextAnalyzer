@@ -2,10 +2,8 @@ from LinkedinDisambiguator.Google_scraper import google_scraper
 import re
 import paths
 import os
-from random import uniform
-from time import sleep
 
-MAX_LIMIT_GOOGLE = 10#32 #words that google defines as a limit in its query
+MAX_LIMIT_GOOGLE = 32 #words that google defines as a limit in its query
 NUM_ENTITY_CANDIDATES = 3
 
 def get_mentions(doc_name, path):
@@ -53,6 +51,7 @@ def run_local_disambiguator():
     for doc_name in os.listdir(paths.get_external_disambiguated_outputs()):
         if os.path.isfile(paths.get_external_disambiguated_outputs() + '2/' + doc_name):
             continue
+        # if '00_05_1-_sektion_fre_s005_01_erhverv__0408_201708040000_1007986827' in doc_name:
         mention_entities = local_disambiguator(doc_name)
         with open(paths.get_external_disambiguated_outputs() + '2/' + doc_name, 'w') as f:
         #with open('/home/erisos/Desktop/Disambiguated/Disambiguated2/' + doc_name, 'w') as f:
@@ -68,12 +67,13 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
     mention_entity_list = get_mentions(doc_name, path)#entity_path)
     for i in range(0, len(mention_entity_list)):
         if mention_entity_list[i][1] != 'None':
-            returned_results.append(mention_entity_list[i][0] + ', [' + mention_entity_list[i][1] + ']')
+            returned_results.append(mention_entity_list[i][0] + ', [u\'' + mention_entity_list[i][1] + '\']')
             continue
-        sleep(uniform(10, 20))
+        # sleep(uniform(10, 20))
         mention_to_disamb = mention_entity_list[i][0]
         related_mentions = []
         word_counter = len(mention_to_disamb.split()) + 2 #+2 to include the 2 site: queries
+        entity_counter = 0
         backward_flag = True
         backward_i = i - 1
         forward_i = i + 1
@@ -89,7 +89,9 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
                 backward_flag = not backward_flag
                 continue
             word_counter += len(related_mention.split())
-            if word_counter > MAX_LIMIT_GOOGLE:
+            if related_mention != '':
+                entity_counter += 1
+            if word_counter > MAX_LIMIT_GOOGLE or entity_counter > 10:
                 break
             elif (backward_i == 0 and forward_i > len(mention_entity_list) or (backward_i < 0 and forward_i == len(mention_entity_list))):
                 if related_mention != '':
@@ -116,7 +118,7 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
                 result = policy(translated_results, mention_to_disamb)
                 returned_results.append(mention_entity_list[i][0] + ', [u\'l.' + result[24:] + '\']')
             else:
-                returned_results.append(mention_entity_list[i][0] + ', [u\'None]\'')
+                returned_results.append(mention_entity_list[i][0] + ', [u\'None\']')
         # except StopIteration:
         #     result = policy(results, mention_to_disamb)
         #     result = translate_to_danish(result)
