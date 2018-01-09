@@ -6,7 +6,16 @@ import os
 MAX_LIMIT_GOOGLE = 32 #words that google defines as a limit in its query
 NUM_ENTITY_CANDIDATES = 3
 
-def get_mentions(doc_name, path):
+
+def clean_line(line):
+    indices = [m.start() for m in re.finditer('\'', line)]
+    grouped_indices =list(zip(indices[0::2], indices[1::2]))
+    cleaned_line = line[grouped_indices[0][0]+1 : grouped_indices[0][1]]
+    for i, k in grouped_indices[1:len(grouped_indices)]:
+        cleaned_line += ' ' + line[i+1 : k]
+    return cleaned_line
+
+def get_mentions_from_disambs(doc_name, path):
     m_e_list = []
     for line in open(path + "/" + doc_name):
         m_e = re.split(r', \[', line)
@@ -15,21 +24,48 @@ def get_mentions(doc_name, path):
         m_e_list.append([mention, entity])
     return m_e_list
 
+def get_mentions_from_ents(filename, path):
+    mentions = []
+    for line in open(path + "/" + filename):
+        new_line = clean_line(line)
+        new_line = Utilities.convert_danish_letters(new_line)
+        mentions.append(new_line)
+    return mentions
+
 def policy(results, mention_to_disamb):
     result = None
     higheset_matches = -1
     for link in results:
         name = ""
         if link.find("/company/"):
-            name = re.split(' |-', link[32:])
+            #name = re.split(' |-', link[32:])
+            name = str(link[32:])
         if link.find("/in/"):
-            name = re.split(' |-', link[27:])
+            #name = re.split(' |-', link[27:])
+            name = str(link[27:])
         match_words = set(re.split(' |-', mention_to_disamb.lower()))
-        matches = len(match_words.intersection(name))
+        matches = 0
+        end_matches = False
+        for match_word in match_words:
+            if match_word in name:
+                matches += 1
+                end_matches = True
+            else:
+                end_matches = False
+
+        #This deals with the trailing s from polyglots recognizer
+        if not end_matches and match_word[-1] == 's':
+            if str(match_word[:-1]) in name:
+                matches += 1
+        #matches = len(match_words.intersection(name))
         if matches > higheset_matches:
             higheset_matches = matches
             result = link
-    return result
+    #Here the None is set only if there is no similarity and the first characters does not match (so acronyms isnt set to None)
+    if higheset_matches == 0 and result[0] != mention_to_disamb.lower()[0]:
+        return 'None'
+    else:
+        return result
 
 def translate_to_danish(text):
     text = text.replace('%C3%A6', 'æ')
@@ -61,10 +97,10 @@ def run_local_disambiguator():
         print('    Completed document ' + str(counter))
         counter += 1
 
-def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs()):# entity_path=paths.get_all_external_entities_path(), disambiguated_path=paths.get_external_disambiguated_outputs()):
+def local_disambiguator(doc_name, path=paths.get_all_external_entities_path()):# entity_path=paths.get_all_external_entities_path(), disambiguated_path=paths.get_external_disambiguated_outputs()):
     #with open(doc_name) as f:
     returned_results = []
-    mention_entity_list = get_mentions(doc_name, path)#entity_path)
+    mention_entity_list = get_mentions_from_ents(doc_name, path)#entity_path)
     for i in range(0, len(mention_entity_list)):
         if mention_entity_list[i][1] != 'None':
             returned_results.append(mention_entity_list[i][0] + ', [u\'' + mention_entity_list[i][1] + '\']')
@@ -116,7 +152,10 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
                     result = translate_to_danish(result[0])
                     translated_results.append(result)
                 result = policy(translated_results, mention_to_disamb)
-                returned_results.append(mention_entity_list[i][0] + ', [u\'l.' + result[24:] + '\']')
+                if result == 'None':
+                    returned_results.append(mention_entity_list[i][0] + ', [u\'None\']')
+                else:
+                    returned_results.append(mention_entity_list[i][0] + ', [u\'l.' + result[24:] + '\']')
             else:
                 returned_results.append(mention_entity_list[i][0] + ', [u\'None\']')
         # except StopIteration:
@@ -142,4 +181,6 @@ def local_disambiguator(doc_name, path=paths.get_external_disambiguated_outputs(
 #import os
 #for doc_name in os.listdir(paths.get_external_annotated()):
 #    local_disambiguator(doc_name)
-run_local_disambiguator()
+#run_local_disambiguator()
+#print(policy(["https://www.linkedin.com/in/lisa", "https://www.linkedin.com/in/lisasandagerramlow", "https://www.linkedin.com/in/lars-sandager-ramlow"], 'Lisa Sandager Ramlow'))
+#local_disambiguator("00_04_1-_sektion_lør_s004_01_børsen___0209_201709020000_1008184492.txt")

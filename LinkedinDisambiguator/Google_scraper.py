@@ -2,6 +2,7 @@ import google
 from random import uniform
 from time import sleep
 
+
 # import urllib
 # import simplejson
 
@@ -23,11 +24,18 @@ def google_scraper(mention, list_of_related_mentions):
 
     return google.search(search_string, lang='dk', pause=uniform(5, 10))
 
-#search_results = google.search('“FREDERIKSHAVN” OR “Poul” OR “Ole Damgaard Jensen” OR “Maritime Ship Supply” OR “Skibshandler Damsgaard” Poul-Ole Damgaard Jensen site:https://dk.linkedin.com/in OR site:https://dk.linkedin.com/company', lang='dk')
-#item = next(search_results)
-#print(item)
-#print(next(search_results))
+
+# search_results = google.search('“FREDERIKSHAVN” OR “Poul” OR “Ole Damgaard Jensen” OR “Maritime Ship Supply” OR “Skibshandler Damsgaard” Poul-Ole Damgaard Jensen site:https://dk.linkedin.com/in OR site:https://dk.linkedin.com/company', lang='dk')
+# item = next(search_results)
+# print(item)
+# print(next(search_results))
 
 
 
-#google_scraper('test', ["nymand", "olsen"])
+#results = google_scraper('Lisa Sandager Ramlow',
+#                         ["AutoBranchen Danmark", "Autobranchen", "Danmarks adm", "Golf'er", "Jesper Brix",
+#                          "Lars Løkke Rasmussens", "Lisa Sandager Ramlow", "Torben Lund Kudsk",
+#                          "autoforhandler Pedersen & Nielsen", "christiansborg"])
+
+#for result in results:
+#    print(result)
