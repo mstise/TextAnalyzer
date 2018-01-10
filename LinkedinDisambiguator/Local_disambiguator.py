@@ -56,7 +56,7 @@ def policy(results, mention_to_disamb):
 
         #This deals with the trailing s from polyglots recognizer
         if not end_matches and match_word[-1] == 's':
-            res = str(match_word[:-1])
+            #res = str(match_word[:-1])
             if str(match_word[:-1]) in name:
                 matches += 1
         #matches = len(match_words.intersection(name))
@@ -153,7 +153,7 @@ def local_disambiguator(doc_name, path=paths.get_all_external_entities_path()):#
             results.append([next(query_results)])
             results.append([next(query_results)])
             results.append([next(query_results)])
-            print(results)
+            #print(results)
         except StopIteration:
             "No matches were found"
         finally:
