@@ -148,14 +148,21 @@ def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_
     precision = (correct / (correct + excess_mentions))
     imperfect_recall = (imperfect_correct / imperfect_num_ground_truth)
     imperfect_precision = (imperfect_correct / (imperfect_correct + imperfect_excess_mentions))
+    num_mentions = len(entities) + gt_none
     avg_mentions = num_ground_truth / len(os.listdir(annotated_path))
     distinct_entities = []
     [distinct_entities.append(ent) for ent in entities if not distinct_entities.count(ent)]
     distinct_entities = len(distinct_entities)
     avg_distinct_entities = distinct_entities / len(os.listdir(annotated_path))
     standard_deviation = np.std(entities_in_document)
+    wikipedia_entities = []
+    [wikipedia_entities.append(ent) for ent in entities if ent[1] == 'w']
+    linkedin_entities = []
+    [linkedin_entities.append(ent) for ent in entities if ent[1] == 'l']
+    test = []
+    [test.append(ent) for ent in entities if ent[1] != 'l' and ent[1] != 'w']
 
-    return precision, recall, imperfect_precision, imperfect_recall, num_ground_truth, gt_none, avg_mentions, distinct_entities, avg_distinct_entities, standard_deviation
+    return precision, recall, imperfect_precision, imperfect_recall, num_mentions, gt_none, avg_mentions, distinct_entities, avg_distinct_entities, standard_deviation
     #recall = 73%: 73% of the ones annotated gets recognized, precision = 44%: Of the ones recognized, 44% should be recognized
 
 # p, r, ip, ir, m, mn, avgm, dent, avgdent, std = ner_evaluator()
@@ -163,7 +170,7 @@ def ner_evaluator(entity_path=paths.get_all_external_entities_path(), annotated_
 # print('Recall: ' + str(r))
 # print('Imperfect Precision: ' + str(ip))
 # print('Imperfect Recall: ' + str(ir))
-# p, r, ip, ir, m, mn, avgm, dent, avgdent, std = ner_evaluator('/media/erisos/My Passport/Entities2')
+#p, r, ip, ir, m, mn, avgm, dent, avgdent, std = ner_evaluator('/media/erisos/My Passport/Entities2')
 # print('Precision: ' + str(p))
 # print('Recall: ' + str(r))
 # print('Imperfect Precision: ' + str(ip))
