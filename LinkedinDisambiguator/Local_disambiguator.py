@@ -2,6 +2,7 @@ from LinkedinDisambiguator.Google_scraper import google_scraper
 import re
 import paths
 import os
+from NamedEntityDisambiguator import Utilities
 
 MAX_LIMIT_GOOGLE = 32 #words that google defines as a limit in its query
 NUM_ENTITY_CANDIDATES = 3
@@ -43,7 +44,7 @@ def policy(results, mention_to_disamb):
         if link.find("/in/"):
             #name = re.split(' |-', link[27:])
             name = str(link[27:])
-        match_words = set(re.split(' |-', mention_to_disamb.lower()))
+        match_words = list(re.split(' |-', mention_to_disamb.lower()))
         matches = 0
         end_matches = False
         for match_word in match_words:
@@ -55,6 +56,7 @@ def policy(results, mention_to_disamb):
 
         #This deals with the trailing s from polyglots recognizer
         if not end_matches and match_word[-1] == 's':
+            res = str(match_word[:-1])
             if str(match_word[:-1]) in name:
                 matches += 1
         #matches = len(match_words.intersection(name))
@@ -100,7 +102,15 @@ def run_local_disambiguator():
 def local_disambiguator(doc_name, path=paths.get_all_external_entities_path()):# entity_path=paths.get_all_external_entities_path(), disambiguated_path=paths.get_external_disambiguated_outputs()):
     #with open(doc_name) as f:
     returned_results = []
-    mention_entity_list = get_mentions_from_ents(doc_name, path)#entity_path)
+    old_mention_entity_list = get_mentions_from_disambs(doc_name, paths.get_external_disambiguated_outputs())
+    order_mention_entity_list = get_mentions_from_ents(doc_name, path)#entity_path)
+    mention_entity_list = []
+    #After disambiguation the order of entities have been sorted. They need to be unsorted! (which is done in this loop)
+    for item in order_mention_entity_list:
+        for tuple in old_mention_entity_list:
+            if tuple[0].lower() == item.lower():
+                mention_entity_list.append(tuple)
+                break
     for i in range(0, len(mention_entity_list)):
         if mention_entity_list[i][1] != 'None':
             returned_results.append(mention_entity_list[i][0] + ', [u\'' + mention_entity_list[i][1] + '\']')
@@ -143,6 +153,7 @@ def local_disambiguator(doc_name, path=paths.get_all_external_entities_path()):#
             results.append([next(query_results)])
             results.append([next(query_results)])
             results.append([next(query_results)])
+            print(results)
         except StopIteration:
             "No matches were found"
         finally:
@@ -176,11 +187,10 @@ def local_disambiguator(doc_name, path=paths.get_all_external_entities_path()):#
     #         print(mention + ", [u\'" + matching_entity + "\']")
     return returned_results
 
-
+# local_disambiguator("00_04_1-_sektion_lør_s004_01_kultur___0909_201709090000_1008261881.txt")
 #print(policy(["https://dk.linkedin.com/in/poul-ole-jensen-2418405", "https://dk.linkedin.com/in/poul-jensen-7a304699"], "Poul-Ole Jensen"))
 #import os
 #for doc_name in os.listdir(paths.get_external_annotated()):
 #    local_disambiguator(doc_name)
-#run_local_disambiguator()
-#print(policy(["https://www.linkedin.com/in/lisa", "https://www.linkedin.com/in/lisasandagerramlow", "https://www.linkedin.com/in/lars-sandager-ramlow"], 'Lisa Sandager Ramlow'))
-#local_disambiguator("00_04_1-_sektion_lør_s004_01_børsen___0209_201709020000_1008184492.txt")
+run_local_disambiguator()
+#print(policy(["https://www.linkedin.com/in/lisa", "https://www.linkedin.com/in/lisasandagerramlow", "https://www.linkedin.com/in/lars-sandager-ramlow"], 'Lisa Sandager Ramlows'))
