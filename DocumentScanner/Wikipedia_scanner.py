@@ -3,6 +3,7 @@ import paths
 import re
 import shelve
 from NamedEntityDisambiguator import Utilities
+import os
 
 def find_link(text):
     if text == None:
@@ -25,7 +26,7 @@ def get_link_names(name):
 tree = etree.parse(paths.get_wikipedia_article_path())
 wiki_tree_root = tree.getroot()
 
-link_dictionary = {}#= shelve.open("SKRIV HER NamedEntityDisambiguator/dbs/link_dic", writeback=True)
+link_dictionary = shelve.open("NamedEntityDisambiguator/dbs/prior_dic", writeback=True)
 for root_child in wiki_tree_root:
     if Utilities.cut_brackets(root_child.tag) == 'page':
         for page_child in root_child:
@@ -42,4 +43,5 @@ for root_child in wiki_tree_root:
                                     (len(link_names[1]) < 1 or link_names[1][0] != ':'):
                                 link_dictionary.setdefault(link_names[0], [])
                                 link_dictionary[link_names[0]].append(link_names[1])
-#link_dictionary.close()
+                                print(os.statvfs('/home/roott/'))
+link_dictionary.close()
