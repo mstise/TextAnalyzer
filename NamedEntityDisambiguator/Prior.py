@@ -68,7 +68,10 @@ def popularityPrior(names, wiki_tree_root):
         sub_list = []
         if list_length != 0:
             while list_length != 0:
+                print(entities)
                 first_entity = [match for match in entities if match == entities[0]]
+                print('First Entity:')
+                print(first_entity)
                 sub_list_length = len(first_entity)
                 entities = [entity for entity in entities if entity not in first_entity]
                 sub_list.append([first_entity[0], sub_list_length / list_length])
