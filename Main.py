@@ -132,6 +132,4 @@ def main():
     end = time.time()
     print(end - start)
 
-from NamedEntityDisambiguator import Prior
-Prior.popularityPrior(['Anders Fogh Rasmussen'], '')
-# main()
+main()

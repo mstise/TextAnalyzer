@@ -28,9 +28,28 @@ def get_link_names(name):
     return [link_text, link_name]
 
 #names: ALLE recognized entities. Prior return list: [["Hp", [["Hewlett-Packard, 52,5], [HP, 40.0], [Harry Potter, 7.5]]], "Voldemort", [...]]
-def popularityPrior(names, wiki_tree_root):
+def popularityPrior(names):
     u_names = set(names)
     u_names = Utilities.make_parentheses_for_regex_list(u_names)
+
+    prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
+    prior_return_list = []
+    for name in u_names:
+        entities = prior_dict[name.lower()]
+        list_length = len(entities)
+        sub_list = []
+        if list_length != 0:
+            while len(entities) != 0:
+                first_entity = [match for match in entities if match == entities[0]]
+                sub_list_length = len(first_entity)
+                entities = [entity for entity in entities if entity not in first_entity]
+                sub_list.append([first_entity[0], sub_list_length / list_length])
+            prior_return_list.append([name, sorted(sub_list, key=lambda x: x[1])[-20:]])
+        else:
+            prior_return_list.append([name, []])
+
+    print(prior_return_list)
+
     # reference_list = []
     # for root_child in wiki_tree_root:
     #     if Utilities.cut_brackets(root_child.tag) == 'page':
@@ -59,24 +78,6 @@ def popularityPrior(names, wiki_tree_root):
     #                                    (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:') and\
     #                                    (len(link_names[1]) < 1 or link_names[1][0] != ':'):
     #                                     reference_list.append(link_names)
-
-    prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
-    prior_return_list = []
-    for name in u_names:
-        entities = prior_dict[name.lower()]
-        list_length = len(entities)
-        sub_list = []
-        if list_length != 0:
-            while len(entities) != 0:
-                first_entity = [match for match in entities if match == entities[0]]
-                sub_list_length = len(first_entity)
-                entities = [entity for entity in entities if entity not in first_entity]
-                sub_list.append([first_entity[0], sub_list_length / list_length])
-            prior_return_list.append([name, sorted(sub_list, key=lambda x: x[1])[-20:]])
-        else:
-            prior_return_list.append([name, []])
-
-    print(prior_return_list)
 
     # prior_return_list = []
     # for name in names:
