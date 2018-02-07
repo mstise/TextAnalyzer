@@ -60,7 +60,7 @@ def popularityPrior(names, wiki_tree_root):
     #                                    (len(link_names[1]) < 1 or link_names[1][0] != ':'):
     #                                     reference_list.append(link_names)
 
-    prior_dict = shelve.open("dbs/prior_dic")
+    prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
     for name in names:
         print(name)
         for item in prior_dict:
@@ -89,4 +89,4 @@ def popularityPrior(names, wiki_tree_root):
 # import paths
 # tree = etree.parse(paths.get_wikipedia_article_path())
 # root = tree.getroot()
-popularityPrior(['København'], '')
+# popularityPrior(['København'], root)

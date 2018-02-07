@@ -132,4 +132,6 @@ def main():
     end = time.time()
     print(end - start)
 
-main()
+from NamedEntityDisambiguator import Prior
+Prior.popularityPrior(['København'], '')
+# main()
