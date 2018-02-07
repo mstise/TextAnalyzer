@@ -63,9 +63,8 @@ def popularityPrior(names, wiki_tree_root):
     prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
     for name in names:
         print(name)
-        for item in prior_dict:
-            if item[0] == name:
-                print("   " + item[1])
+        if name in prior_dict:
+            print(prior_dict[name])
 
     prior_return_list = []
     # for name in names:
