@@ -133,5 +133,5 @@ def main():
     print(end - start)
 
 from NamedEntityDisambiguator import Prior
-Prior.popularityPrior(['København'], '')
+Prior.popularityPrior(['Anders Fogh Rasmussen'], '')
 # main()
