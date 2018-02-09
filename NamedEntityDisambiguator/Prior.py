@@ -1,4 +1,5 @@
 import re
+import shelve
 from NamedEntityDisambiguator import Utilities
 
 # def find_link(text):
@@ -27,53 +28,72 @@ def get_link_names(name):
     return [link_text, link_name]
 
 #names: ALLE recognized entities. Prior return list: [["Hp", [["Hewlett-Packard, 52,5], [HP, 40.0], [Harry Potter, 7.5]]], "Voldemort", [...]]
-def popularityPrior(names, wiki_tree_root):
+def popularityPrior(names):
     u_names = set(names)
     u_names = Utilities.make_parentheses_for_regex_list(u_names)
-    reference_list = []
-    for root_child in wiki_tree_root:
-        if Utilities.cut_brackets(root_child.tag) == 'page':
-            for page_child in root_child:
-                if Utilities.cut_brackets(page_child.tag) == 'revision':
-                    for text in page_child:
-                        if Utilities.cut_brackets(text.tag) == 'text':
-                            # links = find_link(text.text)
-                            # for link in links:
-                            #     link_names = get_link_names(link)
-                            #     for link_name in link_names:
-                            #         for name in u_names:
-                            #             if link_name[0] == name:
-                            #                 if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and \
-                            #                         (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and \
-                            #                         (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:'):
-                            #                     reference_list.append(link_names)
 
-                            for name in u_names:
-                                result = find_link(name, text.text)
-                                for link in result:
-                                    link_names = get_link_names(link)
-                                    if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and\
-                                       (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and\
-                                       (len(link_names[1]) < 5 or link_names[1][:5] != 'file:') and\
-                                       (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:') and\
-                                       (len(link_names[1]) < 1 or link_names[1][0] != ':'):
-                                        reference_list.append(link_names)
-
+    prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
     prior_return_list = []
-    for name in names:
-        new_name = Utilities.unmake_parentheses_for_regex(name)
-        matches = [match for match in reference_list if match[0] == new_name.lower()]
-        list_length = len(matches)
+    for name in u_names:
+        entities = prior_dict[name.lower()]
+        list_length = len(entities)
         sub_list = []
-        if len(matches) != 0:
-            while len(matches) != 0:
-                first_match = [match for match in matches if match == matches[0]]
-                sub_list_length = len(first_match)
-                matches = [x for x in matches if x not in first_match]
-                sub_list.append([first_match[0][1], sub_list_length/list_length])
-            prior_return_list.append([first_match[0][0], sorted(sub_list, key=lambda x: x[1])[-20:]])
+        if list_length != 0:
+            while len(entities) != 0:
+                first_entity = [match for match in entities if match == entities[0]]
+                sub_list_length = len(first_entity)
+                entities = [entity for entity in entities if entity not in first_entity]
+                sub_list.append([first_entity[0], sub_list_length / list_length])
+            prior_return_list.append([name, sorted(sub_list, key=lambda x: x[1])[-20:]])
         else:
             prior_return_list.append([name, []])
+
+    print(prior_return_list)
+
+    # reference_list = []
+    # for root_child in wiki_tree_root:
+    #     if Utilities.cut_brackets(root_child.tag) == 'page':
+    #         for page_child in root_child:
+    #             if Utilities.cut_brackets(page_child.tag) == 'revision':
+    #                 for text in page_child:
+    #                     if Utilities.cut_brackets(text.tag) == 'text':
+    #                         # links = find_link(text.text)
+    #                         # for link in links:
+    #                         #     link_names = get_link_names(link)
+    #                         #     for link_name in link_names:
+    #                         #         for name in u_names:
+    #                         #             if link_name[0] == name:
+    #                         #                 if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and \
+    #                         #                         (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and \
+    #                         #                         (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:'):
+    #                         #                     reference_list.append(link_names)
+    #
+    #                         for name in u_names:
+    #                             result = find_link(name, text.text)
+    #                             for link in result:
+    #                                 link_names = get_link_names(link)
+    #                                 if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and\
+    #                                    (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and\
+    #                                    (len(link_names[1]) < 5 or link_names[1][:5] != 'file:') and\
+    #                                    (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:') and\
+    #                                    (len(link_names[1]) < 1 or link_names[1][0] != ':'):
+    #                                     reference_list.append(link_names)
+
+    # prior_return_list = []
+    # for name in names:
+    #     new_name = Utilities.unmake_parentheses_for_regex(name)
+    #     matches = [match for match in reference_list if match[0] == new_name.lower()]
+    #     list_length = len(matches)
+    #     sub_list = []
+    #     if len(matches) != 0:
+    #         while len(matches) != 0:
+    #             first_match = [match for match in matches if match == matches[0]]
+    #             sub_list_length = len(first_match)
+    #             matches = [x for x in matches if x not in first_match]
+    #             sub_list.append([first_match[0][1], sub_list_length/list_length])
+    #         prior_return_list.append([first_match[0][0], sorted(sub_list, key=lambda x: x[1])[-20:]])
+    #     else:
+    #         prior_return_list.append([name, []])
 
     return prior_return_list
 
