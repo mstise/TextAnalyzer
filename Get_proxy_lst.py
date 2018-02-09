@@ -3,7 +3,7 @@ def get_proxy_lst(proxy_path):
     file = open(proxy_path, 'r')
     for line in file:
         cleaned_line = str(line[:-1]) #[:-1] to remove \n at end of line
-        new_string = cleaned_line[-17:] + '@' + cleaned_line[:-18]
+        new_string = 'https://' + cleaned_line[-17:] + '@' + cleaned_line[:-18]
         proxy_lst.append(new_string)
     return proxy_lst
 
@@ -17,7 +17,7 @@ proxy = urllib2.ProxyHandler({'https': 'https://mthyge11:an2loper@82.211.50.204:
 auth = urllib2.HTTPBasicAuthHandler()
 opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
 urllib2.install_opener(opener)
-    
+
 conn = urllib2.urlopen('http://expressvpn.com/what-is-my-ip')
 return_str = conn.read()
 print return_str
