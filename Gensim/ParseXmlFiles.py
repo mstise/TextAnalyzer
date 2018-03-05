@@ -1,4 +1,3 @@
-from gensim import corpora
 import os
 import xml.etree.ElementTree
 import paths
@@ -13,23 +12,22 @@ def readXML(node):
     global header
     tag = node.tag[38:]
     if (tag == "p"):
-        if (isinstance(node.text, str) and len(body) > 1 and len(str(node.text)) > 1):
+        if (isinstance(node.text, str) and len(str(node.text)) > 0):
             if len(body) > 0 and body[-1] != " ":
                 body += " "
             body += format_text(str(node.text))
-    if (tag == "hl1"):
+    elif (tag == "hl1"):
         header = format_text(str(node.text))
     for child in node:
         readXML(child)
 
 body = ""
 header = ""
-bodies = []
-dictionary = corpora.Dictionary()
 
 for subdir, dirs, files in os.walk(paths.get_newest_news_path()):
     if (subdir[-10:] == "/TabletXML"):
         for filename in os.listdir(subdir):
+            test = os.listdir(paths.get_external_procesed_news())
             if (filename[-4:] == ".xml" and not any(file[:-4] == filename[:-4] for file in os.listdir(paths.get_external_procesed_news()))):
                 readXML(xml.etree.ElementTree.parse(subdir + '/' + filename).getroot())
                 if body == "":
