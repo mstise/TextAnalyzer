@@ -12,7 +12,7 @@ def readXML(node):
     global header
     tag = node.tag[38:]
     if (tag == "p"):
-        if (isinstance(node.text, str) and len(str(node.text)) > 0):
+        if (isinstance(node.text, str) and len(str(node.text)) > 1):
             if len(body) > 0 and body[-1] != " ":
                 body += " "
             body += format_text(str(node.text))
