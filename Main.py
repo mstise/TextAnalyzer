@@ -95,10 +95,10 @@ def main():
 
     reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent = keyphrase_sim_speedup(root)
 
-    num_files = len(os.listdir(paths.get_external_annotated()))
+    num_files = len(os.listdir(paths.get_all_external_entities_path()))
     counter = 0
-    for filename in os.listdir(paths.get_external_annotated()):
-        if counter < 54:
+    for filename in os.listdir(paths.get_all_external_entities_path()):
+        if counter < 0:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
