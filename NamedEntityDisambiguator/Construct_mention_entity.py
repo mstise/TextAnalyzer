@@ -17,7 +17,7 @@ def column(matrix, i):
 def remove_large_priors(priors, entities, candidate_dic):
     removed = []
     for prior in priors:
-        if len(prior) != 0:
+        if len(prior) != 0 and len(prior[1]) != 0 and len(prior[1][-1]) != 0 and len(prior[1][-1][1]) != 0:
             if prior[1][-1][1] > 0.9:
                 del candidate_dic[prior[0]]
                 for ent in prior[1]:
