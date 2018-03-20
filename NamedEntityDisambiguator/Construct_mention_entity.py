@@ -15,7 +15,7 @@ def column(matrix, i):
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
-    priors = popularityPrior(recognized_mentions, root)
+    priors = popularityPrior(recognized_mentions)
     #print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
@@ -39,7 +39,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             counter += 1
 
     if len(second_round_list) != 0:
-        new_priors = popularityPrior(second_round_list, root)
+        new_priors = popularityPrior(second_round_list)
         #print("new_priors: " + str(new_priors))
         for i in range(0, len(new_priors)):
             #print("new_priors[i]: " + str(new_priors[i]) + " and second_round_priors_id[i]: " + str(second_round_priors_id[i]) + "priors[second_round_priors_id[i]]: " + str(priors[second_round_priors_id[i]]))
