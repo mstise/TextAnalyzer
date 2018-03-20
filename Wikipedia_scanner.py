@@ -36,14 +36,16 @@ for root_child in wiki_tree_root:
                         result = find_link(text.text)
                         for link in result:
                             link_names = get_link_names(link)
-                            #link_names[0] = link_names[0].lower()
-                            #link_names[1] = link_names[1].lower()
+                            link_names[0] = link_names[0].lower()
+                            link_names[1] = link_names[1].lower()
                             if (len(link_names[1]) < 9 or link_names[1][:9] != 'kategori:') and \
                                     (len(link_names[1]) < 4 or link_names[1][:4] != 'fil:') and \
                                     (len(link_names[1]) < 5 or link_names[1][:5] != 'file:') and \
                                     (len(link_names[1]) < 8 or link_names[1][:8] != 'billede:') and \
                                     (len(link_names[1]) < 1 or link_names[1][0] != ':'):
                                 link_dictionary.setdefault(link_names[0], [])
-                                link_dictionary[link_names[0]] = link_dictionary[link_names[0]].append(link_names[1])
+                                tmp = link_dictionary[link_names[0]]
+                                tmp.append(link_names[1])
+                                link_dictionary[link_names[0]] = tmp
                                 print(link_names[0])
 link_dictionary.close()
