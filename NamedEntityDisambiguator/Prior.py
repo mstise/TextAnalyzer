@@ -32,7 +32,10 @@ def popularityPrior(names):
     u_names = set(names)
     u_names = Utilities.make_parentheses_for_regex_list(u_names)
 
+    from datetime import datetime
+    print("Open dict start: " + str(datetime.now()))
     prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
+    print("Open dict end: " + str(datetime.now()))
     prior_return_list = []
     for name in u_names:
         if name.lower() in prior_dict:
