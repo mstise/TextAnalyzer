@@ -35,7 +35,10 @@ def popularityPrior(names):
     prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
     prior_return_list = []
     for name in u_names:
-        entities = prior_dict[name.lower()]
+        if name.lower() in prior_dict:
+            entities = prior_dict[name.lower()]
+        else:
+            entities = []
         list_length = len(entities)
         sub_list = []
         if list_length != 0:
