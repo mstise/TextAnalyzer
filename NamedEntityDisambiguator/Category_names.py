@@ -18,12 +18,14 @@ def split_list(lst, parts=1):
              for i in range(parts) ]
 
 def query_phase(titles, hard_stoplist):
+    from datetime import datetime
+    print("Database start: " + str(datetime.now()))
     db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                          user="duper",  # your username
                          passwd="an2loper",  # your password
                          db="wikidb",
                          charset='utf8')  # name of the data base
-
+    print("Database end: " + str(datetime.now()))
     # you must create a Cursor object. It will let
     #  you execute all the queries you need
     cur = db.cursor()

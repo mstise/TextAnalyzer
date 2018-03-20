@@ -144,15 +144,15 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
 def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
-    #print("words_of_doc: " + str(words_of_document))
-    #mem_observor = psutil.Process(os.getpid())
-    #print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
+    # print("words_of_doc: " + str(words_of_document))
+    # mem_observor = psutil.Process(os.getpid())
+    # print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     start = time.time()
     category_kps = category_words(entities)
     end = time.time()
     print("categories time: " + str(end - start))
     simscore_dic = {}
-    #print("word of document: " + str(words_of_document))
+    # print("word of document: " + str(words_of_document))
     start = time.time()
     print("Start of kpbs: " + str(start))
     split_set_of_candidates = split_list(list(candidates_dic.values()), parts=8)
@@ -162,7 +162,7 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
         threads.append(Process(target=threaded_func, args=(q, set_of_entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document)))
 
     print("Start of kpbs threads: " + str(time.time()))
-    #Start new Threads
+    # Start new Threads
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -204,7 +204,7 @@ def find_num_ent_in_kps(num_kp_in_kps_dic, num_ent_in_kps_dic, mixed_keyphrases)
     num_kp_in_kps_dic = {}
     return num_ent_in_kps_dic
 
-#def tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps_dic, entity):
+# def tfind_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps_dic, entity):
 #    grouped_keyphrases_entity = grouped_keyphrases_dic[entity]
 #    split_set_of_kp_words = split_list(grouped_keyphrases_entity, parts=2)
 #    threads = []
@@ -242,7 +242,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
     grouped_entity_kps = grouped_keyphrases_dic[entity]
-    #print("beginning entitiy: " + entity)
+    # print("beginning entity: " + entity)
     simscore = 0.0
     # if simscore_dic.get(entity, -1) != -1:
     #    print("no go: " + str(entity))
@@ -253,14 +253,14 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     # print("mem after foreign: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
     # if len(keyphrases_dic[entity]) != 0:
     #    print("keyphrases: " + str(keyphrases_dic[entity]))
-    #print(str(entity) + " has " + str(len(grouped_entity_kps)) + "keyphrases")
+    # print(str(entity) + " has " + str(len(grouped_entity_kps)) + "keyphrases")
     start = time.time()
     word_dictionary1, word_dictionary2, word_dict3 = init_word_dics(grouped_entity_kps)
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
 
     num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity_candidates)
     end = time.time()
-    #if len(grouped_entity_kps) > 5000:
+    # if len(grouped_entity_kps) > 5000:
     #    print("num_ent_in_kps_dic has " + str(len(grouped_entity_kps)) + " for " + str(entity) + " at time: " + str(end - start))
 
     for kp_words in grouped_entity_kps:
