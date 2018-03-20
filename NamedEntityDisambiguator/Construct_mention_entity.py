@@ -13,6 +13,24 @@ import time
 def column(matrix, i):
     return [row[i] for row in matrix]
 
+
+def remove_large_priors(priors, entities, candidate_dic):
+    removed = []
+    for prior in priors:
+        if prior[1][-1][1] > 0.9:
+            del candidate_dic[prior[0]]
+            for ent in prior[1]:
+                entities.remove(ent[0])
+            removed.append(prior)
+    return removed
+
+def populate_sim_score(removed_priors, sim_score):
+    for prior in removed_priors:
+        for tuple in prior[1]:
+            sim_score[tuple[0]] = 0
+        sim_score[prior[1][-1][0]] = 1
+
+
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, prior_dict)
@@ -65,11 +83,18 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #print("these are entities: " + str(entities))
 
+    entities_for_sim_score = []
+    for ent in entities:
+        entities_for_sim_score.append(ent)
+    removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
+
     #reference_keyphrases = shelve.open(reference_keyphrases)
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+    simscore_dic = keyphrase_similarity(root, entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+
+    populate_sim_score(removed_priors, simscore_dic)
 
     #reference_keyphrases.close()
     #title_of_ent_linking_to_ent.close()
