@@ -47,7 +47,7 @@ def popularityPrior(names):
                 sub_list_length = len(first_entity)
                 entities = [entity for entity in entities if entity not in first_entity]
                 sub_list.append([first_entity[0], sub_list_length / list_length])
-            prior_return_list.append([name, sorted(sub_list, key=lambda x: x[1])[-20:]])
+            prior_return_list.append([name, sorted(sub_list, key=lambda x: x[1])[-5:]])
         else:
             prior_return_list.append([name, []])
 
