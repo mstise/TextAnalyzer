@@ -161,13 +161,13 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     for set_of_entity_candidates in split_set_of_candidates:
         threads.append(Process(target=threaded_func, args=(q, set_of_entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document)))
 
-    print("End of kpbs threads: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    print("Start of kpbs threads: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     # Start new Threads
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
-    print("End of kpbs threads: " + str(time.time()))
+    print("End of kpbs threads: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
     while not q.empty():
         thread_item = q.get()
