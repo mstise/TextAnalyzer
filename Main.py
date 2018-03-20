@@ -95,6 +95,12 @@ def main():
 
     reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent = keyphrase_sim_speedup(root)
 
+    prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
+    reference_keyphrases = shelve.open(reference_keyphrases)
+    title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
+    link_anchors_of_ent = shelve.open(link_anchors_of_ent)
+    ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
+
     num_files = len(os.listdir(paths.get_all_external_entities_path()))
     counter = 0
     for filename in os.listdir(paths.get_all_external_entities_path()):
@@ -106,7 +112,7 @@ def main():
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
-        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict)
+        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict)
         print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))

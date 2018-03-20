@@ -13,9 +13,9 @@ import time
 def column(matrix, i):
     return [row[i] for row in matrix]
 
-def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, alpha=0.45, beta=0.45, gamma=0.1):
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
-    priors = popularityPrior(recognized_mentions)
+    priors = popularityPrior(recognized_mentions, prior_dict)
     #print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
@@ -39,7 +39,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
             counter += 1
 
     if len(second_round_list) != 0:
-        new_priors = popularityPrior(second_round_list)
+        new_priors = popularityPrior(second_round_list, prior_dict)
         #print("new_priors: " + str(new_priors))
         for i in range(0, len(new_priors)):
             #print("new_priors[i]: " + str(new_priors[i]) + " and second_round_priors_id[i]: " + str(second_round_priors_id[i]) + "priors[second_round_priors_id[i]]: " + str(priors[second_round_priors_id[i]]))
@@ -65,15 +65,15 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #print("these are entities: " + str(entities))
 
-    reference_keyphrases = shelve.open(reference_keyphrases)
-    title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
-    link_anchors_of_ent = shelve.open(link_anchors_of_ent)
+    #reference_keyphrases = shelve.open(reference_keyphrases)
+    #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
+    #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
     simscore_dic = keyphrase_similarity(root, entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
 
-    reference_keyphrases.close()
-    title_of_ent_linking_to_ent.close()
-    link_anchors_of_ent.close()
+    #reference_keyphrases.close()
+    #title_of_ent_linking_to_ent.close()
+    #link_anchors_of_ent.close()
 
     #print("sim before normalisation: " + str(simscore_dic))
     #normalise simscore to sum to 1 between candidates
@@ -109,9 +109,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #kp_sim_score = keyphrase_similarity(root, )
     print("Beginning on ent_ent_coh")
-    ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
+    #ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
     ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
-    ent_ent_coh_dict.close()
+    #ent_ent_coh_dict.close()
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
 
