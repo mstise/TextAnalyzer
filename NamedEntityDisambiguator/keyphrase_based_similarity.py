@@ -19,14 +19,13 @@ NUM_WIKI_ARTICLES = 474017
 def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
     simscore = {}
     for entity_candidates in set_of_candidates:
-        print("Make entity to keyphrases start: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+        print("Make entity to keyphrases start: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
         grouped_keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps,
                                                          link_anchors_of_ent, title_of_ent_linking_to_ent)
-        print("Make entity to keyphrases end: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
         for entity in entity_candidates:
             simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                                             title_of_ent_linking_to_ent, words_of_document)
-        print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+        print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
     q.put(simscore)
 
 #def threaded_func2(q, num_kp_in_candidate_kps_dic, grouped_kp_words):
