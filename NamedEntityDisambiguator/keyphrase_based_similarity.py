@@ -17,6 +17,7 @@ from sortedcontainers import SortedList, SortedDict
 NUM_WIKI_ARTICLES = 474017
 
 def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
+    print("Start of process: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     simscore = {}
     for entity_candidates in set_of_candidates:
         grouped_keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps,
@@ -158,13 +159,15 @@ def keyphrase_similarity(wiki_tree_root, entities, candidates_dic, words_of_docu
     split_set_of_candidates = split_list(list(candidates_dic.values()), parts=8)
     threads = []
     q = Queue()
+    print("Start of process creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     for set_of_entity_candidates in split_set_of_candidates:
         threads.append(Process(target=threaded_func, args=(q, set_of_entity_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document)))
 
-    print("Start of kpbs threads: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    print("End of process creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     # Start new Threads
     for thread in threads:
         thread.start()
+    print("End of process starting: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     for thread in threads:
         thread.join()
     print("End of kpbs threads: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
