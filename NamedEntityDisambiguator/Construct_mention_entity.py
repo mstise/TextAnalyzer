@@ -33,6 +33,7 @@ def populate_sim_score(removed_priors, sim_score):
 
 def check_for_ending_s(prior_name, candidates, threshold=0.8):
     if prior_name[-1] == 's':
+        print('Candidates: ' + str(prior_name[:-1]).lower())
         for cand in candidates:
             if cand[1] > threshold:
                 break
@@ -47,8 +48,6 @@ def remove_s_modification(priors, prior_dict):
     try_without_s_list_id = []
     for i in range(0, len(priors)):
         print('Prior name is: ' + priors[i][0])
-        if priors[i][0][-1] == 's':
-            print('Prior name ends in s')
         if check_for_ending_s(priors[i][0], priors[i][1]):
             try_without_s_list.append(priors[i][0])
             try_without_s_list_id.append(i)
