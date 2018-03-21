@@ -51,7 +51,7 @@ def remove_s_modification(priors, prior_dict):
             try_without_s_list.append(priors[i][0])
             try_without_s_list_id.append(i)
     new_priors = popularityPrior(try_without_s_list, prior_dict)
-    print('New priors: ' + new_priors)
+    print('New priors: ' + str(new_priors))
     for i in range(0, len(new_priors)):
         new_priors[i][0] = priors[try_without_s_list_id[i]][0]
         priors[try_without_s_list_id[i]] = new_priors[i]
