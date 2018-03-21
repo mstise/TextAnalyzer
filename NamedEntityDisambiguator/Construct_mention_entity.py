@@ -33,18 +33,13 @@ def populate_sim_score(removed_priors, sim_score):
 
 def check_for_ending_s(prior_name, candidates, threshold=0.8):
     if prior_name[-1] == 's':
-        print('Name without s: ' + str(prior_name[:-1]).lower())
         for cand in candidates:
-            print('Candidate: ' + str(cand[0]))
             if cand[1] > threshold:
-                print('FALSE: We break the loop')
                 break
             elif str(cand[0]) == str(prior_name[:-1]).lower():
-                print('TRUE: We replace the s')
                 return True
         return False
     else:
-        print('FALSE: No s thingy found')
         return False
 
 def remove_s_modification(priors, prior_dict):
@@ -53,6 +48,7 @@ def remove_s_modification(priors, prior_dict):
     for i in range(0, len(priors)):
         print('Prior name is: ' + priors[i][0])
         if check_for_ending_s(priors[i][0], priors[i][1]):
+            print('We entered the loop!')
             try_without_s_list.append(priors[i][0])
             try_without_s_list_id.append(i)
     new_priors = popularityPrior(try_without_s_list, prior_dict)
