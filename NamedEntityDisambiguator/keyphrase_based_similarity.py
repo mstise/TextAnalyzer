@@ -219,13 +219,13 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         simscore += score
     return simscore
 
-import threading
-print(threading.active_count())
+#import threading
+#print(threading.active_count())
 #from lxml import etree
 import paths
 #tree = etree.parse(paths.get_wikipedia_article_path())
 #root = tree.getroot()
-print(str(keyphrase_similarity(["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], {"paris": ["paris", "paris (supertramp)", "paris (lemvig kommune)"], "anders fogh rasmussen": ["anders fogh rasmussen"]}, ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_anchor_dic"))))
+#print(str(keyphrase_similarity(["paris", "paris (supertramp)", "paris (lemvig kommune)", "anders fogh rasmussen"], {"paris": ["paris", "paris (supertramp)", "paris (lemvig kommune)"], "anders fogh rasmussen": ["anders fogh rasmussen"]}, ["paris", "er", "en", "by", "som", "blev", "bombet", "af", "tyskland", "under", "krigen", "mod", "danmark"], shelve.open("NamedEntityDisambiguator/dbs/references_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_dic"), shelve.open("NamedEntityDisambiguator/dbs/link_anchor_dic"))))
 #"paris", "er", "det", "progressive", "rockband", "supertramps", "første", "livealbum", "udgivet", "i", "1980"̈́
 
 
