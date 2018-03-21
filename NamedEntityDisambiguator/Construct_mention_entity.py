@@ -33,8 +33,9 @@ def populate_sim_score(removed_priors, sim_score):
 
 def check_for_ending_s(prior_name, candidates, threshold=0.8):
     if prior_name[-1] == 's':
+        print('Name without s: ' + str(prior_name[:-1]).lower())
         for cand in candidates:
-            print('Candidate: ' + cand[0])
+            print('Candidate: ' + str(cand[0]))
             if cand[1] > threshold:
                 break
             elif str(cand[0]) == str(prior_name[:-1]).lower():
