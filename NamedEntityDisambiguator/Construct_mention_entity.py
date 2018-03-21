@@ -37,11 +37,14 @@ def check_for_ending_s(prior_name, candidates, threshold=0.8):
         for cand in candidates:
             print('Candidate: ' + str(cand[0]))
             if cand[1] > threshold:
+                print('FALSE: We break the loop')
                 break
             elif str(cand[0]) == str(prior_name[:-1]).lower():
+                print('TRUE: We replace the s')
                 return True
         return False
     else:
+        print('FALSE: No s thingy found')
         return False
 
 def remove_s_modification(priors, prior_dict):
