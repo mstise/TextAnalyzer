@@ -69,7 +69,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    simscore_dic = keyphrase_similarity(root, entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+    simscore_dic = keyphrase_similarity(entities, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
 
     #reference_keyphrases.close()
     #title_of_ent_linking_to_ent.close()
