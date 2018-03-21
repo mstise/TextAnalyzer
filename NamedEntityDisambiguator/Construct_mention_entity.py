@@ -46,22 +46,19 @@ def remove_s_modification(priors, prior_dict):
     try_without_s_list = []
     try_without_s_list_id = []
     for i in range(0, len(priors)):
-        print('Prior name is: ' + str(priors[i][0]))
         if check_for_ending_s(priors[i][0], priors[i][1]):
             try_without_s_list.append(str(priors[i][0][:-1]))
             try_without_s_list_id.append(i)
     new_priors = popularityPrior(try_without_s_list, prior_dict)
-    print('New priors: ' + str(new_priors))
     for i in range(0, len(new_priors)):
         new_priors[i][0] = priors[try_without_s_list_id[i]][0]
         priors[try_without_s_list_id[i]] = new_priors[i]
-        print('priors: ' + str(priors))
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, prior_dict)
     remove_s_modification(priors, prior_dict)
-    print("prior-before: " + str(priors))
+    #print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     #entity_candidates_lst = []
