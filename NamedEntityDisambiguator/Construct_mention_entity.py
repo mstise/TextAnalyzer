@@ -34,8 +34,12 @@ def populate_sim_score(removed_priors, sim_score):
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
+    extra_mentions = []
+    for men in recognized_mentions:
+        if men[-1] == 's':
+            extra_mentions.append(men[:-1])
     priors = popularityPrior(recognized_mentions, prior_dict)
-    #print("prior-before: " + str(priors))
+    print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     #entity_candidates_lst = []
