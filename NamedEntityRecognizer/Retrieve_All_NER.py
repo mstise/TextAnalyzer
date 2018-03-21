@@ -5,9 +5,9 @@ import re
 import paths
 
 def clean_line(line):
-    str.replace(line, '\'s\"]', '\']')
-    str.replace(line, '[u\"', '[u\'')
-    str.replace(line, '\"]', '\']')
+    line = str.replace(line, '\'s\"]', '\']')
+    line = str.replace(line, '[u\"', '[u\'')
+    line = str.replace(line, '\"]', '\']')
     indices = [m.start() for m in re.finditer('\'', line)]
     grouped_indices =list(zip(indices[0::2], indices[1::2]))
     print(str(grouped_indices))
