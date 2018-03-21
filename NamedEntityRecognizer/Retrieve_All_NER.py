@@ -5,16 +5,16 @@ import re
 import paths
 
 def clean_line(line):
+    str.replace(line, '\'s\"]', '\']')
+    str.replace(line, '[u\"', '[u\'')
+    str.replace(line, '\"]', '\']')
     indices = [m.start() for m in re.finditer('\'', line)]
     grouped_indices =list(zip(indices[0::2], indices[1::2]))
     print(str(grouped_indices))
     print(line)
-    #if grouped_indices != []:
     cleaned_line = line[grouped_indices[0][0]+1 : grouped_indices[0][1]]
     for i, k in grouped_indices[1:len(grouped_indices)]:
         cleaned_line += ' ' + line[i+1 : k]
-    #else:
-    #   cleaned_line = ''
     return cleaned_line
 
 
