@@ -55,7 +55,7 @@ def remove_s_modification(priors, prior_dict):
         priors[try_without_s_list_id[i]] = new_priors[i]
 
 def modify_based_on_languages(priors):
-    with open('languages') as f:
+    with open('NamedEntityDisambiguator/languages') as f:
         content = f.readlines()
     language_list = [x.strip() for x in content]
     for prior in priors:
