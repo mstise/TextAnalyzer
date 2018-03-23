@@ -21,10 +21,10 @@ def load_sql_file():
             entities = []
             for entity in [s.strip() for s in entity_row.splitlines()]:
                 entities.append(entity)
-                if entity == 'TRIGE':
-                    print(str(category))
             for entity in entities:
                 append_val(phrase_dict, key=entity, val=category)
+                if entity == 'TRIGE':
+                    print(str(category))
                 #print(entity.lower() + " : ")# + str(phrase_dict[entity.lower()]))
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('TRIGE: ' + str(phrase_dict['trige']))
