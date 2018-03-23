@@ -36,5 +36,6 @@ def append_val(dic, key, val, default = []):
     tmp = dic[key]
     tmp.append(val)
     dic[key] = tmp
+    print("KEY: " + key + " VAL: " + val)
 
 load_sql_file()
