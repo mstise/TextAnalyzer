@@ -44,7 +44,7 @@ def append_val(dic, key, val):
                      'Kilder mangler (samlet liste)']
 
     key = key.lower()
-    val = val.lower()
+    #val = val.lower()
     val = val.replace("_", " ")
     if val not in hard_stoplist:
         dic.setdefault(key, [])
