@@ -1,7 +1,8 @@
 import MySQLdb
+import shelve
 
 def load_sql_file():
-    phrase_dict = {}
+    category_dict = shelve.open('dbs/category_dict')
     db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                          user="duper",  # your username
                          passwd="an2loper",  # your password
@@ -22,7 +23,7 @@ def load_sql_file():
             for entity in [s.strip() for s in entity_row.splitlines()]:
                 entities.append(entity)
             for entity in entities:
-                append_val(phrase_dict, entity, category)
+                append_val(category_dict, entity, category)
 
 def append_val(dic, key, val):
     hard_stoplist = ['artikler med døde links',
@@ -51,7 +52,5 @@ def append_val(dic, key, val):
         tmp = dic[key]
         tmp.append(val)
         dic[key] = tmp
-    if key == 'trige':
-        print("KEY: " + key + " VAL: " + str(dic[key]))
 
 load_sql_file()
