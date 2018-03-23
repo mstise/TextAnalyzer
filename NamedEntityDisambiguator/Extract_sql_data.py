@@ -18,9 +18,9 @@ def load_sql_file():
         category = row[0].decode("utf-8")
         entity = row[1].decode("utf-8")
         if category != None and entity != None:
-            phrase_dict[entity] = category
+            phrase_dict[entity.lower()] = category.lower()
             #print(entity + " : " + phrase_dict[entity])
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
-    print('Toyota: ' + phrase_dict['Toyota'])
+    print('Henrik 7: ' + phrase_dict['henrik 7'])
 
 load_sql_file()
