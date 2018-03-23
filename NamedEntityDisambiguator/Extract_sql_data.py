@@ -29,16 +29,14 @@ def load_sql_file():
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('TRIGE: ' + str(phrase_dict['trige']))
 
-def append_val(dic, key, val, default = []):
+def append_val(dic, key, val):
     key = key.lower()
     val = val.lower()
     dic.setdefault(key, [])
     tmp = dic[key]
-    if key == 'trige':
-        print("KEY: " + key + " VAL: " + str(tmp))
-        #print("DEFAULT: " + str(default))
-        exit()
     tmp.append(val)
     dic[key] = tmp
+    if key == 'trige':
+        print("KEY: " + key + " VAL: " + str(dic(key)))
 
 load_sql_file()
