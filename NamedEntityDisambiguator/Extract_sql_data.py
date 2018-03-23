@@ -17,7 +17,7 @@ def load_sql_file():
     for row in cur.fetchall():
         category = row[0].decode("utf-8")
         entity_row = row[1].decode("utf-8")
-        if category != None and category != '' and entity != None and entity != '':
+        if category != None and category != '' and entity_row != None and entity_row != '':
             entities = []
             for entity in entity_row.strip():
                 entities.append()
