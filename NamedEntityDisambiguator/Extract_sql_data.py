@@ -12,9 +12,11 @@ def load_sql_file():
 
     cur.execute("SELECT cl_to" +
                 " FROM categorylinks;")
-    print('TEST')
+
     for row in cur.fetchall():
         print('test')
         non_bytestring = row[0].decode("utf-8")
         print(non_bytestring)
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
+
+load_sql_file()
