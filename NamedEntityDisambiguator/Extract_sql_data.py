@@ -36,7 +36,8 @@ def append_val(dic, key, val, default = []):
     tmp = dic[key]
     tmp.append(val)
     dic[key] = tmp
-    if val == 'byer_i_aarhus_kommune':
-        print("KEY: " + key + " VAL: " )
+    if key == 'trige':
+        print("KEY: " + key + " VAL: " + str(dic[key]))
+        exit()
 
 load_sql_file()
