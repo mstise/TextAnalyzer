@@ -16,10 +16,14 @@ def load_sql_file():
 
     for row in cur.fetchall():
         category = row[0].decode("utf-8")
-        entity = row[1].decode("utf-8")
+        entity_row = row[1].decode("utf-8")
         if category != None and category != '' and entity != None and entity != '':
-            phrase_dict[entity.lower()] = category.lower()
-            print(entity + " : " + phrase_dict[entity.lower()])
+            entities = []
+            for entity in entity_row.strip():
+                entities.append()
+            for entity in entities:
+                phrase_dict[entity.lower()] = category.lower()
+                print(entity.lower() + " : " + phrase_dict[entity.lower()])
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('Henrik 7: ' + phrase_dict['henrik 7'])
 
