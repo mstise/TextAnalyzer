@@ -19,7 +19,7 @@ def load_sql_file():
         entity_row = row[1].decode("utf-8")
         if category != None and category != '' and entity_row != None and entity_row != '':
             entities = []
-            for entity in entity_row.strip():
+            for entity in [s.strip() for s in entity_row.splitlines()]:
                 entities.append(entity)
             for entity in entities:
                 phrase_dict[entity.lower()] = category.lower()
