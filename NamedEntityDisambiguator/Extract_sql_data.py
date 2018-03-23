@@ -21,9 +21,11 @@ def load_sql_file():
             entities = []
             for entity in [s.strip() for s in entity_row.splitlines()]:
                 entities.append(entity)
+                last_ent = ''
             for entity in entities:
                 append_val(phrase_dict, key=entity, val=category)
-                print(entity.lower() + " : " + str(phrase_dict[entity.lower()]))
+                last_ent = entity
+            print(entity.lower() + " : " + str(phrase_dict[entity.lower()]))
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('Henrik 7: ' + phrase_dict['henrik 7'])
 
