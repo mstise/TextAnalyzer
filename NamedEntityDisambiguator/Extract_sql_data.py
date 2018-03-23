@@ -10,11 +10,10 @@ def load_sql_file():
     #  you execute all the queries you need
     cur = db.cursor()
 
-    cur.execute("SELECT cl_to" +
+    cur.execute("SELECT cl_to, cl_sortkey" +
                 " FROM categorylinks;")
 
     for row in cur.fetchall():
-        print('test')
         non_bytestring = row[0].decode("utf-8")
         print(non_bytestring)
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
