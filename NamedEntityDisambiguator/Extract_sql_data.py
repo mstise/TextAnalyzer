@@ -25,7 +25,7 @@ def load_sql_file():
                 append_val(phrase_dict, key=entity, val=category)
                 #print(entity.lower() + " : ")# + str(phrase_dict[entity.lower()]))
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
-    print('TRIGE: ' + phrase_dict['trige'])
+    print('TRIGE: ' + str(phrase_dict['trige']))
 
 def append_val(dic, key, val, default = []):
     key = key.lower()
