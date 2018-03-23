@@ -20,7 +20,7 @@ def load_sql_file():
         if category != None and category != '' and entity_row != None and entity_row != '':
             entities = []
             for entity in entity_row.strip():
-                entities.append()
+                entities.append(entity)
             for entity in entities:
                 phrase_dict[entity.lower()] = category.lower()
                 print(entity.lower() + " : " + phrase_dict[entity.lower()])
