@@ -25,26 +25,26 @@ def load_sql_file():
                 append_val(phrase_dict, entity, category)
 
 def append_val(dic, key, val):
-    hard_stoplist = ['Artikler med døde links',
-                     'Commons-kategori på Wikidata er ens med lokalt link',
-                     'Commons-kategori på Wikidata er ens med sidetitel',
-                     'Intet lokalt billede og intet billede på Wikidata',
-                     'Sider, der bruger automatiske ISBN-henvisninger',
-                     'Wikipedia artikler med GND autoritetsdata-ID',
-                     'Wikipedia artikler med NDL autoritetsdata-ID',
-                     'Wikipedia artikler med BNF autoritetsdata-ID',
-                     'Wikipedia artikler med ISNI autoritetsdata-ID',
-                     'Wikipedia artikler med LCCN autoritetsdata-ID',
-                     'Lokalt billede identisk med Wikidata',
-                     'Lokalt billede forskelligt fra Wikidata',
-                     'Wikipedia artikler med VIAF autoritetsdata-ID',
-                     'Articles with invalid date parameter in template',
-                     'Artikler hvor enkelte passager behøver uddybning (samlet liste)',
-                     'Artikler med filmpersonhenvisninger fra Wikidata',
-                     'Kilder mangler (samlet liste)']
+    hard_stoplist = ['artikler med døde links',
+                     'commons-kategori på wikidata er ens med lokalt link',
+                     'commons-kategori på wikidata er ens med sidetitel',
+                     'intet lokalt billede og intet billede på wikidata',
+                     'sider, der bruger automatiske isbn-henvisninger',
+                     'wikipedia artikler med gnd autoritetsdata-id',
+                     'wikipedia artikler med ndl autoritetsdata-id',
+                     'wikipedia artikler med bnf autoritetsdata-id',
+                     'wikipedia artikler med isni autoritetsdata-id',
+                     'wikipedia artikler med lccn autoritetsdata-id',
+                     'lokalt billede identisk med wikidata',
+                     'lokalt billede forskelligt fra wikidata',
+                     'wikipedia artikler med viaf autoritetsdata-id',
+                     'articles with invalid date parameter in template',
+                     'artikler hvor enkelte passager behøver uddybning (samlet liste)',
+                     'artikler med filmpersonhenvisninger fra wikidata',
+                     'kilder mangler (samlet liste)']
 
     key = key.lower()
-    #val = val.lower()
+    val = val.lower()
     val = val.replace("_", " ")
     if val not in hard_stoplist:
         dic.setdefault(key, [])
