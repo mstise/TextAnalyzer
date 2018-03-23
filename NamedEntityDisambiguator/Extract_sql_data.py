@@ -34,7 +34,7 @@ def append_val(dic, key, val):
     val = val.lower()
     dic.setdefault(key, [])
     tmp = dic[key]
-    tmp.append(val)
+    tmp.append(val.replace("_", " "))
     dic[key] = tmp
     if key == 'trige':
         print("KEY: " + key + " VAL: " + str(dic[key]))
