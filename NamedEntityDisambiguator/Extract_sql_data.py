@@ -1,6 +1,7 @@
 import MySQLdb
 
 def load_sql_file():
+    phrase_dict = {}
     db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                          user="duper",  # your username
                          passwd="an2loper",  # your password
@@ -14,8 +15,11 @@ def load_sql_file():
                 " FROM categorylinks;")
 
     for row in cur.fetchall():
-        non_bytestring = row[0].decode("utf-8") + ", " + row[1].decode("utf-8")
-        print(non_bytestring)
+        category = row[0].decode("utf-8")
+        entity = row[1].decode("utf-8")
+        if category != None and entity != None:
+            phrase_dict[entity] = category
+            print(phrase_dict[entity])
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
 
 load_sql_file()
