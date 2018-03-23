@@ -58,7 +58,6 @@ def modify_based_on_languages(priors):
     with open('NamedEntityDisambiguator/languages') as f:
         content = f.readlines()
     language_list = [x.strip().lower() for x in content]
-    print(str(language_list))
     for prior in priors:
         if prior[0].lower() in language_list:
             prior[1] = [[prior[1][-1][0], 1.0]]
