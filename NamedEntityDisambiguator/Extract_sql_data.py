@@ -23,19 +23,34 @@ def load_sql_file():
                 entities.append(entity)
             for entity in entities:
                 append_val(phrase_dict, entity, category)
-                #if entity == 'TRIGE':
-                #    print(str(category))
-                #print(entity.lower() + " : ")# + str(phrase_dict[entity.lower()]))
-        #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
-    #print('TRIGE: ' + str(phrase_dict['trige']))
 
 def append_val(dic, key, val):
+    hard_stoplist = ['Artikler med døde links',
+                     'Commons-kategori på Wikidata er ens med lokalt link',
+                     'Commons-kategori på Wikidata er ens med sidetitel',
+                     'Intet lokalt billede og intet billede på Wikidata',
+                     'Sider, der bruger automatiske ISBN-henvisninger',
+                     'Wikipedia artikler med GND autoritetsdata-ID',
+                     'Wikipedia artikler med NDL autoritetsdata-ID',
+                     'Wikipedia artikler med BNF autoritetsdata-ID',
+                     'Wikipedia artikler med ISNI autoritetsdata-ID',
+                     'Wikipedia artikler med LCCN autoritetsdata-ID',
+                     'Lokalt billede identisk med Wikidata',
+                     'Lokalt billede forskelligt fra Wikidata',
+                     'Wikipedia artikler med VIAF autoritetsdata-ID',
+                     'Articles with invalid date parameter in template',
+                     'Artikler hvor enkelte passager behøver uddybning (samlet liste)',
+                     'Artikler med filmpersonhenvisninger fra Wikidata',
+                     'Kilder mangler (samlet liste)']
+
     key = key.lower()
     val = val.lower()
-    dic.setdefault(key, [])
-    tmp = dic[key]
-    tmp.append(val.replace("_", " "))
-    dic[key] = tmp
+    val = val.replace("_", " ")
+    if val not in hard_stoplist:
+        dic.setdefault(key, [])
+        tmp = dic[key]
+        tmp.append(val)
+        dic[key] = tmp
     if key == 'trige':
         print("KEY: " + key + " VAL: " + str(dic[key]))
 
