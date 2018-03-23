@@ -62,7 +62,7 @@ def modify_based_on_languages(priors):
         if prior[0] in language_list:
             prior[1] = [[prior[1][-1][0], 1.0]]
 
-def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, prior_dict)
     remove_s_modification(priors, prior_dict)
@@ -126,7 +126,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
 
-    simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
+    simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
 
     populate_sim_score(removed_priors, simscore_dic)
 

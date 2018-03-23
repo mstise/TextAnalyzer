@@ -98,14 +98,10 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
+def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps):
     # print("words_of_doc: " + str(words_of_document))
     # mem_observor = psutil.Process(os.getpid())
     # print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
-    start = time.time()
-    category_kps = category_words(entities)
-    end = time.time()
-    print("categories time: " + str(end - start))
     simscore_dic = {}
     # print("word of document: " + str(words_of_document))
     start = time.time()
