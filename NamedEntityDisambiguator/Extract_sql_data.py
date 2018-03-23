@@ -36,7 +36,7 @@ def append_val(dic, key, val, default = []):
     tmp = dic[key]
     tmp.append(val)
     dic[key] = tmp
-    if val == 'trige':
+    if key == 'trige':
         print("KEY: " + key + " VAL: " + str(dic[key]))
 
 load_sql_file()
