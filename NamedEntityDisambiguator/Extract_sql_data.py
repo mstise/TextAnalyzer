@@ -23,7 +23,7 @@ def load_sql_file():
                 entities.append(entity)
             for entity in entities:
                 append_val(phrase_dict, key=entity, val=category)
-                print(entity.lower() + " : " + phrase_dict[entity.lower()])
+                print(entity.lower() + " : " + str(phrase_dict[entity.lower()]))
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('Henrik 7: ' + phrase_dict['henrik 7'])
 
