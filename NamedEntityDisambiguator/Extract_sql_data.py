@@ -14,7 +14,7 @@ def load_sql_file():
                 " FROM categorylinks;")
 
     for row in cur.fetchall():
-        non_bytestring = row[0].decode("utf-8")
+        non_bytestring = row[0].decode("utf-8") + ", " + row[1].decode("utf-8")
         print(non_bytestring)
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
 
