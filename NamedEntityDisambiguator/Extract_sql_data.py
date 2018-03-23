@@ -34,10 +34,11 @@ def append_val(dic, key, val, default = []):
     val = val.lower()
     dic.setdefault(key, default)
     tmp = dic[key]
+    if key == 'trige':
+        print("KEY: " + key + " VAL: " + str(tmp))
+        print("DEFAULT: " + str(default))
+        exit()
     tmp.append(val)
     dic[key] = tmp
-    if key == 'trige':
-        print("KEY: " + key + " VAL: " + str(dic[key]))
-        exit()
 
 load_sql_file()
