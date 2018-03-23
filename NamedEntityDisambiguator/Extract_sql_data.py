@@ -2,7 +2,7 @@ import MySQLdb
 import shelve
 
 def load_sql_file():
-    category_dict = shelve.open('dbs/category_dict')
+    category_dict = shelve.open('NamedEntityDisambiguator/dbs/category_dict')
     db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                          user="duper",  # your username
                          passwd="an2loper",  # your password
