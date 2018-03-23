@@ -23,8 +23,8 @@ def load_sql_file():
                 entities.append(entity)
             for entity in entities:
                 append_val(phrase_dict, entity, category)
-                if entity == 'TRIGE':
-                    print(str(category))
+                #if entity == 'TRIGE':
+                #    print(str(category))
                 #print(entity.lower() + " : ")# + str(phrase_dict[entity.lower()]))
         #tmp_phrase_lst.append(non_bytestring.replace("_", " ").lower())
     #print('TRIGE: ' + str(phrase_dict['trige']))
@@ -36,6 +36,7 @@ def append_val(dic, key, val, default = []):
     tmp = dic[key]
     tmp.append(val)
     dic[key] = tmp
-    print("KEY: " + key + " VAL: " + str(dic[key]))
+    if val == 'trige':
+        print("KEY: " + key + " VAL: " + str(dic[key]))
 
 load_sql_file()
