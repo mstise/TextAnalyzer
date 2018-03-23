@@ -21,7 +21,8 @@ def load_sql_file():
             entities = []
             for entity in [s.strip() for s in entity_row.splitlines()]:
                 entities.append(entity)
-            print(str(entities))
+                if entity == 'trige':
+                    print(str(category))
             for entity in entities:
                 append_val(phrase_dict, key=entity, val=category)
                 #print(entity.lower() + " : ")# + str(phrase_dict[entity.lower()]))
