@@ -16,14 +16,15 @@ def column(matrix, i):
 def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent):
     import NamedEntityDisambiguator.keyphrase_based_similarity as kpfuncs
     for prior in priors:
-        grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(prior[1], reference_keyphrases, category_kps,
+        candidates = [candidate[0] for candidate in prior]
+        grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(candidates, reference_keyphrases, category_kps,
                                                                  link_anchors_of_ent, title_of_ent_linking_to_ent)
-        for entity in prior[1]:
+        for entity in candidates:
             grouped_entity_kps = grouped_keyphrases_dic[entity]
             foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
             foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
             if len(foreign_grouped_keyphrases[entity]) > 8000:
-                print('TEST: ' + str(entity) + ': ' + foreign_grouped_keyphrases[entity])
+                print('TEST: ' + str(entity) + ': ' + str(foreign_grouped_keyphrases[entity]))
 
 def remove_large_priors(priors, entities, candidate_dic, prior_threshold=0.8):
     removed = []
