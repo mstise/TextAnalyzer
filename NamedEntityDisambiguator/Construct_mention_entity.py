@@ -13,7 +13,7 @@ import time
 def column(matrix, i):
     return [row[i] for row in matrix]
 
-def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent):
+def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, threshold=0.8):
     import NamedEntityDisambiguator.keyphrase_based_similarity as kpfuncs
     for i in range(0, len(priors)):
         candidates = [candidate[0] for candidate in priors[i][1]]
@@ -23,7 +23,7 @@ def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps
             grouped_entity_kps = grouped_keyphrases_dic[entity]
             foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
             foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
-            if len(foreign_grouped_keyphrases[entity]) > 8000:
+            if len(foreign_grouped_keyphrases[entity]) > 8000 and priors[i][1][-1][1] < threshold:
                 print('WE DID SOMETHING: ' + priors[i][0])
                 priors[i] = [priors[i][0], []]
 
@@ -80,6 +80,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     priors = popularityPrior(recognized_mentions, prior_dict)
     remove_s_modification(priors, prior_dict)
     modify_based_on_languages(priors)
+    remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent)
     #print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
@@ -134,8 +135,6 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         entities_for_sim_score.append(ent)
 
     removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
-
-    remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent)
 
     #reference_keyphrases = shelve.open(reference_keyphrases)
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
