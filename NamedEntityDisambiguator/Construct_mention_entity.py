@@ -24,7 +24,7 @@ def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps
             foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
             foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
             if len(foreign_grouped_keyphrases[entity]) > 8000:
-                priors[i] = [priors[i][0], []]
+                priors[i] = [priors[i][0], [[]]]
 
 def remove_large_priors(priors, entities, candidate_dic, prior_threshold=0.8):
     removed = []
