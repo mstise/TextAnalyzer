@@ -131,7 +131,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     for ent in entities:
         entities_for_sim_score.append(ent)
 
-    removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
+    #removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
 
     remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent)
 
@@ -142,7 +142,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
 
-    populate_sim_score(removed_priors, simscore_dic)
+    #populate_sim_score(removed_priors, simscore_dic)
 
     #reference_keyphrases.close()
     #title_of_ent_linking_to_ent.close()
