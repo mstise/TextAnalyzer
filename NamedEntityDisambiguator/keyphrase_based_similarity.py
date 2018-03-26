@@ -180,7 +180,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     foreign_grouped_keyphrases = mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity], link_anchors_of_ent)
     foreign_grouped_keyphrases[entity] = SortedList(grouped_entity_kps)# uniqueify_grouped_kps(grouped_kps)
 
-    print('kpsFORENTITY: ' + str(len(foreign_grouped_keyphrases[entity])))
+    print('kpsFORENTITY: ' + str(entity) + ": " + str(len(foreign_grouped_keyphrases[entity])))
     if entity == 'danmark':
         exit()
 
