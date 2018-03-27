@@ -89,6 +89,7 @@ def main():
     mp.set_start_method('fork')
     print("Usable CPUs: " + str(len(os.sched_getaffinity(0))))
     start = time.time()
+    start_time = datetime.now()
 
     tree = etree.parse(paths.get_wikipedia_article_path())
     root = tree.getroot()
@@ -122,12 +123,14 @@ def main():
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
         print('**********TIMES***************')
+        print('START TIME: ' + str(start_time))
         timer_simscore += simscore_time
         print('SIMSCORE_TIME in minutes: ' + str(timer_simscore / 60))
         timer_ent_ent_coh += ent_ent_coh_time
         print('ENT_ENT_COH_TIME in minutes: ' + str(timer_ent_ent_coh / 60))
         timer_prior += prior_time
         print('PRIOR_TIME in minutes: ' + str(timer_prior / 60))
+        print('CURRENT TIME: ' + str(str(datetime.now())))
         print('******************************')
 
         print("These are the disambiguations: ")
