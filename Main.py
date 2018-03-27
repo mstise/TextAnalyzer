@@ -105,7 +105,7 @@ def main():
     num_files = len(os.listdir(paths.get_all_external_entities_path()))
     counter = 0
     for filename in os.listdir(paths.get_all_external_entities_path()):
-        if counter < 4742:
+        if counter < 4748:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
