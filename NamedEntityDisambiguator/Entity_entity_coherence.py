@@ -83,7 +83,7 @@ def create_entity_entity_dict(root):
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []
     print("ent_ent_coh, first phase done")
-    print("Length of combinations: " + str(len(itertools.combinations(entities, 2))))
+    print("Length of combinations: " + str(len(list(itertools.combinations(entities, 2)))))
     for two_combination in itertools.combinations(entities, 2):
         entity_links1 = reference_dict.get(two_combination[0], -1)
         entity_links2 = reference_dict.get(two_combination[1], -1)
