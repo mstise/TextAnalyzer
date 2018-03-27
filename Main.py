@@ -102,6 +102,10 @@ def main():
     link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
 
+    timer_ent_ent_coh = 0
+    timer_simscore = 0
+    timer_prior = 0
+
     num_files = len(os.listdir(paths.get_all_external_entities_path()))
     counter = 0
     for filename in os.listdir(paths.get_all_external_entities_path()):
@@ -113,10 +117,18 @@ def main():
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
-        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps)
+        G, simscore_time, ent_ent_coh_time, prior_time = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps)
         print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
+        print('**********TIMES***************')
+        timer_simscore += simscore_time
+        print('SIMSCORE_TIME in minutes: ' + str(timer_simscore / 60))
+        timer_ent_ent_coh += ent_ent_coh_time
+        print('ENT_ENT_COH_TIME in minutes: ' + str(timer_ent_ent_coh / 60))
+        timer_prior += prior_time
+        print('PRIOR_TIME in minutes: ' + str(timer_prior / 60))
+        print('******************************')
 
         print("These are the disambiguations: ")
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:

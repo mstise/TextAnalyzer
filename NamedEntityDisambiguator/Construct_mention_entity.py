@@ -127,6 +127,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
     print("priors end*********************************************************************************priors end")
 
+    prior_time = end - start
+
     entity_node_dict = {}
     G = nx.Graph()
 
@@ -143,7 +145,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
 
+    start = time.time()
     simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
+    simscore_time = time.time() - start
 
     populate_sim_score(removed_priors, simscore_dic)
 
@@ -186,7 +190,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #kp_sim_score = keyphrase_similarity(root, )
     print("Beginning on ent_ent_coh")
     #ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
+    start = time.time()
     ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
+    ent_ent_coh_time = time.time() - start
     #ent_ent_coh_dict.close()
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
@@ -197,7 +203,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")
-    return G
+    return G, simscore_time, ent_ent_coh_time, prior_time
 #import time
 #start = time.time()
 
