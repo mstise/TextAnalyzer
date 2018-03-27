@@ -75,13 +75,14 @@ def modify_based_on_languages(priors):
         content = f.readlines()
     language_list = [x.strip().lower() for x in content]
     for prior in priors:
+        print(str(prior))
         if prior[0].lower() in language_list:
             prior[1] = [[prior[1][-1][0], 1.0]]
 
 def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, prior_dict)
-    #remove_s_modification(priors, prior_dict)
+    remove_s_modification(priors, prior_dict)
     modify_based_on_languages(priors)
     remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent)
     #print("prior-before: " + str(priors))
