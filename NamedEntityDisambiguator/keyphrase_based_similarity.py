@@ -19,13 +19,17 @@ NUM_WIKI_ARTICLES = 474017
 def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, words_of_document):
     simscore = {}
     for entity_candidates in set_of_candidates:
-        print("Make entity to keyphrases start: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
-        grouped_keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps,
-                                                         link_anchors_of_ent, title_of_ent_linking_to_ent)
-        for entity in entity_candidates:
-            simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
-                                            title_of_ent_linking_to_ent, words_of_document)
-        print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
+        try:
+            print("Make entity to keyphrases start: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
+            grouped_keyphrases_dic = mk_entity_to_keyphrases(entity_candidates, reference_keyphrases, category_kps,
+                                                             link_anchors_of_ent, title_of_ent_linking_to_ent)
+            for entity in entity_candidates:
+                simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
+                                                title_of_ent_linking_to_ent, words_of_document)
+            print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
+        except:
+            e = sys.exc_info()[0]
+            print("<p>Error: %s</p>" % e)
     q.put(simscore)
 
 
@@ -127,7 +131,6 @@ def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_
         thread_item = q.get()
         for key in thread_item.keys():
             simscore_dic[key] = thread_item[key]
-    print('SIMSCORE DIC: ' + str(simscore_dic))
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
