@@ -36,7 +36,7 @@ def split_list(lst, parts=1):
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
-    #print('INDICES: ' + str(indices))
+    print('INDICES: ' + str(indices))
     # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
     combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
     sorted_combinations = [sorted(x) for x in combinations]
@@ -197,8 +197,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         if 'paradise' in entity:
             for i in range(len(kp_words) - 1, 0, -1):
                 word = kp_words[i]
-                print('CHECK FOR REMOVE: ' + word)
-                if word == 'er' or word == 'med' or word == 'det' or word == 'til' or word == 'en':
+                #print('CHECK FOR REMOVE: ' + word)
+                if word == '' or word == 'er' or word == 'med' or word == 'det' or word == 'til' or word == 'en':
                     kp_words.remove(word)
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
