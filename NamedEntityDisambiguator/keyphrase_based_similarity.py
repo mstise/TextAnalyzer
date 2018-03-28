@@ -210,7 +210,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
                 indices.append(word_idxs)
 
         cover, cover_span = min_distance_indices(indices)  # finds cover
-        print('COVER: ' + str(cover_span) + ' - ' + str(cover))
+        if 'paradise' in entity:
+            print('COVER: ' + str(cover_span) + ' - ' + str(cover))
         if cover_span == 0:
             continue
         if 'paradise' in entity:
