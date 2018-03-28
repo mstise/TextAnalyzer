@@ -140,8 +140,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
 
-    print('SIMSCORE DIC: ' + candidates_dic)
-    print('ENTITIES FOR SIMSCORE DIC: ' + entities_for_sim_score)
+    print('SIMSCORE DIC: ' + str(candidates_dic))
+    print('ENTITIES FOR SIMSCORE DIC: ' + str(entities_for_sim_score))
 
     #reference_keyphrases = shelve.open(reference_keyphrases)
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
