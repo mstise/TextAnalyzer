@@ -140,11 +140,13 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
 
+    print('SIMSCORE DIC: ' + candidates_dic)
+    print('ENTITIES FOR SIMSCORE DIC: ' + entities_for_sim_score)
+
     #reference_keyphrases = shelve.open(reference_keyphrases)
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-    print('REMOVED PRIORS: ' + str(removed_priors))
     start = time.time()
     simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
     simscore_time = time.time() - start
