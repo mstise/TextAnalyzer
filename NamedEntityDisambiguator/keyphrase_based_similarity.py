@@ -173,6 +173,7 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps
 
 def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                  title_of_ent_linking_to_ent, words_of_document):
+    print('ENTITY2: ' + entity)
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
     grouped_entity_kps = grouped_keyphrases_dic[entity]
