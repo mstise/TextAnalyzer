@@ -219,7 +219,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         score = z * (numerator / denominator) ** 2
         simscore += score
         if 'paradise' in entity:
-            print('KP_WORDS_TEST: ' + str(kp_words))
+            print('KP_WORDS_TEST: *' + entity + '*' + str(kp_words))
     if 'paradise' in entity:
         print('ENTITY3: ' + entity)
     return simscore
