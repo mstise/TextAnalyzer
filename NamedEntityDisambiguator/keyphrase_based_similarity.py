@@ -197,7 +197,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         indices = []
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
-        stop_words_strings = open('StopList')
+        stop_words_strings = open('NamedEntityDisambiguator/StopList')
         stop_words = []
         for line in stop_words_strings:
             stop_words.append(line.split()[0])
@@ -205,7 +205,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
             word = kp_words[i]
             if word in stop_words:
                 kp_words.remove(word)
-        
+
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
