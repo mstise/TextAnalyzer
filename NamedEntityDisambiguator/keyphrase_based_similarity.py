@@ -201,6 +201,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
         if len(maximum_words_in_doc) == 0:
             continue
+        if 'paradise' in entity:
+            print('KP_WORDS_TEST2: *' + entity + '*' + str(kp_words))
         for word in maximum_words_in_doc:
             word_idxs = [i for i, x in enumerate(words_of_document) if
                          x == word]  # Get indicies of all occurences of a kp-word
@@ -210,18 +212,22 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         cover, cover_span = min_distance_indices(indices)  # finds cover
         if cover_span == 0:
             continue
+        if 'paradise' in entity:
+            print('KP_WORDS_TEST3: *' + entity + '*' + str(kp_words))
         z = len(maximum_words_in_doc) / cover_span
         denominator = sum(
             [npmi(word, entity_candidates, foreign_grouped_keyphrases, grouped_keyphrases_dic, npmi_speedup_dict_den, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates) for word
              in kp_words])
         if denominator == 0.0:
             continue
+        if 'paradise' in entity:
+            print('KP_WORDS_TEST4: *' + entity + '*' + str(kp_words))
         numerator = sum([npmi(words_of_document[index], entity_candidates, foreign_grouped_keyphrases, grouped_keyphrases_dic,
                               npmi_speedup_dict_num, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates) for index in cover])
         score = z * (numerator / denominator) ** 2
         simscore += score
         if 'paradise' in entity:
-            print('KP_WORDS_TEST2: *' + entity + '*' + str(kp_words))
+            print('KP_WORDS_TEST5: *' + entity + '*' + str(kp_words))
     if 'paradise' in entity:
         print('ENTITY3: ' + entity)
     return simscore
