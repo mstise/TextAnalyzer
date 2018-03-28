@@ -196,7 +196,7 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         indices = []
         for word in kp_words:
             if word == 'er' or word == 'med' or word == 'det' or word == 'til' or word == 'en':
-                kp_words.remove(word)
+                kp_words = kp_words.remove(word)
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
