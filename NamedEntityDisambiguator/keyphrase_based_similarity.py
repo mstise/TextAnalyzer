@@ -26,9 +26,9 @@ def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link
             simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                                             title_of_ent_linking_to_ent, words_of_document)
         print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
-    print('BEFORE PUT: ' + time.localtime(time.time()))
+    print('BEFORE PUT: ' + str(time.localtime(time.time())))
     q.put(simscore)
-    print('AFTER PUT: ' + time.localtime(time.time()))
+    print('AFTER PUT: ' + str(time.localtime(time.time())))
 
 
 def split_list(lst, parts=1):
