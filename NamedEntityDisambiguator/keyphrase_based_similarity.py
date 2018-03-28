@@ -127,7 +127,7 @@ def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_
         thread_item = q.get()
         for key in thread_item.keys():
             simscore_dic[key] = thread_item[key]
-    print('SIMSCORE DIC: ' + simscore_dic)
+    print('SIMSCORE DIC: ' + str(simscore_dic))
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
