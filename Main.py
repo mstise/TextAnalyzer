@@ -107,10 +107,10 @@ def main():
     timer_simscore = 0
     timer_prior = 0
 
-    num_files = len(os.listdir(paths.get_all_external_entities_path()))
+    num_files = len(os.listdir(paths.get_external_procesed_news()))
     counter = 0
-    for filename in os.listdir(paths.get_all_external_entities_path()):
-        if counter < 20133:
+    for filename in os.listdir(paths.get_external_procesed_news()):
+        if counter < 0:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
