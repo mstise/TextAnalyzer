@@ -78,7 +78,6 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
     result = npmi_speedup_dict.get(word, -1)
     if result != -1 or word.isdigit():
         return 0
-    print('KEY: ' + word)
     joint_prob = num_ent_in_kps_dic[word] / len(mixed_grouped_keyphrases.keys())#joint_probability(word, mixed_grouped_keyphrases)
     #print(str(entity) + " join prob is: " + str(joint_prob))
     ent_prob = 1 / len(entities) #NUM_WIKI_ARTICLES
