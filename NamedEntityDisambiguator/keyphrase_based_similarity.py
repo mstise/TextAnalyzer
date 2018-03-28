@@ -195,7 +195,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
             print('KP_WORDS_TEST1: *' + entity + '*' + str(kp_words))
         indices = []
         if 'paradise' in entity:
-            for word in kp_words:
+            for i in range(0, len(kp_words), -1):
+                word = kp_words[i]
                 print('CHECK FOR REMOVE: ' + word)
                 if word == 'er' or word == 'med' or word == 'det' or word == 'til' or word == 'en':
                     kp_words.remove(word)
