@@ -36,9 +36,9 @@ def split_list(lst, parts=1):
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
+    print(str(len(indices)))
     # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
     combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
-    print(str(len(combinations)))
     sorted_combinations = [sorted(x) for x in combinations]
     min_dist = sys.maxsize
     for i in range(0, len(sorted_combinations)):
