@@ -25,7 +25,6 @@ def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link
         for entity in entity_candidates:
             simscore[entity] = get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                                             title_of_ent_linking_to_ent, words_of_document)
-            print('ENTITY NAME: ' + str(entity))
         print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
     q.put(simscore)
 
@@ -173,7 +172,8 @@ def find_num_kp_in_candidate_kps(grouped_keyphrases_dic, num_kp_in_candidate_kps
 
 def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors_of_ent,
                  title_of_ent_linking_to_ent, words_of_document):
-    print('ENTITY2: ' + entity)
+    if 'paradise' in entity:
+        print('ENTITY1: ' + entity)
     npmi_speedup_dict_num = {}
     npmi_speedup_dict_den = {}
     grouped_entity_kps = grouped_keyphrases_dic[entity]
@@ -186,6 +186,9 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
     num_ent_in_kps_dic = find_num_ent_in_kps(word_dictionary1, word_dictionary2, foreign_grouped_keyphrases)
 
     num_kp_in_candidate_kps_dic, num_kps_in_candidates = find_num_kp_in_candidate_kps(grouped_keyphrases_dic, word_dict3, entity_candidates)
+
+    if 'paradise' in entity:
+        print('ENTITY2: ' + entity)
 
     for kp_words in grouped_entity_kps:
         indices = []
@@ -215,6 +218,8 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
                               npmi_speedup_dict_num, entity, num_ent_in_kps_dic, num_kp_in_candidate_kps_dic, num_kps_in_candidates) for index in cover])
         score = z * (numerator / denominator) ** 2
         simscore += score
+    if 'paradise' in entity:
+        print('ENTITY3: ' + entity)
     return simscore
 
 #import threading
