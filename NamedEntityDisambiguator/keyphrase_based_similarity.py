@@ -36,19 +36,16 @@ def split_list(lst, parts=1):
 
 #This function finds the indicies of the minimum cover using maximum amount of words from kp
 def min_distance_indices(indices):
-    try:
-        # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
-        combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
-
-        sorted_combinations = [sorted(x) for x in combinations]
-        min_dist = sys.maxsize
-        for i in range(0, len(sorted_combinations)):
-            new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0] + 1
-            if new_dist < min_dist:
-                min_dist = new_dist
-                min_dist_index = i
-    except:
-        print('Oh noes!')
+    # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
+    combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
+    print(str(len(combinations)))
+    sorted_combinations = [sorted(x) for x in combinations]
+    min_dist = sys.maxsize
+    for i in range(0, len(sorted_combinations)):
+        new_dist = sorted_combinations[i][-1] - sorted_combinations[i][0] + 1
+        if new_dist < min_dist:
+            min_dist = new_dist
+            min_dist_index = i
     return combinations[min_dist_index], min_dist #returns cover (in indices) and length of the cover
 
 def mk_entity_to_keyphrases(entities, reference_keyphrases, category_kps, link_anchors_of_entity, title_of_ent_linking_to_ent):
