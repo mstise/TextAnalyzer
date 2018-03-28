@@ -195,14 +195,14 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         if 'paradise' in entity:
             print('KP_WORDS_TEST1: *' + entity + '*' + str(kp_words))
         indices = []
+        if len(kp_words) > 10:
+            kp_words = list(kp_words[:10])
         if 'paradise' in entity:
             for i in range(len(kp_words) - 1, 0, -1):
                 word = kp_words[i]
                 #print('CHECK FOR REMOVE: ' + word)
                 if word == '' or word == 'er' or word == 'med' or word == 'det' or word == 'til' or word == 'en':
                     kp_words.remove(word)
-        if len(kp_words) > 10:
-            kp_words = list(kp_words[:10])
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))
