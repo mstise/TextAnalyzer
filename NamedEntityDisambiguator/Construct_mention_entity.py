@@ -148,9 +148,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     start = time.time()
     simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
     simscore_time = time.time() - start
-
+    print('ROUND 1: ' + str(simscore_time))
     populate_sim_score(removed_priors, simscore_dic)
-
+    print('ROUND 2: ' + str(simscore_time))
     #reference_keyphrases.close()
     #title_of_ent_linking_to_ent.close()
     #link_anchors_of_ent.close()
