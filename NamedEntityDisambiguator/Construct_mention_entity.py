@@ -166,8 +166,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         mention_entities_sim[prior[0]] = {}
         overall_score = 0
         for entities_comma_props in prior[1]:
-            print('POSSIBLE ERROR: ' + entities_comma_props[0])
-            overall_score += simscore_dic[entities_comma_props[0]]
+            if entities_comma_props[0] in simscore_dic:
+                overall_score += simscore_dic[entities_comma_props[0]]
         for entities_comma_props in prior[1]:
             if overall_score == 0:
                 mention_entities_sim[prior[0]][entities_comma_props[0]] = 1
