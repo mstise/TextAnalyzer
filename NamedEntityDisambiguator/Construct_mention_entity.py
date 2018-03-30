@@ -16,23 +16,21 @@ def column(matrix, i):
 def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, threshold=0.8):
     import NamedEntityDisambiguator.keyphrase_based_similarity as kpfuncs
     for i in range(0, len(priors)):
-        try:
-            candidates = [candidate[0] for candidate in priors[i][1]]
-            grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(candidates, reference_keyphrases, category_kps,
-                                                                     link_anchors_of_ent, title_of_ent_linking_to_ent)
-            for entity in candidates:
-                grouped_entity_kps = grouped_keyphrases_dic[entity]
-                foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
-                foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
-                #print(str(priors[i]))
-                if len(foreign_grouped_keyphrases[entity]) > 4000 and priors[i][1][-1][1] < threshold:
-                    print('WE DID SOMETHING: ' + priors[i][0])
-                    priors[i] = [priors[i][0], []]
-                    break
-        except:
-            print('***********************')
-            print(str(title_of_ent_linking_to_ent))
-            print('***********************')
+        print('***********************')
+        print(str(title_of_ent_linking_to_ent))
+        print('***********************')
+        candidates = [candidate[0] for candidate in priors[i][1]]
+        grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(candidates, reference_keyphrases, category_kps,
+                                                                 link_anchors_of_ent, title_of_ent_linking_to_ent)
+        for entity in candidates:
+            grouped_entity_kps = grouped_keyphrases_dic[entity]
+            foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
+            foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
+            #print(str(priors[i]))
+            if len(foreign_grouped_keyphrases[entity]) > 4000 and priors[i][1][-1][1] < threshold:
+                print('WE DID SOMETHING: ' + priors[i][0])
+                priors[i] = [priors[i][0], []]
+                break
 
 def remove_large_priors(priors, entities, candidate_dic, prior_threshold=0.8):
     removed = []
