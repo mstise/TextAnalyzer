@@ -16,13 +16,12 @@ def column(matrix, i):
 def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, threshold=0.8):
     import NamedEntityDisambiguator.keyphrase_based_similarity as kpfuncs
     for i in range(0, len(priors)):
-        print('***********************')
-        print(str(title_of_ent_linking_to_ent))
-        print('***********************')
         candidates = [candidate[0] for candidate in priors[i][1]]
         grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(candidates, reference_keyphrases, category_kps,
                                                                  link_anchors_of_ent, title_of_ent_linking_to_ent)
         for entity in candidates:
+            if entity not in grouped_keyphrases_dic or entity not in title_of_ent_linking_to_ent:
+                continue
             grouped_entity_kps = grouped_keyphrases_dic[entity]
             foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
             foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
