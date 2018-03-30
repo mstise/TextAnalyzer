@@ -110,7 +110,7 @@ def main():
     num_files = len(os.listdir(paths.get_external_procesed_news()))
     counter = 0
     for filename in os.listdir(paths.get_external_procesed_news()):
-        if counter < 19764:
+        if counter < 31728:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
