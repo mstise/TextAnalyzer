@@ -13,6 +13,23 @@ import time
 def column(matrix, i):
     return [row[i] for row in matrix]
 
+def remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent, threshold=0.8):
+    import NamedEntityDisambiguator.keyphrase_based_similarity as kpfuncs
+    for i in range(0, len(priors)):
+        candidates = [candidate[0] for candidate in priors[i][1]]
+        grouped_keyphrases_dic = kpfuncs.mk_entity_to_keyphrases(candidates, reference_keyphrases, category_kps,
+                                                                 link_anchors_of_ent, title_of_ent_linking_to_ent)
+        for entity in candidates:
+            if entity not in grouped_keyphrases_dic or entity not in title_of_ent_linking_to_ent:
+                continue
+            grouped_entity_kps = grouped_keyphrases_dic[entity]
+            foreign_grouped_keyphrases = kpfuncs.mk_unique_foreign_entity_to_keyphrases(title_of_ent_linking_to_ent[entity],                                                                      link_anchors_of_ent)
+            foreign_grouped_keyphrases[entity] = kpfuncs.SortedList(grouped_entity_kps)
+            #print(str(priors[i]))
+            if len(foreign_grouped_keyphrases[entity]) > 4000 and priors[i][1][-1][1] < threshold:
+                print('WE DID SOMETHING: ' + priors[i][0])
+                priors[i] = [priors[i][0], []]
+                break
 
 def remove_large_priors(priors, entities, candidate_dic, prior_threshold=0.8):
     removed = []
@@ -47,18 +64,28 @@ def remove_s_modification(priors, prior_dict):
     try_without_s_list_id = []
     for i in range(0, len(priors)):
         if check_for_ending_s(priors[i][0], priors[i][1]):
-            try_without_s_list.append(priors[i][0])
+            try_without_s_list.append(str(priors[i][0][:-1]))
             try_without_s_list_id.append(i)
     new_priors = popularityPrior(try_without_s_list, prior_dict)
     for i in range(0, len(new_priors)):
         new_priors[i][0] = priors[try_without_s_list_id[i]][0]
         priors[try_without_s_list_id[i]] = new_priors[i]
 
-def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, alpha=0.45, beta=0.45, gamma=0.1):
+def modify_based_on_languages(priors):
+    with open('NamedEntityDisambiguator/languages') as f:
+        content = f.readlines()
+    language_list = [x.strip().lower() for x in content]
+    for prior in priors:
+        if prior[0].lower() in language_list:
+            prior[1] = [[prior[1][-1][0], 1.0]]
+
+def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps, alpha=0.45, beta=0.45, gamma=0.1):
     start = time.time()
     priors = popularityPrior(recognized_mentions, prior_dict)
     remove_s_modification(priors, prior_dict)
-    print("prior-before: " + str(priors))
+    modify_based_on_languages(priors)
+    remove_if_keyphrase_set_too_large(priors, reference_keyphrases, category_kps, link_anchors_of_ent, title_of_ent_linking_to_ent)
+    #print("prior-before: " + str(priors))
     priors_wo_mentions = [prior[1] for prior in priors]
     entities = []
     #entity_candidates_lst = []
@@ -102,6 +129,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         print("ENTITY: " + str(prior[0]) + " has " + str(len(prior[1])) + ": " + str(prior[1]))
     print("priors end*********************************************************************************priors end")
 
+    prior_time = end - start
+
     entity_node_dict = {}
     G = nx.Graph()
 
@@ -110,17 +139,22 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     entities_for_sim_score = []
     for ent in entities:
         entities_for_sim_score.append(ent)
+
     removed_priors = remove_large_priors(priors, entities_for_sim_score, candidates_dic)
+
+    print('SIMSCORE DIC: ' + str(candidates_dic))
+    print('ENTITIES FOR SIMSCORE DIC: ' + str(entities_for_sim_score))
 
     #reference_keyphrases = shelve.open(reference_keyphrases)
     #title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     #link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     # alle mentions til den samme entity candidate har samme sim_score (derfor der kun er entity-keys i dic)
-
-    simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent)
-
+    start = time.time()
+    simscore_dic = keyphrase_similarity(entities_for_sim_score, candidates_dic, [word for line in open(document, 'r') for word in util.split_and_delete_special_characters(line)], reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps)
+    simscore_time = time.time() - start
+    print('ROUND 1: ' + str(simscore_dic))
     populate_sim_score(removed_priors, simscore_dic)
-
+    print('ROUND 2: ' + str(simscore_dic))
     #reference_keyphrases.close()
     #title_of_ent_linking_to_ent.close()
     #link_anchors_of_ent.close()
@@ -132,7 +166,8 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
         mention_entities_sim[prior[0]] = {}
         overall_score = 0
         for entities_comma_props in prior[1]:
-            overall_score += simscore_dic[entities_comma_props[0]]
+            if entities_comma_props[0] in simscore_dic:
+                overall_score += simscore_dic[entities_comma_props[0]]
         for entities_comma_props in prior[1]:
             if overall_score == 0:
                 mention_entities_sim[prior[0]][entities_comma_props[0]] = 1
@@ -160,7 +195,9 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
     #kp_sim_score = keyphrase_similarity(root, )
     print("Beginning on ent_ent_coh")
     #ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
+    start = time.time()
     ent_ent_coh_triples = entity_entity_coherence(entities, ent_ent_coh_dict)
+    ent_ent_coh_time = time.time() - start
     #ent_ent_coh_dict.close()
     node_nr_triples = [(entity_node_dict[entity1], entity_node_dict[entity2], gamma * coherence) for entity1, entity2, coherence in ent_ent_coh_triples]
     G.add_weighted_edges_from(node_nr_triples)
@@ -171,7 +208,7 @@ def construct_ME_graph(document, recognized_mentions, root, reference_keyphrases
 
     #nx.write_gml(G, "/home/duper/Desktop")
     #nx.read_gml("/home/duper/Desktop")
-    return G
+    return G, simscore_time, ent_ent_coh_time, prior_time
 #import time
 #start = time.time()
 

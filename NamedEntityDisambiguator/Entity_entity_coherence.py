@@ -83,6 +83,7 @@ def create_entity_entity_dict(root):
 def entity_entity_coherence(entities, reference_dict):
     entity_entity_coherences = []
     print("ent_ent_coh, first phase done")
+    print("Length of combinations: " + str(len(list(itertools.combinations(entities, 2)))))
     for two_combination in itertools.combinations(entities, 2):
         entity_links1 = reference_dict.get(two_combination[0], -1)
         entity_links2 = reference_dict.get(two_combination[1], -1)
@@ -91,10 +92,10 @@ def entity_entity_coherence(entities, reference_dict):
         shared_links = entity_links1 & entity_links2 #& er intersection operator
         if len(shared_links) == 0:
             continue
-        nominator = math.log(max(len(entity_links1), len(entity_links2))) - math.log(len(shared_links)) #Logs here are with root: e
         denominator = math.log(NUM_WIKI_ARTICLES) - math.log(min(len(entity_links1), len(entity_links2))) #Logs here are with root: e
         if denominator == 0:
             continue
+        nominator = math.log(max(len(entity_links1), len(entity_links2))) - math.log(len(shared_links)) #Logs here are with root: e
         mw_coh = 1 - (nominator / denominator)
         if mw_coh > 0:
             entity_entity_coherences.append((two_combination[0], two_combination[1], mw_coh))

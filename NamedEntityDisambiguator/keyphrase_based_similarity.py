@@ -28,6 +28,7 @@ def threaded_func(q, set_of_candidates, reference_keyphrases, category_kps, link
         print("End simscore creation: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(entity_candidates))
     q.put(simscore)
 
+
 def split_list(lst, parts=1):
     length = len(lst)
     return [lst[i * length // parts: (i + 1) * length // parts]
@@ -37,7 +38,6 @@ def split_list(lst, parts=1):
 def min_distance_indices(indices):
     # makes the following combinations: (ex) [[1,2,3],[4,5,6],[7,8,9,10]] -> [[1,4,7],[1,4,8],...,[3,6,10]]
     combinations = list(product(*indices)) #*indicies unpacks the list to positional arguments in the function
-
     sorted_combinations = [sorted(x) for x in combinations]
     min_dist = sys.maxsize
     for i in range(0, len(sorted_combinations)):
@@ -98,14 +98,10 @@ def npmi(word, entities, mixed_grouped_keyphrases, grouped_keyphrases_dic, npmi_
 
 
 #Makes keyphrase-based similarity between alle mentions and entity candidates in ONE document (entities = All candidates from the given document)
-def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent):
+def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, category_kps):
     # print("words_of_doc: " + str(words_of_document))
     # mem_observor = psutil.Process(os.getpid())
     # print("starting-similarity at mem: " + str(mem_observor.memory_full_info().vms / 1024 / 1024 / 1024))
-    start = time.time()
-    category_kps = category_words(entities)
-    end = time.time()
-    print("categories time: " + str(end - start))
     simscore_dic = {}
     # print("word of document: " + str(words_of_document))
     start = time.time()
@@ -130,7 +126,6 @@ def keyphrase_similarity(entities, candidates_dic, words_of_document, reference_
         thread_item = q.get()
         for key in thread_item.keys():
             simscore_dic[key] = thread_item[key]
-
     end = time.time()
     print("keyphrase_similarity" + str(end - start))
     return simscore_dic
@@ -193,6 +188,15 @@ def get_simscore(entity, entity_candidates, grouped_keyphrases_dic, link_anchors
         indices = []
         if len(kp_words) > 10:
             kp_words = list(kp_words[:10])
+        stop_words_strings = open('NamedEntityDisambiguator/StopList')
+        stop_words = []
+        for line in stop_words_strings:
+            stop_words.append(line.split()[0])
+        for i in range(len(kp_words) - 1, 0, -1):
+            word = kp_words[i]
+            if word in stop_words:
+                kp_words.remove(word)
+
         kp_words = [word for word in kp_words if word not in npmi_speedup_dict_den.keys()]
 
         maximum_words_in_doc = list(set(kp_words).intersection(words_of_document))

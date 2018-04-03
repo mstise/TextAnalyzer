@@ -89,6 +89,7 @@ def main():
     mp.set_start_method('fork')
     print("Usable CPUs: " + str(len(os.sched_getaffinity(0))))
     start = time.time()
+    start_time = datetime.now()
 
     tree = etree.parse(paths.get_wikipedia_article_path())
     root = tree.getroot()
@@ -96,15 +97,20 @@ def main():
     reference_keyphrases, title_of_ent_linking_to_ent, ent_ent_coh_dict, link_anchors_of_ent = keyphrase_sim_speedup(root)
 
     prior_dict = shelve.open("NamedEntityDisambiguator/dbs/prior_dic")
+    category_kps = shelve.open("NamedEntityDisambiguator/dbs/category_dic")
     reference_keyphrases = shelve.open(reference_keyphrases)
     title_of_ent_linking_to_ent = shelve.open(title_of_ent_linking_to_ent)
     link_anchors_of_ent = shelve.open(link_anchors_of_ent)
     ent_ent_coh_dict = shelve.open(ent_ent_coh_dict)
 
-    num_files = len(os.listdir(paths.get_all_external_entities_path()))
+    timer_ent_ent_coh = 0
+    timer_simscore = 0
+    timer_prior = 0
+
+    num_files = len(os.listdir(paths.get_external_procesed_news()))
     counter = 0
-    for filename in os.listdir(paths.get_all_external_entities_path()):
-        if counter < 0:
+    for filename in os.listdir(paths.get_external_procesed_news()):
+        if counter < 46066:
             counter += 1
             continue
         print("Beginning file " + str(counter) + " out of " + str(num_files))
@@ -112,10 +118,20 @@ def main():
         recognized_mentions = retrieve_ner_single_document(paths.all_external_entities + "/" + filename)
         recognized_mentions = convert_danish_letters_list(recognized_mentions)
 
-        G = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict)
+        G, simscore_time, ent_ent_coh_time, prior_time = construct_ME_graph(paths.get_external_procesed_news() + "/" + filename, recognized_mentions, root, reference_keyphrases, title_of_ent_linking_to_ent, link_anchors_of_ent, ent_ent_coh_dict, prior_dict, category_kps)
         print("Graph constructed at: " + str(datetime.now()))
         men_ent_list = graph_disambiguation_algorithm(copy.deepcopy(G))
         print("Graph algorithm completed at:" + str(datetime.now()))
+        print('**********TIMES***************')
+        print('START TIME: ' + str(start_time))
+        timer_simscore += simscore_time
+        print('SIMSCORE_TIME in minutes: ' + str(timer_simscore / 60))
+        timer_ent_ent_coh += ent_ent_coh_time
+        print('ENT_ENT_COH_TIME in minutes: ' + str(timer_ent_ent_coh / 60))
+        timer_prior += prior_time
+        print('PRIOR_TIME in minutes: ' + str(timer_prior / 60))
+        print('CURRENT TIME: ' + str(str(datetime.now())))
+        print('******************************')
 
         print("These are the disambiguations: ")
         with open(paths.get_external_disambiguated_outputs() + '/' + filename, 'w') as f:
@@ -130,8 +146,8 @@ def main():
                 print(mention + ", [u\'" + matching_entity + "\']")
         counter += 1
 
-    accuracy = ned_evaluator(paths.get_external_disambiguated_outputs(), paths.get_external_annotated())
-    print("NED accuracy is: " + str(accuracy))
+    #accuracy = ned_evaluator(paths.get_external_disambiguated_outputs(), paths.get_external_annotated())
+    #print("NED accuracy is: " + str(accuracy))
 
 
 

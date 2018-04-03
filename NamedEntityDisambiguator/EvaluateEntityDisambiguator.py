@@ -25,7 +25,7 @@ def ned_evaluator(disambiguated_path=paths.get_external_disambiguated_outputs(),
     correct = 0
     incorrect = 0
     for filename in os.listdir(annotated_path):
-        recognized_mentions = correctly_recognized_lists(filename, entity_path=paths.get_all_external_entities_path() + '2', remove=remove)
+        recognized_mentions = correctly_recognized_lists(filename, entity_path=paths.get_all_external_entities_path(), remove=remove)
         new_rec_men = []
         for men in recognized_mentions:
             if men[1][-1:] == '/':
