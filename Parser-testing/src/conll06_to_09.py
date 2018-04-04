@@ -23,7 +23,7 @@ for line in codecs.open(args.input, encoding='utf-8'):
         row[10] = deprel
         row[11] = deprel
 
-        print "\t".join(row).encode('utf-8')
+        print("\t".join(row).encode('utf-8'))
 
     else:
-        print ""
+        print("")
