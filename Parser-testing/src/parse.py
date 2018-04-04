@@ -56,7 +56,7 @@ def parse_sentences(tagged_sentences, model):
         # Writing input file
         for sent_i, tagged_tokens in enumerate(tagged_sentences):
             if sent_i > 0:
-                print(>>parser_in_utf8, "")
+                print >>parser_in_utf8, ""
             for token_i, (token, tag) in enumerate(tagged_tokens, 1):
                 # 0:ID 1:FORM 2:LEMMA 3:PLEMMA 4:POS 5:PPOS 6:FEAT 7:PFEAT 8:HEAD 9:PHEAD 10:DEPREL
                 # 11:PDEPREL 12:FILLPRED 13:PRED 14:APREDs
@@ -64,7 +64,7 @@ def parse_sentences(tagged_sentences, model):
                 conll_columns[0] = unicode(token_i)
                 conll_columns[1] = token
                 conll_columns[5] = tag
-                print(>>parser_in_utf8, u"\t".join(conll_columns))
+                print >>parser_in_utf8, u"\t".join(conll_columns)
 
     # Calling parser
     logging.info("Parsing {}".format(parser_in_file.name))
@@ -146,7 +146,7 @@ with codecs.open(args.out_file, 'w', encoding='utf-8') as out:
 
         if last_doc_id != doc_id:
             if last_doc_id is not None:
-                print(>>out, json.dumps(dict(current_doc)))
+                print >>out, json.dumps(dict(current_doc))
             last_doc_id = doc_id
             current_doc = defaultdict(list)
             current_doc[args.id_field] = doc_id
@@ -155,4 +155,4 @@ with codecs.open(args.out_file, 'w', encoding='utf-8') as out:
         current_doc[parsed_field].append(sent)
 
     if len(current_doc):
-        print(>>out, json.dumps(dict(doc)))
+        print >>out, json.dumps(dict(doc))

@@ -24,12 +24,12 @@ def clean_token(token):
     token = token.lower()
     return escape(token)
 
-print(u"""<?xml version="1.0" encoding="UTF-8"?>
-<dictionary case_sensitive="false">""")
+print u"""<?xml version="1.0" encoding="UTF-8"?>
+<dictionary case_sensitive="false">"""
 
 for form, tags in ambiguity_map.items():
-    print(u"""
+    print u"""
     <entry tags="{tags}">
         <token>{token}</token>
-    </entry>""".format(token=clean_token(form), tags=" ".join(tags)))
-print(u"</dictionary>")
+    </entry>""".format(token=clean_token(form), tags=" ".join(tags))
+print u"</dictionary>"

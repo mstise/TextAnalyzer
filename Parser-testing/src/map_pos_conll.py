@@ -23,7 +23,7 @@ for line in codecs.open(args.input, encoding='utf-8'):
         parts[3] = new_pos
         parts[4] = new_pos
 
-        print("\t".join(parts).encode('utf-8'))
+        print "\t".join(parts).encode('utf-8')
 
     else:
-        print('')
+        print ''

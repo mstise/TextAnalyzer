@@ -43,5 +43,5 @@ reader = SentenceReader(args.infile)
 for sentence in reader.sentences():
     for i, t in enumerate(sentence.tokens, 1):
         l = "\t".join([str(i), t.form, t.lemma, t.POS, t.FULLPOS, "_", t.head, t.label, "_", "_"])
-        print(l)
-    print()
+        print l
+    print

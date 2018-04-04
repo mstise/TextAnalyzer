@@ -14,8 +14,8 @@ for line in codecs.open(args.input, encoding='utf-8'):
         parts = line.split("\t")
         tokens.append(u"{}_{}".format(parts[1].lower(), parts[4]))
     else:
-        print(" ".join(tokens).encode('utf-8'))
+        print " ".join(tokens).encode('utf-8')
         tokens = []
 
 if tokens:
-    print(" ".join(tokens).encode('utf-8'))
+    print " ".join(tokens).encode('utf-8')
