@@ -30,6 +30,11 @@ def do_pre_processing(partitioned_docs, threshold=0.15):
         incl = []
         excl = []
 
+        if len(partition) == 1:
+            partitioned_docs_included.append([])
+            partitioned_docs_excluded.append(partition)
+            continue
+
         matr = create_matrix_for_similarity(partition, dict)
         similarity = cosine_similarity(matr)
         for row in range(len(similarity)):
