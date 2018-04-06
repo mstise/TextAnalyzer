@@ -8,7 +8,6 @@ def create_matrix_for_similarity(partition, dict):
     for docidx in range(len(partition)):
         matrix.append(dict[partition[docidx]].toarray()[0])
     temp = np.array(matrix)
-
     return sparse.csr_matrix(temp)
 
 # Input: List of lists containing document names and optionally a threshold for the cosine similarity scores
