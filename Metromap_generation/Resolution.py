@@ -34,4 +34,4 @@ def compare_dates(file_date, cluster_date, resolution):
             return True
     return False
 
-resolutionize('Example_documents')
+#resolutionize('Example_documents')
