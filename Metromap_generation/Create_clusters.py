@@ -8,15 +8,16 @@ import scipy.sparse as sp
 import numpy as np
 random.seed(10)
 np.random.seed(10)
-import nimfa
-from sklearn.feature_extraction.text import TfidfVectorizer
+from Metromap_generation.Doc_representation_gen import get_doc_representation
 from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
 import math
-from Clustering.Utils import init_matrix, factorize
+from Metromap_generation.Utils import init_matrix, save_sparse_csr, load_sparse_csr
 from scipy.stats import bernoulli
-from Clustering.Resolution import resolutionize
+from Metromap_generation.Resolution import resolutionize
+from Metromap_generation.CosinePreProc import do_pre_processing
 import paths
+from Metromap_generation.nmf import Nmf
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -31,7 +32,7 @@ load_W = False          #False: Cluster words by gradient descent               
                                     #                              #                                                               #
                                     ################################                                                               #
                                                                                                                                    #
-cluster_size = 5 #How many clusters?                                                                                               #
+cluster_size = 3 #How many clusters?                                                                                               #
 group_size = 3 #how many timelines?                                                                                                #
 resetter = 0.001  #Resets to this value, if update is below it.                                                                    #
 #resetter can take the following values:                                                                                           #
@@ -41,6 +42,7 @@ resetter = 0.001  #Resets to this value, if update is below it.                 
 paper_epsilon = False #If false the epsilon is used directly as threshold for clustering, with resetter-value                      #
 paper_noisify = False #Introduce noise in graph according to paper. This slows down the approach considerably (for litte dataset atleast)
 resolution='month'
+incl_ents=True #includ d_entities in tf-idf scheme
 
 
 
@@ -49,7 +51,8 @@ resolution='month'
 
 
 def run():
-    clustered_docs = resolutionize('new_examples', resolution=resolution)
+    partitioned_docs = resolutionize('new_examples', resolution=resolution)#new_examples Example_documents
+    pdocs_incl, pdocs_excl = do_pre_processing(partitioned_docs)
     if load_adj:
         efile = open('dbs/epsilons', 'r')
     else:
@@ -57,7 +60,10 @@ def run():
     term2clusters = shelve.open("dbs/term2clusters")
     clusters2term = shelve.open("dbs/clusters2term")
     clustercount = 0
-    for i in range(0, len(clustered_docs)):
+    for i in range(0, len(pdocs_incl)):
+        if len(pdocs_incl[i]) == 0:
+            print('iteration ' + str(i) + ' is skipped')
+            continue
         epsilon = None
         if load_adj:
             V = load_sparse_csr('dbs/V.npz' + str(i)).tolil()
@@ -66,25 +72,58 @@ def run():
         else:
             term2idx = shelve.open("dbs/term2idx" + str(i))
             idx2term = shelve.open("dbs/idx2term" + str(i))
-            V, term2idx, idx2term, epsilon = create_dicts(clustered_docs[i], term2idx, idx2term)
+            V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term)
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
             efile.write(str(epsilon) + '\n')
         if load_W:
             W = load_sparse_csr('dbs/W.npz' + str(i)).tolil()
         else:
-            W = init_matrix((list(V.shape)[0], cluster_size), resetter)
-            W, _ = factorize(V, cluster_size, resetter, W=W)
+            W = create_clusters(V, len(pdocs_incl[i]))
             save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
         fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount)
         clustercount += cluster_size
         term2idx.close()
         idx2term.close()
+        if i == 2:
+            print(pdocs_incl[i])
+            break
+
 
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
     term2clusters.close()
     clusters2term.close()
+
+#This also evaluate cluster size
+def create_clusters(V, num_docs):
+    possible_sizes = list(range(1, num_docs + 2))
+    if len(possible_sizes) == 2:
+        W, _ = spectrum_nmf(V, 0, 0, possible_sizes)
+        return W
+    lower_idx = 0
+    upper_idx = len(possible_sizes) - 1
+    middle_idx = math.floor((len(possible_sizes) - 1) / 2)
+    while (upper_idx - lower_idx) > 1: #Continue until only 2 cluster_sizes left and then choose lowest
+        W_lower, curr_obj_lower = spectrum_nmf(V, lower_idx, middle_idx, possible_sizes)
+        W_upper, curr_obj_upper = spectrum_nmf(V, middle_idx + 1, upper_idx, possible_sizes)
+        if curr_obj_lower < curr_obj_upper:
+            upper_idx = middle_idx
+            middle_idx = math.floor(len(possible_sizes[lower_idx : middle_idx]) / 2)
+            W = W_lower
+        else:
+            lower_idx = middle_idx + 1
+            middle_idx = lower_idx + math.floor(len(possible_sizes[middle_idx + 1: upper_idx]) / 2)
+            W = W_upper
+    return W
+
+def spectrum_nmf(V, lower_idx, upper_idx, possible_sizes):
+    tmp_sizes = list(possible_sizes[lower_idx : upper_idx + 1])
+    idx = math.floor((len(tmp_sizes) - 1) / 2)
+    cluster_size = tmp_sizes[idx]
+    W = init_matrix((list(V.shape)[0], cluster_size), resetter)
+    W, _, obj = factorize(V, cluster_size, resetter, W=W)
+    return W, obj
 
 def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount):
     w_arr = W.toarray()
@@ -110,26 +149,57 @@ def limit(epsilon):
 
 def create_dicts(filenames, term2idx, idx2term):
     print("Creating dicts")
+
+    #doc2terms = get_top50_tfidf(document_path='/home/duper/Documents/NewsClustering/TextAnalyzer/Clustering/Example_documents') #skal have full path apparantly
+    if load_tf_idf:
+        doc2terms = shelve.open("dbs/doc2terms")
+    else:
+        doc2terms = get_doc_representation(
+            document_path='Processed_news', incl_ents=incl_ents) #Processed_news Example_documents
+    print('1')
+    term2docidx = idx_terms(filenames, doc2terms, idx2term, term2idx) #idx2term and term2idx also gets filled
+    print('2')
+    V = create_adj(filenames, term2docidx, term2idx)
+    print('3')
+
+    if paper_noisify:
+        V, epsilon = add_random_edges(V)
+    if not paper_epsilon:
+        epsilon = resetter
+    return V.tolil(), term2idx, idx2term, epsilon #V in CSR format has faster arithmetic and matrix vector operations
+
+
+def create_adj(filenames, term2docidx, term2idx):
+    num_unique_terms = len(term2docidx.keys())
+    V = sp.lil_matrix((num_unique_terms, num_unique_terms))  # This is the adjacency matrix to factorize
+    tempterm2docidx = {k: v for k, v in term2docidx.items() if len(v) > 1}
+    unique_terms = tempterm2docidx.keys()  # Use only terms which is referenced in at least 2 documents without any loss in result! (speeds the method up)
+    debug_counter = 0
+    for (term1, term2) in itertools.combinations(unique_terms,
+                                                 2):  # term1 ='dog', term2='dog' does not happen on purpose!
+        shared_docs = set(term2docidx[term1]).intersection(term2docidx[term2])
+        if len(shared_docs) < float(len(filenames)) * 0.05 or len(
+                shared_docs) < 2:  # Hvis vægt er mindre end max mulige vægt, er co-occurence for lav til at vi laver en edge imellem knuderne
+            continue
+        V[term2idx[term1], term2idx[term2]] = len(shared_docs)
+        V[term2idx[term2], term2idx[term1]] = len(shared_docs)
+        debug_counter += 1
+        print('shared: ' + term1 + ', ' + term2 + ' in ' + str(len(shared_docs)) + ' docs')
+    return V
+
+
+def idx_terms(filenames, doc2terms, idx2term, term2idx):
     term2docidx = {}
     doc2docidx = {}
     term_idx = 0
     doc_idx = 0
-
-
-    #doc2terms = get_top50_tfidf(document_path='/home/duper/Documents/NewsClustering/TextAnalyzer/Clustering/Example_documents') #skal have full path apparantly
-    if load_tf_idf:
-        doc2terms = shelve.open("dbs/doc2term")
-    else:
-        doc2terms = get_top50_tfidf(
-            document_path=paths.get_external_procesed_news())
-    print('1')
     for filename in filenames:
         if doc_idx % 1000 == 0:
             print(doc_idx)
         doc2docidx[filename] = term_idx
         for term in doc2terms[filename]:
-            if term == 'a1':
-                break
+            if term[0] == 'a' and str(term[1]).isdigit():
+                continue
             term = term_preprocess(term)
             if term == '':
                 continue
@@ -145,27 +215,8 @@ def create_dicts(filenames, term2idx, idx2term):
                 idx2term[str(term_idx)] = term
                 term_idx += 1
         doc_idx += 1
-    print('2')
-    num_unique_terms = len(term2docidx.keys())
-    V = sp.lil_matrix((num_unique_terms, num_unique_terms)) #This is the adjacency matrix to factorize
-    tempterm2docidx = {k: v for k, v in term2docidx.items() if len(v) > 1}
-    unique_terms = tempterm2docidx.keys() #Use only terms which is referenced in at least 2 documents without any loss in result! (speeds the method up)
-    debug_counter = 0
-    for (term1, term2) in itertools.combinations(unique_terms, 2): #term1 ='dog', term2='dog' does not happen on purpose!
-        shared_docs = set(term2docidx[term1]).intersection(term2docidx[term2])
-        if len(shared_docs) < float(doc_idx) * 0.05 or len(shared_docs) < 2: #Hvis vægt er mindre end max mulige vægt, er co-occurence for lav til at vi laver en edge imellem knuderne
-            continue
-        V[term2idx[term1], term2idx[term2]] = len(shared_docs)
-        V[term2idx[term2], term2idx[term1]] = len(shared_docs)
-        debug_counter += 1
-        print('shared: ' + term1 + ', ' + term2 + ' in ' + str(len(shared_docs)) + ' docs')
-    print('3')
+    return term2docidx
 
-    if paper_noisify:
-        V, epsilon = add_random_edges(V)
-    if not paper_epsilon:
-        epsilon = resetter
-    return V.tolil(), term2idx, idx2term, epsilon #V in CSR format has faster arithmetic and matrix vector operations
 
 def add_random_edges(V):
     #add to V random epsilon value which is 2|E|/|V|(|V|−1)
@@ -177,24 +228,6 @@ def add_random_edges(V):
     one_matrix = sp.random(V.shape[0], V.shape[0], density=epsilon, format='lil', data_rvs=rvs)
     V = V + one_matrix
     return V, epsilon
-
-def get_top50_tfidf(document_path):
-    vectorizer = TfidfVectorizer(input='filename', stop_words=create_stop_words(5000), token_pattern=r"(?u)\b[a-zA-ZøØæÆåÅ]\w+\b")#, max_features=50)
-    full_filenames = [os.path.join(document_path, each) for each in os.listdir(document_path)]
-    tfidf_result = vectorizer.fit_transform(full_filenames)
-    feature_terms = vectorizer.get_feature_names()
-    doc2term = shelve.open("dbs/doc2term")
-    for i in range(0, len(full_filenames)):
-        if i % 100 == 0:
-            print(i)
-        scores = zip(feature_terms,
-                     tfidf_result[i,:].toarray()[0])
-        sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
-        filename = full_filenames[i].split('/')[-1]
-        sorted_terms = list(zip(*(sorted_scores[:50])))[0]
-        doc2term[filename] = sorted_terms
-    return doc2term
-
 
 
 def term_preprocess(term):
@@ -219,32 +252,17 @@ def plot(W, idx2term):
         plb.title("Top10 terms in basisvector " + str(basisvector_idx))
         plb.savefig("Visual_output/documents_basisW%d.png" % (basisvector_idx), bbox_inches="tight")
 
-
-def create_stop_words(limit = 150):
-    stop_words = []
-    counter = 0
-    with open('5000_common_terms') as f:
-        for line in f:
-            if counter == limit:
-                break
-            splits = line.split()
-            stop_words.append(splits[0])
-            counter += 1
-    return stop_words
-
-def save_sparse_csr(filename, array):
-    np.savez(filename, data=array.data, indices=array.indices,
-             indptr=array.indptr, shape=array.shape)
-
-def load_sparse_csr(filename):
-    loader = np.load(filename)
-    return csr_matrix((loader['data'], loader['indices'], loader['indptr']),
-                      shape=loader['shape'])
-
 additional_stop_words = [
     ".", " ", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
     "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",
     "bliver", "ligger", "siger", "mange", "får", "siden"]
+
+def factorize(V, rank, resetter, W=None, H=None, update="log_update", objective="log_obj"):
+    #Do this: V = V.tocsr(), before nmf, if update is eucledian or divergence... makes it faster
+    nmf_inst = Nmf(V, rank, max_iter=2, W=W, H=H, update=update,
+                    objective=objective, resetter=resetter)
+    basis, coef, obj = nmf_inst.factorize()
+    return basis, coef, obj
 
 
 if __name__ == "__main__":

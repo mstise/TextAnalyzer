@@ -1,0 +1,27 @@
+OW Bunker, Dynamic Oil Trading, DOC, Lars Møller, konkurs
+
+Headhunt, faglært, fagfolk, elektriker, vikarer
+
+Intelligent Marking, robot, bane, USA, Hjørring
+
+
+grep -r -e 'OW Bunker' (tag de 3):
+00_02_1-_sektion_fre_s002_01_erhverv__1407_201707140000_1007884114.txt:Dynamic Oil Trading.
+00_02_1-_sektion_fre_s002_01_erhverv__1407_201707140000_1007884112.txt:Direktør tiltalt .
+01_01_vendsyssel_fre_s001_11_forside__1407_201707140000_1007883091.txt:Efterforskning fortsætter i OW-sag.
+
+grep -r -e 'Intelligent Marking'(tag de 2)
+00_02_1-_sektion_søn_s002_01_erhverv__2307_201707230000_1007922579.txt:Kridter skoene .
+00_02_1-_sektion_søn_s002_01_erhverv__2307_201707230000_1007922561.txt:Fart på robotten.
+
+00_08_aalborg_tir_s008_02_lokal____2507_201707250000_1007725403.txt:Flere børn i Aalborgs skoler.
+01_10_himmerland_tor_s010_13_lokal____2007_201707200000_1007912770.txt:Forældre kræver handling straks.
+00_09_aalborg_tir_s009_02_lokal____2507_201707250000_1007725405.txt:SKOLEPROGNOSE.
+
+00_01_aalborg_tor_s001_02_forside__2007_201707200000_1007918185.txt:Samspil giver gode resultater.	
+09_04_thisted_dagblad_tor_s004_94_nordjyll_2007_201707200000_noid1620170719225603068.txt:AAU sætter markant præg på mange    virksomheder.
+09_05_thisted_dagblad_tor_s005_94_nordjyll_2007_201707200000_noid1620170719225603084.txt: NORDJYLLAND: Hver gang, Aalborg Universitet bruger en milliard kroner på forskning, kaster det omkring 420 forskningsaftaler med virksomheder af sig.
+
+00_05_aalborg_søn_s005_02_nordjyll_1607_201707160000_1007877788.txt:Problematisk hus er fortsat ikke færdigt. 
+00_06_aalborg_søn_s006_02_nordjyll_2307_201707230000_1007912526.txt:Store byggerier er på vej på   Aalborg Universitet.
+

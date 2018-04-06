@@ -16,7 +16,7 @@ def create_matrix_for_similarity(partition, dict):
 def do_pre_processing(partitioned_docs, threshold=0.15):
     partitioned_docs_included = []
     partitioned_docs_excluded = []
-    dict = shelve.open("/home/michael/PreProcessing/doc2features/doc2features")
+    dict = shelve.open("dbs/doc2features")
 
     # Remove noid documents before starting the similarity comparison
     for partition in partitioned_docs:
