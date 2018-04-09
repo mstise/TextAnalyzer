@@ -79,7 +79,7 @@ def run():
             W = load_sparse_csr('dbs/W.npz' + str(i)).tolil()
         else:
             #W = create_clusters(V, len(pdocs_incl[i]))
-            W = init_matrix((list(V.shape)[0], clustesr_size), resetter)
+            W = init_matrix((list(V.shape)[0], cluster_size), resetter)
             W, _, obj = factorize(V, cluster_size, resetter, W=W)
             save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
