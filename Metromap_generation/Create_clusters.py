@@ -51,7 +51,7 @@ incl_ents=True #includ d_entities in tf-idf scheme
 
 
 def run():
-    partitioned_docs = resolutionize('new_examples', resolution=resolution)#new_examples Example_documents
+    partitioned_docs = resolutionize('example_documents/Socialdemokratiet', resolution=resolution)#new_examples Example_documents
     pdocs_incl, pdocs_excl = do_pre_processing(partitioned_docs)
     if load_adj:
         efile = open('dbs/epsilons', 'r')
