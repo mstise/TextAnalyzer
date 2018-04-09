@@ -66,7 +66,7 @@ def run():
             continue
         epsilon = None
         if load_adj:
-            V = load_sparse_csr('dbs/V.npz' + str(i)).tolil()
+            V = load_sparse_csr('dbs/V' + str(i) + '.npz').tolil()
             term2idx = shelve.open('dbs/term2idx' + str(i))
             idx2term = shelve.open('dbs/idx2term' + str(i))
         else:
@@ -76,7 +76,7 @@ def run():
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
             efile.write(str(epsilon) + '\n')
         if load_W:
-            W = load_sparse_csr('dbs/W.npz' + str(i)).tolil()
+            W = load_sparse_csr('dbs/W' + str(i) + '.npz').tolil()
         else:
             #W = create_clusters(V, len(pdocs_incl[i]))
             W = init_matrix((list(V.shape)[0], cluster_size), resetter)
