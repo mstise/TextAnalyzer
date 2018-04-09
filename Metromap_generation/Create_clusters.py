@@ -12,12 +12,12 @@ from Metromap_generation.Doc_representation_gen import get_doc_representation
 from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
 import math
-from Metromap_generation.Utils import init_matrix, save_sparse_csr, load_sparse_csr
+from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_sparse_csr
 from scipy.stats import bernoulli
 from Metromap_generation.Resolution import resolutionize
 from Metromap_generation.CosinePreProc import do_pre_processing
 import paths
-from Metromap_generation.nmf import Nmf
+from Metromap_generation.TimelineUtils import factorize
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -78,7 +78,9 @@ def run():
         if load_W:
             W = load_sparse_csr('dbs/W.npz' + str(i)).tolil()
         else:
-            W = create_clusters(V, len(pdocs_incl[i]))
+            #W = create_clusters(V, len(pdocs_incl[i]))
+            W = init_matrix((list(V.shape)[0], clustesr_size), resetter)
+            W, _, obj = factorize(V, cluster_size, resetter, W=W)
             save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
         fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount)
@@ -256,14 +258,6 @@ additional_stop_words = [
     ".", " ", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
     "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",
     "bliver", "ligger", "siger", "mange", "får", "siden"]
-
-def factorize(V, rank, resetter, W=None, H=None, update="log_update", objective="log_obj"):
-    #Do this: V = V.tocsr(), before nmf, if update is eucledian or divergence... makes it faster
-    nmf_inst = Nmf(V, rank, max_iter=2, W=W, H=H, update=update,
-                    objective=objective, resetter=resetter)
-    basis, coef, obj = nmf_inst.factorize()
-    return basis, coef, obj
-
 
 if __name__ == "__main__":
     run()

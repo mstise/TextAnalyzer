@@ -13,7 +13,8 @@ from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
 import math
 from scipy.stats import bernoulli
-from Metromap_generation.Utils import init_matrix, factorize
+from Metromap_generation.MatrixUtils import init_matrix
+from Metromap_generation.TimelineUtils import factorize
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #

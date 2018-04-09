@@ -1,6 +1,6 @@
 from scipy.sparse import csr_matrix, isspmatrix
 import numpy as np
-from Metromap_generation.Utils import dot
+from Metromap_generation.MatrixUtils import dot
 import math
 import sys
 __all__ = ['Nmf']
