@@ -1,0 +1,7 @@
+#(Node ID, Node label)
+6347	Center
+2	Close1
+3	Close2
+4	farther
+5	farther
+6	farther

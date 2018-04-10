@@ -18,6 +18,7 @@ from Metromap_generation.Resolution import resolutionize
 from Metromap_generation.CosinePreProc import do_pre_processing
 import paths
 from Metromap_generation.TimelineUtils import factorize
+import Metromap_generation.snap.Snap_wrapper as Swrapper
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -74,6 +75,7 @@ def run():
             idx2term = shelve.open("dbs/idx2term" + str(i))
             V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term)
             save_snap_format(V, idx2term)
+            Swrapper.snap()
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
             efile.write(str(epsilon) + '\n')
         if load_W:
