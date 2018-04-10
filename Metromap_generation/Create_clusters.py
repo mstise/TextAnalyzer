@@ -12,7 +12,7 @@ from Metromap_generation.Doc_representation_gen import get_doc_representation
 from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
 import math
-from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_sparse_csr
+from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_sparse_csr, save_snap_format
 from scipy.stats import bernoulli
 from Metromap_generation.Resolution import resolutionize
 from Metromap_generation.CosinePreProc import do_pre_processing
@@ -23,6 +23,7 @@ from Metromap_generation.TimelineUtils import factorize
                                     #            SAVING            #                                                               #
                                     #                              #                                                               #
                                     ################################                                                               #
+
 load_adj = True        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
 load_tf_idf = True      #False: Creates new mapping between target docs to tf-idf                                                  #
 load_W = True          #False: Cluster words by gradient descent                                                                  #
@@ -73,6 +74,7 @@ def run():
             term2idx = shelve.open("dbs/term2idx" + str(i))
             idx2term = shelve.open("dbs/idx2term" + str(i))
             V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term)
+            save_snap_format(V, idx2term)
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
             efile.write(str(epsilon) + '\n')
         if load_W:
