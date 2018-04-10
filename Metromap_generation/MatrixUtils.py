@@ -23,3 +23,6 @@ def dot(X, Y):
         return sp.csr_matrix(X) * sp.csr_matrix(Y)
     else:
         return np.asmatrix(X) * np.asmatrix(Y)
+
+def save_snap_format(V, idx2term):
+    print('g')
