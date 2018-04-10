@@ -23,9 +23,9 @@ from Metromap_generation.TimelineUtils import factorize
                                     #            SAVING            #                                                               #
                                     #                              #                                                               #
                                     ################################                                                               #
-load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
+load_adj = True        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
 load_tf_idf = True      #False: Creates new mapping between target docs to tf-idf                                                  #
-load_W = False          #False: Cluster words by gradient descent                                                                  #
+load_W = True          #False: Cluster words by gradient descent                                                                  #
                                                                                                                                    #
 ####################################################################################################################################
                                     #       Cluster-Options        #                                                               #
@@ -51,7 +51,7 @@ incl_ents=True #includ d_entities in tf-idf scheme
 
 
 def run():
-    partitioned_docs = resolutionize('example_documents/Socialdemokratiet', resolution=resolution)#new_examples Example_documents
+    partitioned_docs = resolutionize('example_documents/Aalborg_pirates', resolution=resolution)#new_examples Example_documents
     pdocs_incl, pdocs_excl = do_pre_processing(partitioned_docs)
     if load_adj:
         efile = open('dbs/epsilons', 'r')
