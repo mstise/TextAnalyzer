@@ -25,4 +25,13 @@ def dot(X, Y):
         return np.asmatrix(X) * np.asmatrix(Y)
 
 def save_snap_format(V, idx2term):
-    print('g')
+    edge_file = open("snap/edges", "w")
+    for i in range(len(V.rows)):
+        for index in V.rows[i]:
+            edge_file.write(str(i) + "\t" + str(index) + "\n")
+            edge_file.write(str(index) + "\t" + str(i) + "\n")
+    edge_file.close()
+    labels_file = open("snap/labels", "w")
+    for i in range(len(V.rows)):
+        labels_file.write(str(i) + "\t" + str(idx2term[str(i)]) + "\n")
+    labels_file.close()

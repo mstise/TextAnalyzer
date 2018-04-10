@@ -24,7 +24,8 @@ import Metromap_generation.snap.Snap_wrapper as Swrapper
                                     #            SAVING            #                                                               #
                                     #                              #                                                               #
                                     ################################                                                               #
-load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                 #
+
+load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
 load_tf_idf = True      #False: Creates new mapping between target docs to tf-idf                                                  #
 load_W = False          #False: Cluster words by gradient descent                                                                  #
                                                                                                                                    #
