@@ -24,9 +24,9 @@ from Metromap_generation.TimelineUtils import factorize
                                     #                              #                                                               #
                                     ################################                                                               #
 
-load_adj = True        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
+load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
 load_tf_idf = True      #False: Creates new mapping between target docs to tf-idf                                                  #
-load_W = True          #False: Cluster words by gradient descent                                                                  #
+load_W = False          #False: Cluster words by gradient descent                                                                  #
                                                                                                                                    #
 ####################################################################################################################################
                                     #       Cluster-Options        #                                                               #
