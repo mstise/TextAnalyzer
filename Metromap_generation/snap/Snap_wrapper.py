@@ -1,6 +1,7 @@
 import os
 from scipy.sparse import csr_matrix
 from Metromap_generation.MatrixUtils import init_matrix
+import numpy as np
 
 def snap(num_docs):
     print('NUM DOCS: ' + str(num_docs))
@@ -10,7 +11,7 @@ def get_data(term2idx, resetter, V):
     file = open('snap/snapout/cmtyvv.txt', 'r')
     lines = file.readlines()
     num_cmtys = len(lines)
-    W = init_matrix((list(V.shape)[0], num_cmtys), resetter)
+    W = np.zeros((V.shape[0], num_cmtys))
     cmty_counter = 0
     for line in lines:
         tuples = line[:-1].split('\t')
@@ -18,9 +19,7 @@ def get_data(term2idx, resetter, V):
             term, weight = tuple.split(',')
             W[term2idx[term], cmty_counter] = weight
         cmty_counter += 1
-
-
-
+    W = np.maximum(resetter, W)
     return csr_matrix(W)
 
 

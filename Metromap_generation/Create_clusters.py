@@ -65,7 +65,7 @@ def run():
     clustercount = 0
     for i in range(0, len(pdocs_incl)):
         #if len(pdocs_excl[[i]]) > 0:
-            #fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
+        #    fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -97,7 +97,7 @@ def run():
         clustercount += W.shape[1]
         term2idx.close()
         idx2term.close()
-        if i == 2:
+        if i == 1:
             print(pdocs_incl[i])
             break
 
