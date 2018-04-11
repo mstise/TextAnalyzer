@@ -45,7 +45,7 @@ paper_epsilon = False #If false the epsilon is used directly as threshold for cl
 paper_noisify = False #Introduce noise in graph according to paper. This slows down the approach considerably (for litte dataset atleast)
 resolution='month'
 incl_ents=True #includ d_entities in tf-idf scheme
-snapclam = False
+snapclam = True
 
 
 
@@ -64,6 +64,8 @@ def run():
     clusters2term = shelve.open("dbs/clusters2term")
     clustercount = 0
     for i in range(0, len(pdocs_incl)):
+        #if len(pdocs_excl[[i]]) > 0:
+            #fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -84,7 +86,7 @@ def run():
             W = load_sparse_csr('dbs/W' + str(i) + '.npz').tolil()
         else:
             if snapclam:
-                W = Swrapper.get_data(term2idx, V=V)
+                W = Swrapper.get_data(term2idx, resetter, V=V)
             else:
                 W = init_matrix((list(V.shape)[0], cluster_size), resetter)
                 #W = create_clusters(V, len(pdocs_incl[i]))
@@ -92,10 +94,10 @@ def run():
                 save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
         fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount)
-        clustercount += cluster_size
+        clustercount += W.shape[1]
         term2idx.close()
         idx2term.close()
-        if i == 1:
+        if i == 2:
             print(pdocs_incl[i])
             break
 
