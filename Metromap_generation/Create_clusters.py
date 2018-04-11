@@ -97,7 +97,7 @@ def run():
         clustercount += W.shape[1]
         term2idx.close()
         idx2term.close()
-        if i == 1:
+        if i == 2:
             print(pdocs_incl[i])
             break
 
