@@ -99,9 +99,12 @@ def run():
             print(pdocs_incl[i])
             break
 
-
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
+
+    from TopicSummarization.Topic_summarization import ts
+    topic_summarization = ts(clusters2term, pdocs_incl)
+
     term2clusters.close()
     clusters2term.close()
 
