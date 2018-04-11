@@ -62,10 +62,11 @@ def run():
         efile = open('dbs/epsilons', 'w') #this line also reset the file
     term2clusters = shelve.open("dbs/term2clusters")
     clusters2term = shelve.open("dbs/clusters2term")
+    cluster2resolution = shelve.open("dbs/cluster2resolution")
     clustercount = 0
     for i in range(0, len(pdocs_incl)):
-        #if len(pdocs_excl[[i]]) > 0:
-        #    fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
+        if len(pdocs_excl[[i]]) > 0:
+            fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -93,7 +94,7 @@ def run():
                 W, _, obj = factorize(V, cluster_size, resetter, W=W)
                 save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
-        fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount)
+        fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount, cluster2resolution, i)
         clustercount += W.shape[1]
         term2idx.close()
         idx2term.close()
@@ -137,12 +138,13 @@ def spectrum_nmf(V, lower_idx, upper_idx, possible_sizes):
     W, _, obj = factorize(V, cluster_size, resetter, W=W)
     return W, obj
 
-def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount):
+def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount, cluster2resolution, res):
     w_arr = W.toarray()
     for i in range(0, W.shape[0]):
         term = idx2term[str(i)]
         clusters = []
         for j in range(0, W.shape[1]):
+            cluster2resolution[str(clustercount + j)] = res
             if w_arr[i,j] > limit(epsilon):
                 clusters.append(clustercount + j)
             if str(clustercount + j) not in clusters2term:
@@ -152,6 +154,9 @@ def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercou
                 tmp.append((term, w_arr[i,j]))
                 clusters2term[str(clustercount + j)] = tmp
         term2clusters[term] = clusters
+
+def fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount):
+    return 0
 
 def limit(epsilon):
     if paper_epsilon:
