@@ -1,5 +1,6 @@
 import re
 from sklearn.metrics.pairwise import cosine_similarity
+from nltk import bigrams
 
 
 def split_sentence_into_list(sentence):
@@ -36,19 +37,23 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
     else:
         return False
 
-def topic_summarization(text, query, amount_of_summarizations=1):
+def ts(text, query, amount_of_summarizations=5):
     scores = {}
-    topic_candidates = re.split('(?<=[.!?:]) +',text)
+    topic_candidates = re.split('(?<=[.!?]) +',text)
     for topic_candidate in topic_candidates:
         score = 0
         # Split the topic candidate into individual words and check whether any match the query words, score accordingly
         words = split_sentence_into_list(topic_candidate)
         for term in query:
-            for word in words:
-                if term.lower() == word:
-                    score += query[term]
+            if query[term] > 0.001:
+                for word in words:
+                    if term.lower() == word:
+                        score += 1# query[term]
         scores[topic_candidate] = score
     result = (sorted(scores, key=scores.get, reverse=True))
+    # Make sure not to get out of bounds when returning
+    if len(result) < amount_of_summarizations:
+        amount_of_summarizations = len(result)
     # Check if any of the top topics are similar, and that we have enough to afford losing one, if so, delete the lower scoring one of them.
     for candidate1_index in range(len(result) - 1, 0, -1):
         if len(result) <= amount_of_summarizations:
@@ -60,6 +65,20 @@ def topic_summarization(text, query, amount_of_summarizations=1):
                 del result[candidate2_index]
     return result[0:amount_of_summarizations]
 
-test = topic_summarization('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
-                    {'Aalborg': 9, 'White hawks': 2, 'test': 0.5, 'en': 0.1})
-testing = 1
+def topic_summarization(cluster2term, cluster2resolution, documents):
+    query = {}
+    for cluster in cluster2term:
+        tuples = cluster2term[str(cluster)]
+        text = ''
+        for entry in tuples:
+            query[entry[0]] = entry[1]
+        for document in documents[int(cluster2resolution[str(cluster)])]:
+            doc = open('example_documents/Aalborg_pirates/' + document, "r")
+            text += doc.read() + ". "
+        text = text.replace('..', '.')
+        test = ts(text, query)
+        testing = 1
+
+#test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
+#                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
+#testing = 1

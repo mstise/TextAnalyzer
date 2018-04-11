@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import random
-import os
 import itertools
 #import Clustering.python_lil as sp
 import matplotlib.pylab as plb
@@ -9,16 +8,15 @@ import numpy as np
 random.seed(10)
 np.random.seed(10)
 from Metromap_generation.Doc_representation_gen import get_doc_representation
-from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
 import math
 from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_sparse_csr, save_snap_format
 from scipy.stats import bernoulli
 from Metromap_generation.Resolution import resolutionize
 from Metromap_generation.CosinePreProc import do_pre_processing
-import paths
 from Metromap_generation.TimelineUtils import factorize
 import Metromap_generation.snap.Snap_wrapper as Swrapper
+from Metromap_generation.TopicSummarization.Topic_summarization import topic_summarization
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -65,8 +63,8 @@ def run():
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     clustercount = 0
     for i in range(0, len(pdocs_incl)):
-        if len(pdocs_excl[[i]]) > 0:
-            fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
+        #if len(pdocs_excl[[i]]) > 0:
+        #    fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -105,8 +103,7 @@ def run():
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
 
-    from TopicSummarization.Topic_summarization import ts
-    topic_summarization = ts(clusters2term, pdocs_incl)
+    ts = topic_summarization(clusters2term, cluster2resolution, pdocs_incl)
 
     term2clusters.close()
     clusters2term.close()
