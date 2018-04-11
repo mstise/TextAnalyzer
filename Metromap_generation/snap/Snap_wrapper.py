@@ -1,6 +1,5 @@
 import os
 from scipy.sparse import csr_matrix
-from Metromap_generation.MatrixUtils import init_matrix
 import numpy as np
 
 def snap(num_docs):

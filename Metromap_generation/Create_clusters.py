@@ -7,7 +7,6 @@ import scipy.sparse as sp
 import numpy as np
 random.seed(10)
 np.random.seed(10)
-from Metromap_generation.Doc_representation_gen import get_doc_representation
 import shelve
 import math
 from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_sparse_csr, save_snap_format
@@ -23,8 +22,7 @@ from Metromap_generation.TopicSummarization.Topic_summarization import topic_sum
                                     #                              #                                                               #
                                     ################################                                                               #
 
-load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #
-load_tf_idf = True      #False: Creates new mapping between target docs to tf-idf                                                  #
+load_adj = False        #False: Creates new adjacency matrix from docs (skal være False hvis paper_epsilon = True)                  #                                              #
 load_W = False          #False: Cluster words by gradient descent                                                                  #
                                                                                                                                    #
 ####################################################################################################################################
@@ -155,8 +153,22 @@ def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercou
                 clusters2term[str(clustercount + j)] = tmp
         term2clusters[term] = clusters
 
-def fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount):
-    return 0
+def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercount):
+    doc2terms = shelve.open("dbs/doc2terms")
+    for p in range(0, len(pdocs_excl)):
+        for doc in pdocs_excl[p]:
+            f = open('Processed_news/' + doc)
+            for line in f:
+                headline = line.split('.')[0]
+                for term in headline.split(' '):
+                    clusters2term.setdefault([str(clustercount)], [])
+                    tmp = clusters2term[[str(clustercount)]]
+                    tmp.append((term, -1))
+                    clusters2term[[str(clustercount)]] = tmp
+            cluster2resolution[str(clustercount)] = p
+            clustercount += 1
+    doc2terms.close()
+    return clustercount
 
 def limit(epsilon):
     if paper_epsilon:
@@ -167,12 +179,8 @@ def limit(epsilon):
 def create_dicts(filenames, term2idx, idx2term):
     print("Creating dicts")
 
-    #doc2terms = get_top50_tfidf(document_path='/home/duper/Documents/NewsClustering/TextAnalyzer/Clustering/Example_documents') #skal have full path apparantly
-    if load_tf_idf:
-        doc2terms = shelve.open("dbs/doc2terms")
-    else:
-        doc2terms = get_doc_representation(
-            document_path='Processed_news', incl_ents=incl_ents) #Processed_news Example_documents
+    doc2terms = shelve.open("dbs/doc2terms")
+
     print('1')
     term2docidx = idx_terms(filenames, doc2terms, idx2term, term2idx) #idx2term and term2idx also gets filled
     print('2')
@@ -213,10 +221,8 @@ def idx_terms(filenames, doc2terms, idx2term, term2idx):
     for filename in filenames:
         if doc_idx % 1000 == 0:
             print(doc_idx)
-        doc2docidx[filename] = term_idx
+        doc2docidx[filename] = doc_idx
         for term in doc2terms[filename]:
-            if term[0] == 'a' and str(term[1]).isdigit():
-                continue
             term = term_preprocess(term)
             if term == '':
                 continue
