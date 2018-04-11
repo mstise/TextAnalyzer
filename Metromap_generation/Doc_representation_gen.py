@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 DISAMBIGUATED_PATH = 'Disambiguated'
+incl_ents = True
 
 def get_doc_representation(document_path, incl_ents=False):
     if incl_ents:
@@ -52,8 +53,14 @@ def get_top50_tfidf(document_path, doc2ents={}):
         scores = zip(feature_terms,
                      tfidf_result[i,:].toarray()[0])
         sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)[:50]
+        sorted_terms = []
+        counter = 0
+        for score in sorted_scores:
+            if score[1] == 0.0 or counter == 50:
+                break
+            sorted_terms.append(score[0])
+            counter += 1
         filename = full_filenames[i].split('/')[-1]
-        sorted_terms = list(zip(*(sorted_scores[:50])))[0] #this only took the words :b
         doc2terms[filename] = sorted_terms
         doc2features[filename] = lil_matrix(tfidf_result[i,:].toarray()[0])
     return doc2terms
@@ -100,3 +107,5 @@ def get_disambiguations(filename, path):
             new_line = new_line + ' ' + line.split(',')[0]
         entities.append(new_line)
     return entities
+
+doc2terms = get_doc_representation(document_path='Processed_news', incl_ents=incl_ents) #Processed_news
