@@ -45,6 +45,7 @@ paper_epsilon = False #If false the epsilon is used directly as threshold for cl
 paper_noisify = False #Introduce noise in graph according to paper. This slows down the approach considerably (for litte dataset atleast)
 resolution='month'
 incl_ents=True #includ d_entities in tf-idf scheme
+snapclam = False
 
 
 
@@ -76,22 +77,25 @@ def run():
             idx2term = shelve.open("dbs/idx2term" + str(i))
             V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term)
             save_snap_format(V, idx2term)
-            Swrapper.snap()
+            Swrapper.snap(len(pdocs_incl[i]))
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
             efile.write(str(epsilon) + '\n')
         if load_W:
             W = load_sparse_csr('dbs/W' + str(i) + '.npz').tolil()
         else:
-            #W = create_clusters(V, len(pdocs_incl[i]))
-            W = init_matrix((list(V.shape)[0], cluster_size), resetter)
-            W, _, obj = factorize(V, cluster_size, resetter, W=W)
-            save_sparse_csr('dbs/W' + str(i), W.tocsr())
+            if snapclam:
+                W = Swrapper.get_data(term2idx, V=V)
+            else:
+                W = init_matrix((list(V.shape)[0], cluster_size), resetter)
+                #W = create_clusters(V, len(pdocs_incl[i]))
+                W, _, obj = factorize(V, cluster_size, resetter, W=W)
+                save_sparse_csr('dbs/W' + str(i), W.tocsr())
         plot(W, idx2term)
         fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount)
         clustercount += cluster_size
         term2idx.close()
         idx2term.close()
-        if i == 2:
+        if i == 1:
             print(pdocs_incl[i])
             break
 
@@ -140,10 +144,10 @@ def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercou
             if w_arr[i,j] > limit(epsilon):
                 clusters.append(clustercount + j)
             if str(clustercount + j) not in clusters2term:
-                clusters2term[str(clustercount + j)] = [term]
+                clusters2term[str(clustercount + j)] = [(term, w_arr[i,j])]
             else:
                 tmp = clusters2term[str(clustercount + j)]
-                tmp.append(term)
+                tmp.append((term, w_arr[i,j]))
                 clusters2term[str(clustercount + j)] = tmp
         term2clusters[term] = clusters
 
