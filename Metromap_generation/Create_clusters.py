@@ -256,7 +256,7 @@ def add_random_edges(V):
 def term_preprocess(term):
     # lowers and remove stop words, digits, symbols, too short words
     term = term.strip().replace(',', '').replace('.', '').replace('(', '').replace(')', '').replace('?', '').replace(
-        '!', '').replace(':', '').replace(';', '').replace('+', '').replace('-', '').replace('*', '')
+        '!', '').replace(':', '').replace(';', '').replace('+', '')
     term = term.lower()
     if term in additional_stop_words or str.isdigit(term):
         term = ''
