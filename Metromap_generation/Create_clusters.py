@@ -84,7 +84,9 @@ def run():
             W = load_sparse_csr('dbs/W' + str(i) + '.npz').tolil()
         else:
             if snapclam:
+                print('af')
                 W = Swrapper.get_data(term2idx, resetter, V=V)
+                print('af')
             else:
                 W = init_matrix((list(V.shape)[0], cluster_size), resetter)
                 #W = create_clusters(V, len(pdocs_incl[i]))
@@ -153,12 +155,12 @@ def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercou
             cluster2resolution[str(clustercount + j)] = res
             if w_arr[i,j] > limit(epsilon):
                 clusters.append(clustercount + j)
-            if str(clustercount + j) not in clusters2term:
-                clusters2term[str(clustercount + j)] = [(term, w_arr[i,j])]
-            else:
-                tmp = clusters2term[str(clustercount + j)]
-                tmp.append((term, w_arr[i,j]))
-                clusters2term[str(clustercount + j)] = tmp
+                if str(clustercount + j) not in clusters2term:
+                    clusters2term[str(clustercount + j)] = [(term, w_arr[i,j])]
+                else:
+                    tmp = clusters2term[str(clustercount + j)]
+                    tmp.append((term, w_arr[i,j]))
+                    clusters2term[str(clustercount + j)] = tmp
         term2clusters[term] = clusters
 
 def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercount):
