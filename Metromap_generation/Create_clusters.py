@@ -16,6 +16,7 @@ from Metromap_generation.CosinePreProc import do_pre_processing
 from Metromap_generation.TimelineUtils import factorize
 import Metromap_generation.snap.Snap_wrapper as Swrapper
 from Metromap_generation.TopicSummarization.Topic_summarization import topic_summarization
+from Metromap_generation.Prune_clusters import prune_clusters
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -89,7 +90,7 @@ def run():
                 #W = create_clusters(V, len(pdocs_incl[i]))
                 W, _, obj = factorize(V, cluster_size, resetter, W=W)
                 save_sparse_csr('dbs/W' + str(i), W.tocsr())
-        plot(W, idx2term)
+        #plot(W, idx2term)
         fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount, cluster2resolution, i)
         clustercount += W.shape[1]
         term2idx.close()
@@ -101,7 +102,14 @@ def run():
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
 
+    import time
+    print("Pruning begins: " + time.strftime("%H:%M:%S"))
+    #prune_clusters(clusters2term, cluster2resolution)
+    print("Topic summarization begins: " + time.strftime("%H:%M:%S"))
+    test = len(clusters2term)
     ts = topic_summarization(clusters2term, cluster2resolution, pdocs_incl)
+    test2 = len(clusters2term)
+    print("Topic summarization ends: " + time.strftime("%H:%M:%S"))
 
     term2clusters.close()
     clusters2term.close()
