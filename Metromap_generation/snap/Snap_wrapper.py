@@ -5,7 +5,7 @@ import numpy as np
 def snap(num_docs):
     print('NUM DOCS: ' + str(num_docs))
     if num_docs > 8:
-        num_docs /= 2
+        num_docs = int(num_docs / 2)
     os.system("./snap/bigclam -o:snap/snapout/ -c:-1 -i:snap/edges -l:snap/labels -nc:" + str(num_docs) + " -mc:1 -xc:" + str(num_docs))
 
 def get_data(term2idx, resetter, V):
