@@ -13,7 +13,7 @@ from Metromap_generation.MatrixUtils import init_matrix, save_sparse_csr, load_s
 from scipy.stats import bernoulli
 from Metromap_generation.Resolution import resolutionize
 from Metromap_generation.CosinePreProc import do_pre_processing
-from Metromap_generation.TimelineUtils import factorize
+from Metromap_generation.TimelineUtils import factorize, get_rec_disamb_pairs
 import Metromap_generation.snap.Snap_wrapper as Swrapper
 from Metromap_generation.TopicSummarization.Topic_summarization import topic_summarization
 from Metromap_generation.Prune_clusters import prune_clusters
@@ -51,7 +51,7 @@ snapclam = True
 
 
 def run():
-    partitioned_docs = resolutionize('example_documents/Aalborg_pirates', resolution=resolution)#new_examples Example_documents
+    partitioned_docs, _ = resolutionize('example_documents/Aalborg_pirates', resolution=resolution)#new_examples Example_documents
     pdocs_incl, pdocs_excl = do_pre_processing(partitioned_docs)
     if load_adj:
         efile = open('dbs/epsilons', 'r')
@@ -61,9 +61,8 @@ def run():
     clusters2term = shelve.open("dbs/clusters2term")
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     clustercount = 0
+    clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercount)
     for i in range(0, len(pdocs_incl)):
-        #if len(pdocs_excl[[i]]) > 0:
-        #    fill_excl_clusters(pdocs_excl, term2clusters, clusters2term, clustercount)
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -97,9 +96,9 @@ def run():
         clustercount += W.shape[1]
         term2idx.close()
         idx2term.close()
-        if i == 2:
-            print(pdocs_incl[i])
-            break
+        #if i == 2:
+        #    print(pdocs_incl[i])
+        #    break
 
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
@@ -148,11 +147,12 @@ def spectrum_nmf(V, lower_idx, upper_idx, possible_sizes):
 
 def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercount, cluster2resolution, res):
     w_arr = W.toarray()
+    for j in range(0, W.shape[1]):
+        cluster2resolution[str(clustercount + j)] = res
     for i in range(0, W.shape[0]):
         term = idx2term[str(i)]
         clusters = []
         for j in range(0, W.shape[1]):
-            cluster2resolution[str(clustercount + j)] = res
             if w_arr[i,j] > limit(epsilon):
                 clusters.append(clustercount + j)
                 if str(clustercount + j) not in clusters2term:
@@ -168,13 +168,40 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercou
     for p in range(0, len(pdocs_excl)):
         for doc in pdocs_excl[p]:
             f = open('Processed_news/' + doc)
+            rec_disambs = get_rec_disamb_pairs(doc, 'Disambiguated')
+            rec_disambs.sort(key=lambda tup: len(tup[1]), reverse=True)
             for line in f:
-                headline = line.split('.')[0]
-                for term in headline.split(' '):
-                    clusters2term.setdefault([str(clustercount)], [])
-                    tmp = clusters2term[[str(clustercount)]]
-                    tmp.append((term, -1))
-                    clusters2term[[str(clustercount)]] = tmp
+                headline = line.split('.')[0].lower()
+                headterms = headline.split(' ')
+                headterms = list([name.lower() for name in headterms])
+                for rec_disamb in rec_disambs:
+                    recognized = rec_disamb[0].lower()
+                    disambiguated = rec_disamb[1].lower()
+                    if '(' in disambiguated:
+                        idx = disambiguated.find('(')
+                        disambiguated = disambiguated[:idx - 1]
+                    if disambiguated[:2] == 'w.':
+                        if recognized in headline:
+                            headline = headline.replace(recognized, '')
+                            rec_terms = str(recognized).split()
+                            for term in rec_terms:
+                                while term in headterms: headterms.remove(term)
+                            if '*w' + str(disambiguated[2:]) not in headterms:
+                                headterms.append('*w' + str(disambiguated[2:]))
+                    if disambiguated == 'none':
+                        if recognized in headline:
+                            headline = headline.replace(recognized, '')
+                            rec_terms = str(recognized).split()
+                            for term in rec_terms:
+                                while term in headterms: headterms.remove(term)
+                            if '*r' + str(recognized) not in headterms:
+                                headterms.append('*r' + str(recognized))
+                for term in headterms:
+                    clusters2term.setdefault(str(clustercount), [])
+                    tmp = clusters2term[str(clustercount)]
+                    tmp.append((term.lower(), -1))
+                    clusters2term[str(clustercount)] = tmp
+                print('gh')
             cluster2resolution[str(clustercount)] = p
             clustercount += 1
     doc2terms.close()

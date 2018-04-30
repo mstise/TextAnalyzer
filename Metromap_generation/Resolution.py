@@ -11,12 +11,15 @@ def resolutionize(dirpath, sdate=date(2014, 1, 1), edate=date.today(), resolutio
 
     cluster_date = get_date(valid_filenames[0])
     clusters = [[]]
+    date_strings = []
+    date_strings.append(cluster_date)
     for i in range(0, len(valid_filenames)):
         if compare_dates(get_date(valid_filenames[i]), cluster_date, resolution):
             cluster_date = get_date(valid_filenames[i])
             clusters.append([])
+            date_strings.append(cluster_date)
         clusters[-1].append(valid_filenames[i])
-    return clusters
+    return clusters, date_strings
 
 def get_date(filename):
     file_number = filename.split('_')[-2]

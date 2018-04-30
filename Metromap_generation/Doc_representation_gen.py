@@ -4,6 +4,7 @@ import os
 import re
 from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
+from Metromap_generation.TimelineUtils import get_disambiguations
 import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -29,7 +30,7 @@ def get_doc2ents():
             if str(d_ent[:4]) != 'None':
                 dent_set.add('*' + d_ent)
             else:
-                dent_set.add(str(d_ent[5:]))
+                dent_set.add('*r.' + str(d_ent[5:]))
         doc2ents[filename] = list(dent_set)
 
     return doc2ents
@@ -87,25 +88,4 @@ def create_stop_words(limit = 150, doc2ents = {}):
 
     return stop_words
 
-def clean_line(line):
-    indices = [m.start() for m in re.finditer('\'', line)]
-    if len(indices) < 2:
-        print('following line is corrupted: ' + line)
-        return ''
-    grouped_indices =list(zip(indices[0::2], indices[1::2]))
-    cleaned_line = line[grouped_indices[0][0]+1 : grouped_indices[0][1]]
-    for i, k in grouped_indices[1:len(grouped_indices)]:
-        cleaned_line += ' ' + line[i+1 : k]
-    return cleaned_line
-
-def get_disambiguations(filename, path):
-    entities = []
-    for line in open(path + "/" + filename):
-        new_line = clean_line(line)
-        if new_line == '': continue
-        if new_line == 'None':
-            new_line = new_line + ' ' + line.split(',')[0]
-        entities.append(new_line)
-    return entities
-
-doc2terms = get_doc_representation(document_path='Processed_news', incl_ents=incl_ents) #Processed_news
+doc2terms = get_doc_representation(document_path='Lemmatized', incl_ents=incl_ents) #Processed_news
