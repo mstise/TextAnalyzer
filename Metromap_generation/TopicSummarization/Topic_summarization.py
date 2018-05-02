@@ -43,6 +43,8 @@ def ts(text, lemmatized_text, hypernyms_text, query, amount_of_summarizations=5)
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
+        if topic_candidate == '' or topic_candidate == ' ' or topic_candidate == '.' or topic_candidate == '?' or topic_candidate == '!':
+            continue
         score = 0
         # Split the topic candidate into individual words and check whether any match the query words, score accordingly
         words = split_sentence_into_list(topic_candidate)
@@ -84,50 +86,66 @@ def ts(text, lemmatized_text, hypernyms_text, query, amount_of_summarizations=5)
                 for word in lemmatized_words:
                     if term.lower() == word.lower():
                         score += score_for_term
-        scores[topic_candidate] = score
+        if score > 0:
+            scores[topic_candidate] = score
         topic_candidate_number += 1
-    result = (sorted(scores, key=scores.get, reverse=True))
+    summarizations = (sorted(scores, key=scores.get, reverse=True))
     # Make sure not to get out of bounds when returning
-    if len(result) < amount_of_summarizations:
-        amount_of_summarizations = len(result)
+    if len(summarizations) < amount_of_summarizations:
+        amount_of_summarizations = len(summarizations)
     # Check if any of the top topics are similar, and that we have enough to afford losing one, if so, delete the lower scoring one of them.
-    for candidate1_index in range(len(result) - 1, 0, -1):
-        if len(result) <= amount_of_summarizations:
+    for candidate1_index in range(len(summarizations) - 1, 0, -1):
+        if len(summarizations) <= amount_of_summarizations:
             break
-        for candidate2_index in range(len(result) - 1, 0, -1):
-            if candidate1_index >= candidate2_index or candidate1_index >= amount_of_summarizations or len(result) <= amount_of_summarizations:
+        for candidate2_index in range(len(summarizations) - 1, 0, -1):
+            if candidate1_index >= candidate2_index or candidate1_index >= amount_of_summarizations or len(summarizations) <= amount_of_summarizations:
                 break
-            if are_topics_similar(result[candidate1_index], result[candidate2_index]):
-                del result[candidate2_index]
-    return result[0:amount_of_summarizations]
+            if are_topics_similar(summarizations[candidate1_index], summarizations[candidate2_index]):
+                del summarizations[candidate2_index]
+    return scores# summarizations[0:amount_of_summarizations]
 
 def topic_summarization(cluster2term, cluster2resolution, documents):
-    result = {}
+    cluster2summaries = {}
+    document2summary_candidates = {}
     for cluster in cluster2term:
         query = {}
         tuples = cluster2term[str(cluster)]
-        text = ''
-        lemmatized_text = ''
-        hyponyms_text = ''
         for entry in tuples:
             query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             doc = open('example_documents/Aalborg_pirates/' + document, "r")
-            text += doc.read() + ". "
+            text = doc.read() + ". "
+            text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
-            lemmatized_text += doc.read() + ". "
+            lemmatized_text = doc.read() + ". "
+            lemmatized_text = lemmatized_text.replace('..', '.')
             doc = open('Ranked/' + document, "r")
-            hyponyms_text += doc.read()
-        text = text.replace('..', '.')
-        lemmatized_text = lemmatized_text.replace('..', '.')
-        cluster_result = ts(text, lemmatized_text, hyponyms_text, query)
+            hyponyms_text = doc.read()
+            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query)
+            for candidate in summary_candidates.keys():
+                document2summary_candidates[candidate] = [summary_candidates[candidate], document]
+        if summary_candidates == []:
+            continue
         include = True
-        for a_result in result:
-            if do_the_lists_contain_the_same(result[a_result], cluster_result):
-                include = False
-        if include:
-            result[cluster] = cluster_result
-    return result
+        winner_summaries = []
+        for candidate in document2summary_candidates:
+            if len(winner_summaries) <= 5:
+                winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
+                winner_summaries.sort(key=lambda x: x[0], reverse=True)
+            elif winner_summaries[4][0] < document2summary_candidates[candidate][0]:
+                del winner_summaries[4]
+                winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
+                winner_summaries.sort(key=lambda x: x[0], reverse=True)
+        cluster2summaries.setdefault(cluster, [])
+        for summary in winner_summaries:
+            cluster2summaries[cluster].append(summary)
+
+        #for a_result in cluster2summaries:
+        #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
+        #        include = False
+        #if include:
+        #    cluster2summaries[cluster] = summary_candidates
+    return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
 #                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
