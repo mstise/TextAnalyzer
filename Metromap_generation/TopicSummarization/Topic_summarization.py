@@ -37,15 +37,15 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
     else:
         return False
 
-def ts(text, lemmatized_text, hypernyms_text, query, amount_of_summarizations=5):
+def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, amount_of_summarizations=5):
     scores = {}
     topic_candidates = re.split('(?<=[.!?]) +', text)
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
+        score = 0
         if topic_candidate == '' or topic_candidate == ' ' or topic_candidate == '.' or topic_candidate == '?' or topic_candidate == '!':
             continue
-        score = 0
         # Split the topic candidate into individual words and check whether any match the query words, score accordingly
         words = split_sentence_into_list(topic_candidate)
         lemmatized_topic_candidate = lemmatized_topic_candidates[topic_candidate_number]
@@ -63,51 +63,94 @@ def ts(text, lemmatized_text, hypernyms_text, query, amount_of_summarizations=5)
                     hypernyms[hyper] = [hyponym]
                 else:
                     hypernyms[hyper].append(hyponym)
-        for term in query:
-            score_for_term = 1# query[term] # 1
-            if term[0:2] == '*w' or term[0:2] == '*r':
-                term = term[2:]
-                words_in_term = len(term.split())
-                current_word_set = 0
-                while current_word_set < len(words) - words_in_term:
-                    words_term = ''
-                    for word in words[current_word_set:current_word_set + words_in_term]:
-                        words_term += word + " "
-                    words_term = words_term[:-1]
-                    if term.lower() == words_term.lower():
-                        score += score_for_term
-                    current_word_set += 1
-            elif term[0:2] == '*f':
-                for word in lemmatized_words:
-                    if word in hypernyms and term[2:] in hypernyms[word]:
-                        score += score_for_term
-                        break
-            else:
-                for word in lemmatized_words:
-                    if term.lower() == word.lower():
-                        score += score_for_term
-        if score > 0:
+        # Check for 1-document clusters
+        if next(iter(query.values())) == -1:
+            topic = ''
+            for word in headline[str(cluster_number)]:
+                topic += word[0] + ' '
+            topic = topic[0:-1] + '.'
+            scores[topic] = 1
+        else:
+            for term in query:
+                score_for_term = 1  # query[term] # 1
+                if term[0:2] == '*w' or term[0:2] == '*r':
+                    term = term[2:]
+                    words_in_term = len(term.split())
+                    current_word_set = 0
+                    while current_word_set < len(words) - words_in_term:
+                        words_term = ''
+                        for word in words[current_word_set:current_word_set + words_in_term]:
+                            words_term += word + " "
+                        words_term = words_term[:-1]
+                        if term.lower() == words_term.lower():
+                            score += score_for_term
+                        current_word_set += 1
+                elif term[0:2] == '*f':
+                    for word in lemmatized_words:
+                        if word in hypernyms and term[2:] in hypernyms[word]:
+                            score += score_for_term
+                            break
+                elif score_for_term > 0:
+                    for word in lemmatized_words:
+                        if term.lower() == word.lower():
+                            score += score_for_term
+                elif score_for_term < 0:
+                    for word in words:
+                        if term.lower() == word.lower():
+                            score += score_for_term
+        if score != 0:
             scores[topic_candidate] = score
         topic_candidate_number += 1
-    summarizations = (sorted(scores, key=scores.get, reverse=True))
-    # Make sure not to get out of bounds when returning
-    if len(summarizations) < amount_of_summarizations:
-        amount_of_summarizations = len(summarizations)
     # Check if any of the top topics are similar, and that we have enough to afford losing one, if so, delete the lower scoring one of them.
-    for candidate1_index in range(len(summarizations) - 1, 0, -1):
-        if len(summarizations) <= amount_of_summarizations:
-            break
-        for candidate2_index in range(len(summarizations) - 1, 0, -1):
-            if candidate1_index >= candidate2_index or candidate1_index >= amount_of_summarizations or len(summarizations) <= amount_of_summarizations:
-                break
-            if are_topics_similar(summarizations[candidate1_index], summarizations[candidate2_index]):
-                del summarizations[candidate2_index]
+    candidates_to_delete = []
+    candidates_already_checked = []
+    for candidate1 in scores:
+        candidates_already_checked.append(candidate1)
+        for candidate2 in scores:
+            if candidate2 in candidates_already_checked:
+                continue
+            if are_topics_similar(candidate1, candidate2):
+                candidates_to_delete.append(candidate2)
+    for candidate in candidates_to_delete:
+        del scores[candidate]
+    # Make sure any 1-document cluster only returns one summarization (headline)
+    query_text = ''
+    for text in query:
+        query_text += ' ' + text
+    candidates_to_delete = []
+    for candidate in scores:
+        if scores[candidate] < 0:
+            for word in candidate.split(' '):
+                for char in '.,:;!?"\'':
+                    word = word.replace(char, '')
+                if word.lower() not in query_text and '*w' + word.lower() not in query_text and '*r' + word.lower() not in query_text:
+                    candidates_to_delete.append(candidate)
+                    break
+            if candidate not in candidates_to_delete:
+                for word in query:
+                    if word not in candidate.lower() and (word[0] == '*' and word[2:] not in candidate.lower()):
+                        candidates_to_delete.append(candidate)
+                        break
+    for candidate in candidates_to_delete:
+        del scores[candidate]
+    # Make sure not to get out of bounds when returning
+    #summarizations = (sorted(scores, key=scores.get, reverse=True))
+    #if len(summarizations) < amount_of_summarizations:
+    #    amount_of_summarizations = len(summarizations)
+    #for candidate1_index in range(len(summarizations) - 1, 0, -1):
+    #    if len(summarizations) <= amount_of_summarizations:
+    #        break
+    #    for candidate2_index in range(len(summarizations) - 1, 0, -1):
+    #        if candidate1_index >= candidate2_index or candidate1_index >= amount_of_summarizations or len(summarizations) <= amount_of_summarizations:
+    #            break
+    #        if are_topics_similar(summarizations[candidate1_index], summarizations[candidate2_index]):
+    #            del summarizations[candidate2_index]
     return scores# summarizations[0:amount_of_summarizations]
 
-def topic_summarization(cluster2term, cluster2resolution, documents):
+def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents):
     cluster2summaries = {}
-    document2summary_candidates = {}
     for cluster in cluster2term:
+        document2summary_candidates = {}
         query = {}
         tuples = cluster2term[str(cluster)]
         for entry in tuples:
@@ -121,15 +164,14 @@ def topic_summarization(cluster2term, cluster2resolution, documents):
             lemmatized_text = lemmatized_text.replace('..', '.')
             doc = open('Ranked/' + document, "r")
             hyponyms_text = doc.read()
-            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query)
+            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster)
             for candidate in summary_candidates.keys():
                 document2summary_candidates[candidate] = [summary_candidates[candidate], document]
         if summary_candidates == []:
             continue
-        include = True
         winner_summaries = []
         for candidate in document2summary_candidates:
-            if len(winner_summaries) <= 5:
+            if len(winner_summaries) < 5:
                 winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
                 winner_summaries.sort(key=lambda x: x[0], reverse=True)
             elif winner_summaries[4][0] < document2summary_candidates[candidate][0]:
@@ -140,6 +182,7 @@ def topic_summarization(cluster2term, cluster2resolution, documents):
         for summary in winner_summaries:
             cluster2summaries[cluster].append(summary)
 
+        #include = True
         #for a_result in cluster2summaries:
         #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
         #        include = False

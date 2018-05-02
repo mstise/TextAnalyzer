@@ -60,9 +60,11 @@ def run():
     term2clusters = shelve.open("dbs/term2clusters")
     clusters2term = shelve.open("dbs/clusters2term")
     cluster2resolution = shelve.open("dbs/cluster2resolution")
+    clusters2headlines = shelve.open("dbs/zclusters2headlines")
     clustercount = 0
-    clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercount)
+    clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
     for i in range(0, len(pdocs_incl)):
+        #break
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -108,7 +110,7 @@ def run():
     #prune_clusters(clusters2term, cluster2resolution)
     print("Topic summarization begins: " + time.strftime("%H:%M:%S"))
     test = len(clusters2term)
-    ts = topic_summarization(clusters2term, cluster2resolution, pdocs_incl)
+    ts = topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs)
     test2 = len(clusters2term)
     print("Topic summarization ends: " + time.strftime("%H:%M:%S"))
 
@@ -163,39 +165,23 @@ def fill_clusters(epsilon, W, idx2term, term2clusters, clusters2term, clustercou
                     clusters2term[str(clustercount + j)] = tmp
         term2clusters[term] = clusters
 
-def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercount):
+def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount):
     doc2terms = shelve.open("dbs/doc2terms")
     for p in range(0, len(pdocs_excl)):
         for doc in pdocs_excl[p]:
             f = open('Processed_news/' + doc)
-            rec_disambs = get_rec_disamb_pairs(doc, 'Disambiguated')
+            rec_disambs = get_rec_disamb_pairs(doc, '/media/michael/My Passport/Disambiguated')
             rec_disambs.sort(key=lambda tup: len(tup[1]), reverse=True)
             for line in f:
                 headline = line.split('.')[0].lower()
                 headterms = headline.split(' ')
                 headterms = list([name.lower() for name in headterms])
-                for rec_disamb in rec_disambs:
-                    recognized = rec_disamb[0].lower()
-                    disambiguated = rec_disamb[1].lower()
-                    if '(' in disambiguated:
-                        idx = disambiguated.find('(')
-                        disambiguated = disambiguated[:idx - 1]
-                    if disambiguated[:2] == 'w.':
-                        if recognized in headline:
-                            headline = headline.replace(recognized, '')
-                            rec_terms = str(recognized).split()
-                            for term in rec_terms:
-                                while term in headterms: headterms.remove(term)
-                            if '*w' + str(disambiguated[2:]) not in headterms:
-                                headterms.append('*w' + str(disambiguated[2:]))
-                    if disambiguated == 'none':
-                        if recognized in headline:
-                            headline = headline.replace(recognized, '')
-                            rec_terms = str(recognized).split()
-                            for term in rec_terms:
-                                while term in headterms: headterms.remove(term)
-                            if '*r' + str(recognized) not in headterms:
-                                headterms.append('*r' + str(recognized))
+                for term in headterms:
+                    clusters2headlines.setdefault(str(clustercount), [])
+                    tmp = clusters2headlines[str(clustercount)]
+                    tmp.append((term.lower(), -1))
+                    clusters2headlines[str(clustercount)] = tmp
+                annotate_recdisamb(headline, headterms, rec_disambs)
                 for term in headterms:
                     clusters2term.setdefault(str(clustercount), [])
                     tmp = clusters2term[str(clustercount)]
@@ -206,6 +192,32 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clustercou
             clustercount += 1
     doc2terms.close()
     return clustercount
+
+
+def annotate_recdisamb(headline, headterms, rec_disambs):
+    for rec_disamb in rec_disambs:
+        recognized = rec_disamb[0].lower()
+        disambiguated = rec_disamb[1].lower()
+        if '(' in disambiguated:
+            idx = disambiguated.find('(')
+            disambiguated = disambiguated[:idx - 1]
+        if disambiguated[:2] == 'w.':
+            if recognized in headline:
+                headline = headline.replace(recognized, '')
+                rec_terms = str(recognized).split()
+                for term in rec_terms:
+                    while term in headterms: headterms.remove(term)
+                if '*w' + str(disambiguated[2:]) not in headterms:
+                    headterms.append('*w' + str(disambiguated[2:]))
+        if disambiguated == 'none':
+            if recognized in headline:
+                headline = headline.replace(recognized, '')
+                rec_terms = str(recognized).split()
+                for term in rec_terms:
+                    while term in headterms: headterms.remove(term)
+                if '*r' + str(recognized) not in headterms:
+                    headterms.append('*r' + str(recognized))
+
 
 def limit(epsilon):
     if paper_epsilon:
