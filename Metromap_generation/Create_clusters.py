@@ -62,9 +62,9 @@ def run():
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     clusters2headlines = shelve.open("dbs/zclusters2headlines")
     clustercount = 0
-    clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
+    #clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
     for i in range(0, len(pdocs_incl)):
-        #break
+        break
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
