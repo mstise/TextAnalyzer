@@ -170,7 +170,7 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2h
     for p in range(0, len(pdocs_excl)):
         for doc in pdocs_excl[p]:
             f = open('Processed_news/' + doc)
-            rec_disambs = get_rec_disamb_pairs(doc, '/media/michael/My Passport/Disambiguated')
+            rec_disambs = get_rec_disamb_pairs(doc, 'Disambiguated')
             rec_disambs.sort(key=lambda tup: len(tup[1]), reverse=True)
             for line in f:
                 headline = line.split('.')[0].lower()
