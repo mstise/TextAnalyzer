@@ -39,8 +39,16 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
 
 def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, amount_of_summarizations=5):
     scores = {}
+    if cluster_number == '7':
+        test = 'test'
     topic_candidates = re.split('(?<=[.!?]) +', text)
+    for entry in range(len(topic_candidates) - 1, 0, -1):
+        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0:
+            del topic_candidates[entry]
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
+    for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0:
+            del lemmatized_topic_candidates[lem_entry]
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
         score = 0
@@ -72,7 +80,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
             scores[topic] = 1
         else:
             for term in query:
-                score_for_term = 1  # query[term] # 1
+                score_for_term = query[term] # 1
                 if term[0:2] == '*w' or term[0:2] == '*r':
                     term = term[2:]
                     words_in_term = len(term.split())
@@ -83,7 +91,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                             words_term += word + " "
                         words_term = words_term[:-1]
                         if term.lower() == words_term.lower():
-                            score += score_for_term
+                            score += score_for_term# * 100
                         current_word_set += 1
                 elif term[0:2] == '*f':
                     for word in lemmatized_words:
