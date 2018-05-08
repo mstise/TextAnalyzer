@@ -18,7 +18,9 @@ def get_data(term2idx, resetter, V):
         tuples = line[:-1].split('\t')
         for tuple in tuples[:-1]:
             term, weight = tuple.split(',')
-            W[term2idx[term], cmty_counter] = weight
+            W[term2idx[term], cmty_counter] = int(weight)
+            if weight == 0.0:
+                W[term2idx[term], cmty_counter] = int(weight) + resetter * 2
         cmty_counter += 1
     W = np.maximum(resetter, W)
     return csr_matrix(W)

@@ -223,7 +223,7 @@ def limit(epsilon):
     if paper_epsilon:
         return math.sqrt(-math.log(1 - epsilon))
     else:
-        return -1#resetter
+        return resetter
 
 def create_dicts(filenames, term2idx, idx2term):
     print("Creating dicts")
