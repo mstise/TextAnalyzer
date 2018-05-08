@@ -58,6 +58,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
         lemmatized_words = split_sentence_into_list(lemmatized_topic_candidate)
         hypernym_list = hypernyms_text.split('\n')
         hypernyms = {}
+        used_words = []
         for hypernym_set in hypernym_list:
             if hypernym_set == '':
                 continue
@@ -93,13 +94,15 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                         current_word_set += 1
                 elif term[0:2] == '*f':
                     for word in lemmatized_words:
-                        if word in hypernyms and term[2:] in hypernyms[word]:
+                        if word in hypernyms and term[2:] in hypernyms[word] and word not in used_words:
                             score += score_for_term
+                            used_words.append(word)
                             break
                 elif score_for_term > 0:
                     for word in lemmatized_words:
-                        if term.lower() == word.lower():
+                        if term.lower() == word.lower() and word not in used_words:
                             score += score_for_term
+                            used_words.append(word)
                 elif score_for_term < 0:
                     for word in words:
                         if term.lower() == word.lower():
