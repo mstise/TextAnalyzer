@@ -62,9 +62,9 @@ def run():
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     clusters2headlines = shelve.open("dbs/zclusters2headlines")
     clustercount = 0
-    #clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
+    clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
     for i in range(0, len(pdocs_incl)):
-        break
+        #break
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -223,7 +223,7 @@ def limit(epsilon):
     if paper_epsilon:
         return math.sqrt(-math.log(1 - epsilon))
     else:
-        return resetter
+        return -1#resetter
 
 def create_dicts(filenames, term2idx, idx2term):
     print("Creating dicts")
@@ -271,7 +271,7 @@ def idx_terms(filenames, doc2terms, idx2term, term2idx):
         if doc_idx % 1000 == 0:
             print(doc_idx)
         doc2docidx[filename] = doc_idx
-        for term in doc2terms[filename]:
+        for term in remove_wr_subterms(doc2terms[filename]):
             term = term_preprocess(term)
             if term == '':
                 continue
@@ -329,5 +329,19 @@ additional_stop_words = [
     "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",
     "bliver", "ligger", "siger", "mange", "får", "siden"]
 
+def remove_wr_subterms(terms):
+    return_list = []
+    wr_list = []
+    for term in terms:
+        if term[:2] == '*r' or term[:2] == '*w':
+            wr_list.append(term)
+    for term in terms:
+        skip_flag = False
+        for wr_term in wr_list:
+            if term in wr_term.split():
+                skip_flag = True
+        if not skip_flag:
+            return_list.append(term)
+    return return_list
 if __name__ == "__main__":
     run()
