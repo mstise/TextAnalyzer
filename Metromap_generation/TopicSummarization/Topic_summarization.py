@@ -246,6 +246,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             cluster2summaries[cluster].append(summary)
 
     #find_primary_entity(cluster2summaries, query, ent2idf)
+        cluster2summaries[cluster] = cluster2summaries[:5]
         #include = True
         #for a_result in cluster2summaries:
         #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
@@ -288,7 +289,7 @@ def find_primary_entity(cluster2summaries, query, ent2idf):
                 if entity.lower() in summary_triple[1].lower():
                     summaries_to_include.append(summary_triple)
                     break
-        cluster2summaries[cluster] = summaries_to_include[:5]
+        cluster2summaries[cluster] = summaries_to_include
 
 def do_the_lists_contain_the_same(list1, list2):
     result = True
