@@ -245,8 +245,18 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         for summary in winner_summaries:
             cluster2summaries[cluster].append(summary)
 
+    #REMEMBER THAT find_primary_entity SHOULD NOT BE FURTHER INDENTED THAN IT IS, SOME MOVING MIGHT BE REQUIRED
     #find_primary_entity(cluster2summaries, query, ent2idf)
         cluster2summaries[cluster] = cluster2summaries[cluster][:5]
+        clusters2summaries_for_cluster = []
+        cluster_total_score = 0
+        for summary in cluster2summaries[cluster]:
+            if summary[0] >= 1:
+                clusters2summaries_for_cluster.append(summary)
+                cluster_total_score += summary[0]
+        if cluster_total_score < 15:
+            clusters2summaries_for_cluster = []
+        cluster2summaries[cluster] = clusters2summaries_for_cluster
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
