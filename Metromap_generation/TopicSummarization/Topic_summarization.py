@@ -39,7 +39,7 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
     else:
         return False
 
-def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, amount_of_summarizations=5):
+def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf):
     if cluster_number == '15':
         test = 1
     scores = {}
@@ -88,6 +88,12 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
         else:
             for term in query:
                 score_for_term = query[term] # 1
+                if term[0:2] == '*w' or term[0:2] == '*r':
+                    score_for_term = score_for_term * ent2idf[term]
+                    if score_for_term * 20 > 3:
+                        score_for_term = 3
+                    else:
+                        score_for_term *= 20
                 if term[0:2] == '*w':
                     term = term[2:]
                     words_in_term = len(term.split())
@@ -98,7 +104,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                             words_term += word + " "
                         words_term = words_term[:-1]
                         if term.lower() == words_term.lower():
-                            score += score_for_term * 2
+                            score += score_for_term
                         current_word_set += 1
                 elif term[0:2] == '*r':
                     term = term[2:]
@@ -116,7 +122,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                                 words_term += word + " "
                             words_term = words_term[:-1]
                             if term.lower() == words_term.lower():
-                                score += score_for_term * 2
+                                score += score_for_term
                                 do_break = True
                                 break
                             current_word_set += 1
@@ -221,7 +227,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             lemmatized_text = lemmatized_text.replace('..', '.')
             doc = open('Ranked/' + document, "r")
             hyponyms_text = doc.read()
-            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster)
+            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster, ent2idf)
             for candidate in summary_candidates.keys():
                 document2summary_candidates[candidate] = [summary_candidates[candidate], document]
         if summary_candidates == []:
