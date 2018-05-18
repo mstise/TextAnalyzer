@@ -17,6 +17,7 @@ from Metromap_generation.TimelineUtils import factorize, get_rec_disamb_pairs
 import Metromap_generation.snap.Snap_wrapper as Swrapper
 from Metromap_generation.TopicSummarization.Topic_summarization import topic_summarization
 from Metromap_generation.Prune_clusters import prune_clusters
+import os
 
 ####################################################################################################################################
                                     #            SAVING            #                                                               #
@@ -48,10 +49,10 @@ snapclam = True
 
 
 ########################################################################################################################
-
+dirpath = 'example_documents/Aalborg_pirates'
 
 def run():
-    partitioned_docs, _ = resolutionize('example_documents/Aalborg_pirates', resolution=resolution)#new_examples Example_documents
+    partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)#new_examples Example_documents
     pdocs_incl, pdocs_excl = do_pre_processing(partitioned_docs)
     if load_adj:
         efile = open('dbs/epsilons', 'r')
@@ -61,10 +62,11 @@ def run():
     clusters2term = shelve.open("dbs/clusters2term")
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     clusters2headlines = shelve.open("dbs/zclusters2headlines")
+    doc2terms = shelve.open("dbs/doc2terms")
+    ent2replacement = mk_ent_replacement_dic(doc2terms, os.listdir(dirpath))
     clustercount = 0
     clustercount = fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2headlines, clustercount)
     for i in range(0, len(pdocs_incl)):
-        #break
         if len(pdocs_incl[i]) == 0:
             print('iteration ' + str(i) + ' is skipped')
             continue
@@ -76,7 +78,7 @@ def run():
         else:
             term2idx = shelve.open("dbs/term2idx" + str(i))
             idx2term = shelve.open("dbs/idx2term" + str(i))
-            V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term)
+            V, term2idx, idx2term, epsilon = create_dicts(pdocs_incl[i], term2idx, idx2term, doc2terms, ent2replacement)
             save_snap_format(V, idx2term)
             Swrapper.snap(len(pdocs_incl[i]))
             save_sparse_csr('dbs/V' + str(i), V.tocsr())
@@ -104,7 +106,7 @@ def run():
 
     efile.write(str(clustercount) + '\n')  # last line contain num clustered docs
     efile.close()
-
+    return
     import time
     print("Pruning begins: " + time.strftime("%H:%M:%S"))
     #prune_clusters(clusters2term, cluster2resolution)
@@ -225,13 +227,10 @@ def limit(epsilon):
     else:
         return resetter
 
-def create_dicts(filenames, term2idx, idx2term):
+def create_dicts(filenames, term2idx, idx2term, doc2terms, ent2replacement):
     print("Creating dicts")
-
-    doc2terms = shelve.open("dbs/doc2terms")
-
     print('1')
-    term2docidx = idx_terms(filenames, doc2terms, idx2term, term2idx) #idx2term and term2idx also gets filled
+    term2docidx = idx_terms(filenames, doc2terms, idx2term, term2idx, ent2replacement) #idx2term and term2idx also gets filled
     print('2')
     V = create_adj(filenames, term2docidx, term2idx)
     print('3')
@@ -242,6 +241,39 @@ def create_dicts(filenames, term2idx, idx2term):
         epsilon = resetter
     return V.tolil(), term2idx, idx2term, epsilon #V in CSR format has faster arithmetic and matrix vector operations
 
+def mk_ent_replacement_dic(doc2terms, filenames):
+    wr_list = []
+    for doc in filenames:
+        for term in doc2terms[doc]:
+            if term[:2] == '*r':
+                wr_list.append(term.lower())
+    wr_list.sort(key=lambda x: len(x.split(' ')))
+    ent2replacement = {}
+    replacement2ent = {}
+    for wr1 in wr_list:
+        if wr1 in ent2replacement.keys():
+            continue
+        similar_wrs = list(set([wr2 for wr2 in wr_list if wr1[3:] in wr2]))
+        similar_wrs_non_unique = [wr2 for wr2 in wr_list if wr1[3:] in wr2]
+        similar_wrs.sort(key=lambda x: similar_wrs_non_unique.count(x), reverse=True)
+        if len(similar_wrs) == 1:
+            continue
+        concat = ''
+        for similar_wr in similar_wrs:
+            concat += similar_wr
+        for similar_wr in similar_wrs:
+            ent2replacement[similar_wr] = concat
+            replacement2ent.setdefault(concat, [])
+            replacement2ent[concat].append(similar_wr)
+
+    #The below part, just fills ent2replacement in a different order, which gives slightly different results
+    ent2replacement = {}
+    descending_largest_concats = sorted(list(replacement2ent.keys()), key=lambda x: len(replacement2ent[x]), reverse=True)
+    for concat in descending_largest_concats:
+        for ent in replacement2ent[concat]:
+            ent2replacement[ent] = concat
+
+    return ent2replacement
 
 def create_adj(filenames, term2docidx, term2idx):
     num_unique_terms = len(term2docidx.keys())
@@ -262,7 +294,7 @@ def create_adj(filenames, term2docidx, term2idx):
     return V
 
 
-def idx_terms(filenames, doc2terms, idx2term, term2idx):
+def idx_terms(filenames, doc2terms, idx2term, term2idx, ent2replacement):
     term2docidx = {}
     doc2docidx = {}
     term_idx = 0
@@ -271,7 +303,7 @@ def idx_terms(filenames, doc2terms, idx2term, term2idx):
         if doc_idx % 1000 == 0:
             print(doc_idx)
         doc2docidx[filename] = doc_idx
-        for term in remove_wr_subterms(doc2terms[filename]):
+        for term in remove_wr_subterms(doc2terms[filename], ent2replacement):
             term = term_preprocess(term)
             if term == '':
                 continue
@@ -329,7 +361,7 @@ additional_stop_words = [
     "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)",
     "bliver", "ligger", "siger", "mange", "får", "siden"]
 
-def remove_wr_subterms(terms):
+def remove_wr_subterms(terms, ent2replacement):
     return_list = []
     wr_list = []
     for term in terms:
@@ -338,8 +370,20 @@ def remove_wr_subterms(terms):
     for term in terms:
         skip_flag = False
         for wr_term in wr_list:
-            if term in wr_term.split():
-                skip_flag = True
+            if term[0] != '*':
+                if term in wr_term.lower():
+                    skip_flag = True
+                elif term + 's' in wr_term.lower():
+                    skip_flag = True
+                elif term + 'en' in wr_term.lower():
+                    skip_flag = True
+                elif term + 'en' in wr_term.lower():
+                    skip_flag = True
+                elif term + 'e' in wr_term.lower():
+                    skip_flag = True
+        if term.lower() in ent2replacement.keys():
+            return_list.append(ent2replacement[term.lower()])
+            skip_flag = True
         if not skip_flag:
             return_list.append(term)
     return return_list
