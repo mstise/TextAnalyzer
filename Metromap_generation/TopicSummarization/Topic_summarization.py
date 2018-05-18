@@ -1,4 +1,6 @@
 import re
+import shelve
+
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk import bigrams
 
@@ -38,11 +40,15 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
         return False
 
 def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, amount_of_summarizations=5):
+    if cluster_number == '15':
+        test = 1
     scores = {}
+    #topic_candidates = [text]
     topic_candidates = re.split('(?<=[.!?]) +', text)
     for entry in range(len(topic_candidates) - 1, 0, -1):
         if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0:
             del topic_candidates[entry]
+    #lemmatized_topic_candidates = [lemmatized_text]
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
         if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0:
@@ -71,6 +77,8 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                 else:
                     hypernyms[hyper].append(hyponym)
         # Check for 1-document clusters
+        if len(query.values()) == 0:
+            testing = True
         if next(iter(query.values())) == -1:
             topic = ''
             for word in headline[str(cluster_number)]:
@@ -79,8 +87,8 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
             scores[topic] = 1
         else:
             for term in query:
-                score_for_term = 1 # query[term] # 1
-                if term[0:2] == '*w' or term[0:2] == '*r':
+                score_for_term = query[term] # 1
+                if term[0:2] == '*w':
                     term = term[2:]
                     words_in_term = len(term.split())
                     current_word_set = 0
@@ -92,12 +100,35 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
                         if term.lower() == words_term.lower():
                             score += score_for_term * 2
                         current_word_set += 1
+                elif term[0:2] == '*r':
+                    term = term[2:]
+                    if len(term.split('*r')) > 1:
+                        test = term.split('*r')
+                        testing = 1
+                    terms = term.split('*r')
+                    do_break = False
+                    for term in terms:
+                        words_in_term = len(term.split())
+                        current_word_set = 0
+                        while current_word_set < len(words) - words_in_term:
+                            words_term = ''
+                            for word in words[current_word_set:current_word_set + words_in_term]:
+                                words_term += word + " "
+                            words_term = words_term[:-1]
+                            if term.lower() == words_term.lower():
+                                score += score_for_term * 2
+                                do_break = True
+                                break
+                            current_word_set += 1
+                        if do_break:
+                            break
                 elif term[0:2] == '*f':
                     for word in lemmatized_words:
-                        if word in hypernyms and term[2:] in hypernyms[word] and word not in used_words:
-                            score += score_for_term
-                            used_words.append(word)
-                            break
+                        for hypernym in hypernyms:
+                            if word in hypernyms[hypernym] and term[2:] == hypernym:
+                                score += score_for_term
+                                used_words.append(word)
+                                break
                 elif score_for_term > 0:
                     for word in lemmatized_words:
                         if term.lower() == word.lower() and word not in used_words:
@@ -158,12 +189,29 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
 
 def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents):
     cluster2summaries = {}
+    already_seen_words = {}
+    ent2df = df_creator(documents)
+    for cluster in cluster2term.keys():
+        tuples = cluster2term[str(cluster)]
+        query = {}
+        for entry in tuples:
+            query[entry[0]] = entry[1]
+        for word in query:
+            already_seen_words.setdefault(word, 0)
+            already_seen_words[word] += 1
     for cluster in cluster2term:
         document2summary_candidates = {}
         query = {}
         tuples = cluster2term[str(cluster)]
         for entry in tuples:
-            query[entry[0]] = entry[1]
+            if entry[1] == -1:
+                query[entry[0]] = entry[1]
+            else:
+                if already_seen_words[entry[0]] > 5:
+                    query[entry[0]] = 1 #0.5
+                else:
+                    query[entry[0]] = 1
+            #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             doc = open('example_documents/Aalborg_pirates/' + document, "r")
             text = doc.read() + ". "
@@ -180,17 +228,47 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             continue
         winner_summaries = []
         for candidate in document2summary_candidates:
-            if len(winner_summaries) < 5:
+            #if len(winner_summaries) < 5:
                 winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
                 winner_summaries.sort(key=lambda x: x[0], reverse=True)
-            elif winner_summaries[4][0] < document2summary_candidates[candidate][0]:
-                del winner_summaries[4]
-                winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
-                winner_summaries.sort(key=lambda x: x[0], reverse=True)
+            #elif winner_summaries[4][0] < document2summary_candidates[candidate][0]:
+            #    del winner_summaries[4]
+            #    winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
+            #    winner_summaries.sort(key=lambda x: x[0], reverse=True)
         cluster2summaries.setdefault(cluster, [])
         for summary in winner_summaries:
             cluster2summaries[cluster].append(summary)
 
+    # Check for the primary entity in the cluster
+    for cluster in cluster2summaries:
+        scores = cluster2summaries[cluster]
+        entity_score = {}
+        for score_and_sentence in scores:
+            sentence_score = score_and_sentence[0]
+            if sentence_score < 3:
+                continue
+            sentence = score_and_sentence[1]
+            for term in query:
+                if term[:2] == "*r" or term[:2] == "*w":
+                    entity_names = term[2:].split("*r")
+                    for entity_name in entity_names:
+                        if entity_name.lower() in sentence.lower():
+                            entity_score.setdefault(term, 0)
+                            entity_score[term] += sentence_score / ent2df[term]
+                            break
+        if len(entity_score) == 0:
+            cluster2summaries[cluster] = cluster2summaries[cluster][:5]
+            continue
+        winner_ent = sorted(list(entity_score.items()), key=lambda x: x[1])[0][0]
+        summaries_to_include = []
+        for summary_triple in cluster2summaries[cluster]:
+            summary_triple.append(winner_ent)
+            entities = winner_ent[2:].split("*r")
+            for entity in entities:
+                if entity.lower() in summary_triple[1].lower():
+                    summaries_to_include.append(summary_triple)
+                    break
+        cluster2summaries[cluster] = summaries_to_include[:5]
         #include = True
         #for a_result in cluster2summaries:
         #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
@@ -210,3 +288,30 @@ def do_the_lists_contain_the_same(list1, list2):
             result = False
             break
     return result
+
+def df_creator(document_clusters):
+    documents = []
+    for doc_cluster in document_clusters:
+        for doc in doc_cluster:
+            documents.append(doc)
+    clusters2term = shelve.open('dbs/clusters2term')
+    ent2doc = shelve.open('dbs/ent2doctuple')
+    docidx2name = shelve.open('dbs/docidx2name')
+    entities = set()
+    for cluster in clusters2term:
+        for term in clusters2term[cluster]:
+            if term[0][:2] == '*w' or term[0][:2] == '*r':
+                entities.add(term[0])
+    ent2df = {}
+    for entity in entities:
+        recognized = entity[2:].split("*r")
+        for rec in recognized:
+            if "*w" + rec in ent2doc:
+                doctuples = ent2doc["*w" + rec]
+            elif "*r" + rec in ent2doc:
+                doctuples = ent2doc["*r" + rec]
+            for doctuple in doctuples:
+                if docidx2name[str(doctuple[0])] in documents:
+                    ent2df.setdefault(entity, 0)
+                    ent2df[entity] += doctuple[1]
+    return ent2df
