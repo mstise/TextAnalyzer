@@ -190,7 +190,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, a
 def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents):
     cluster2summaries = {}
     already_seen_words = {}
-    ent2df = df_creator(documents)
+    ent2idf = df_creator(documents)
     for cluster in cluster2term.keys():
         tuples = cluster2term[str(cluster)]
         query = {}
@@ -254,12 +254,12 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
                     for entity_name in entity_names:
                         if entity_name.lower() in sentence.lower():
                             entity_score.setdefault(term, 0)
-                            entity_score[term] += sentence_score / ent2df[term]
+                            entity_score[term] += sentence_score * ent2idf[term]
                             break
         if len(entity_score) == 0:
             cluster2summaries[cluster] = cluster2summaries[cluster][:5]
             continue
-        winner_ent = sorted(list(entity_score.items()), key=lambda x: x[1])[0][0]
+        winner_ent = sorted(list(entity_score.items()), key=lambda x: x[1], reverse=True)[0][0]
         summaries_to_include = []
         for summary_triple in cluster2summaries[cluster]:
             summary_triple.append(winner_ent)
@@ -302,7 +302,7 @@ def df_creator(document_clusters):
         for term in clusters2term[cluster]:
             if term[0][:2] == '*w' or term[0][:2] == '*r':
                 entities.add(term[0])
-    ent2df = {}
+    ent2idf = {}
     for entity in entities:
         recognized = entity[2:].split("*r")
         for rec in recognized:
@@ -312,6 +312,8 @@ def df_creator(document_clusters):
                 doctuples = ent2doc["*r" + rec]
             for doctuple in doctuples:
                 if docidx2name[str(doctuple[0])] in documents:
-                    ent2df.setdefault(entity, 0)
-                    ent2df[entity] += doctuple[1]
-    return ent2df
+                    ent2idf.setdefault(entity, 0)
+                    ent2idf[entity] += doctuple[1]
+    for entity in ent2idf:
+        ent2idf[entity] = 1 / ent2idf[entity]
+    return ent2idf
