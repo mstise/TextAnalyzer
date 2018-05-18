@@ -245,6 +245,20 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         for summary in winner_summaries:
             cluster2summaries[cluster].append(summary)
 
+    #find_primary_entity(cluster2summaries, query, ent2idf)
+        #include = True
+        #for a_result in cluster2summaries:
+        #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
+        #        include = False
+        #if include:
+        #    cluster2summaries[cluster] = summary_candidates
+    return cluster2summaries
+
+#test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
+#                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
+#testing = 1
+
+def find_primary_entity(cluster2summaries, query, ent2idf):
     # Check for the primary entity in the cluster
     for cluster in cluster2summaries:
         scores = cluster2summaries[cluster]
@@ -275,17 +289,6 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
                     summaries_to_include.append(summary_triple)
                     break
         cluster2summaries[cluster] = summaries_to_include[:5]
-        #include = True
-        #for a_result in cluster2summaries:
-        #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
-        #        include = False
-        #if include:
-        #    cluster2summaries[cluster] = summary_candidates
-    return cluster2summaries
-
-#test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
-#                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
-#testing = 1
 
 def do_the_lists_contain_the_same(list1, list2):
     result = True
