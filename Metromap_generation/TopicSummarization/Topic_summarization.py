@@ -246,13 +246,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             cluster2summaries[cluster].append(summary)
 
     #find_primary_entity(cluster2summaries, query, ent2idf)
-        cluster2summaries[cluster] = cluster2summaries[:5]
-        #include = True
-        #for a_result in cluster2summaries:
-        #    if do_the_lists_contain_the_same(cluster2summaries[a_result], summary_candidates):
-        #        include = False
-        #if include:
-        #    cluster2summaries[cluster] = summary_candidates
+        cluster2summaries[cluster] = cluster2summaries[cluster][:5]
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
