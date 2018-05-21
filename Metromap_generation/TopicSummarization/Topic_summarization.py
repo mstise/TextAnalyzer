@@ -52,7 +52,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #lemmatized_topic_candidates = [lemmatized_text]
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[entry]:
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry]:
             del lemmatized_topic_candidates[lem_entry]
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
