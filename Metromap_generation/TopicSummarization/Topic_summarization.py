@@ -47,12 +47,12 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #topic_candidates = [text]
     topic_candidates = re.split('(?<=[.!?]) +', text)
     for entry in range(len(topic_candidates) - 1, 0, -1):
-        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0:
+        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0 or ' ' not in topic_candidates[entry]:
             del topic_candidates[entry]
     #lemmatized_topic_candidates = [lemmatized_text]
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0:
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in topic_candidates[entry]:
             del lemmatized_topic_candidates[lem_entry]
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
@@ -194,7 +194,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #            del summarizations[candidate2_index]
     return scores# summarizations[0:amount_of_summarizations]
 
-def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents):
+def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents, sentences_per_cluster=5):
     cluster2summaries = {}
     already_seen_words = {}
     ent2idf = df_creator(documents)
@@ -272,7 +272,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
 
     #REMEMBER THAT find_primary_entity SHOULD NOT BE FURTHER INDENTED THAN IT IS, SOME MOVING MIGHT BE REQUIRED
     #find_primary_entity(cluster2summaries, query, ent2idf)
-        cluster2summaries[cluster] = cluster2summaries[cluster][:5]
+        cluster2summaries[cluster] = cluster2summaries[cluster][:sentences_per_cluster]
         clusters2summaries_for_cluster = []
         cluster_total_score = 0
         for summary in cluster2summaries[cluster]:
@@ -283,6 +283,12 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
 
+        clusters_to_remove = []
+        for summary in cluster2summaries[cluster]:
+            if summary = []
+            for summary2 in cluster2summaries[cluster]:
+
+                test = 1
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
