@@ -283,12 +283,12 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
 
-        clusters_to_remove = []
-        for summary in cluster2summaries[cluster]:
-            if summary = []
-            for summary2 in cluster2summaries[cluster]:
+#        clusters_to_remove = []
+#        for summary in cluster2summaries[cluster]:
+#            if summary == []:
+#                for summary2 in cluster2summaries[cluster]:
 
-                test = 1
+#                test = 1
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
