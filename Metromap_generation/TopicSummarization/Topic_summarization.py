@@ -2,6 +2,7 @@ import re
 import shelve
 
 from sklearn.metrics.pairwise import cosine_similarity
+from dateutil import relativedelta
 from nltk import bigrams
 
 
@@ -245,6 +246,30 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         for summary in winner_summaries:
             cluster2summaries[cluster].append(summary)
 
+        # Scale scores based on the time of the document
+        timescore = {}
+        for summary in cluster2summaries[cluster]:
+            time = get_date_from_docname(summary[2])
+            timescore.setdefault(time, 0)
+            timescore[time] += summary[0]
+
+        if len(timescore) > 0:
+            winner_time = max(timescore.keys(), key=(lambda k: timescore[k]))
+            for summary in cluster2summaries[cluster]:
+                cluster_time = get_date_from_docname(summary[2])
+                time_difference = relativedelta.relativedelta(winner_time, cluster_time)
+                days = time_difference.days
+                time_factor = 1
+                while days != 0:
+                    time_factor = time_factor - time_factor * 0.05
+                    if days > 0:
+                        days -= 1
+                    else:
+                        days += 1
+                summary[0] *= time_factor
+            cluster2summaries[cluster].sort(key=lambda x: x[0], reverse=True)
+            test = 1
+
     #REMEMBER THAT find_primary_entity SHOULD NOT BE FURTHER INDENTED THAN IT IS, SOME MOVING MIGHT BE REQUIRED
     #find_primary_entity(cluster2summaries, query, ent2idf)
         cluster2summaries[cluster] = cluster2summaries[cluster][:5]
@@ -257,11 +282,18 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         if cluster_total_score < 15:
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
+
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
 #                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
 #testing = 1
+
+from datetime import date
+def get_date_from_docname(docname):
+    timepoint = docname.split('_')[-2]
+    timepoint = date(int(timepoint[0:4]), int(timepoint[4:6]), int(timepoint[6:8]))
+    return timepoint
 
 def find_primary_entity(cluster2summaries, query, ent2idf):
     # Check for the primary entity in the cluster
