@@ -52,7 +52,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #lemmatized_topic_candidates = [lemmatized_text]
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in topic_candidates[entry]:
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[entry]:
             del lemmatized_topic_candidates[lem_entry]
     topic_candidate_number = 0
     for topic_candidate in topic_candidates:
@@ -283,12 +283,12 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
 
-        clusters_to_remove = []
-        for summary in cluster2summaries[cluster]:
-            if summary = []
-            for summary2 in cluster2summaries[cluster]:
+#        clusters_to_remove = []
+#        for summary in cluster2summaries[cluster]:
+#            if summary == []:
+#                for summary2 in cluster2summaries[cluster]:
 
-                test = 1
+#                test = 1
     return cluster2summaries
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
