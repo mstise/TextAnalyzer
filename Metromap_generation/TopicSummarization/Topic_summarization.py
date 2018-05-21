@@ -44,11 +44,12 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     if cluster_number == '15':
         test = 1
     scores = {}
-    #lemmatized_topic_candidates = [lemmatized_text]
-    lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
+    text = text.replace(".", ". ")
+    lemmatized_text = lemmatized_text.replace(".", ". ").replace("!", "! ").replace("?", "? ")
+    lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text).replace('.', '').replace('?', '').replace('!', '')
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
-        lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" .", ".")
-        lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" /", "/")
+        #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" .", ".").replace(" /", "/")
+        #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" /", "/")
         if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry]:
             del lemmatized_topic_candidates[lem_entry]
     #topic_candidates = [text]
