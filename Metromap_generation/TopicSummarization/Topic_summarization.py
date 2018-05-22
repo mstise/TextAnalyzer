@@ -3,8 +3,7 @@ import shelve
 
 from sklearn.metrics.pairwise import cosine_similarity
 from dateutil import relativedelta
-from nltk import bigrams
-
+from Metromap_generation.TimelineUtils import get_rec_disamb_pairs
 
 def split_sentence_into_list(sentence):
     result = re.sub("[^\w]", " ", sentence).split()
@@ -40,7 +39,7 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
     else:
         return False
 
-def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf):
+def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf, dis2rec):
     if cluster_number == '190':
         test = 1
     scores = {}
@@ -106,17 +105,19 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                     else:
                         score_for_term *= 20
                 if term[0:2] == '*w':
-                    term = term[2:]
-                    words_in_term = len(term.split())
-                    current_word_set = 0
-                    while current_word_set < len(words) - words_in_term:
-                        words_term = ''
-                        for word in words[current_word_set:current_word_set + words_in_term]:
-                            words_term += word + " "
-                        words_term = words_term[:-1]
-                        if term.lower() == words_term.lower():
-                            score += score_for_term
-                        current_word_set += 1
+                    recognized = dis2rec[term]
+                    for term in recognized:
+                        term = term[2:]
+                        words_in_term = len(term.split())
+                        current_word_set = 0
+                        while current_word_set < len(words) - words_in_term:
+                            words_term = ''
+                            for word in words[current_word_set:current_word_set + words_in_term]:
+                                words_term += word + " "
+                            words_term = words_term[:-1]
+                            if term.lower() == words_term.lower():
+                                score += score_for_term
+                            current_word_set += 1
                 elif term[0:2] == '*r':
                     term = term[2:]
                     if len(term.split('*r')) > 1:
@@ -204,7 +205,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #            del summarizations[candidate2_index]
     return scores# summarizations[0:amount_of_summarizations]
 
-def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents, sentences_per_cluster=5):
+def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents, dis2rec, sentences_per_cluster=5):
     cluster2summaries = {}
     already_seen_words = {}
     ent2idf = df_creator(documents)
@@ -238,7 +239,8 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             lemmatized_text = lemmatized_text.replace('..', '.')
             doc = open('Ranked/' + document, "r")
             hyponyms_text = doc.read()
-            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster, ent2idf)
+            text = replace_abbreviation_dots(text)
+            summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster, ent2idf, dis2rec)
             for candidate in summary_candidates.keys():
                 document2summary_candidates[candidate] = [summary_candidates[candidate], document]
         if summary_candidates == []:
@@ -300,6 +302,14 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
 
 #                test = 1
     return cluster2summaries
+
+
+def replace_abbreviation_dots(text):
+    if "tidl." in text or "f.eks." in text or "fx." in text:
+        test = 1
+    text = text.replace("tidl.", "tidl\u2024").replace("f.eks.", "f\u2024eks\u2024").replace("fx.", "fx\u2024")
+    return text
+
 
 #test = ts('Dette er en tests streng. Den handler om Aalborg Pirates! Og har åbenbart også noget, med, frederikshavn White Hawks at gøre?. Dette er stadig en tests streng',
 #                    {'Aalborg': 9, '*wWhite hawks': 2, 'test': 0.5, 'en': 0.1})
@@ -379,3 +389,15 @@ def df_creator(document_clusters):
     for entity in ent2idf:
         ent2idf[entity] = 1 / ent2idf[entity]
     return ent2idf
+
+def test_topic_summarization():
+    clusters2term = shelve.open("dbs/clusters2term")
+    clusters2headlines = shelve.open("dbs/zclusters2headlines")
+    cluster2resolution = shelve.open("dbs/cluster2resolution")
+    dirpath = 'example_documents/Socialdemokratiet'
+    resolution = 'month'
+    from Metromap_generation.Resolution import resolutionize
+    partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)
+    topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs)
+
+# test_topic_summarization()
