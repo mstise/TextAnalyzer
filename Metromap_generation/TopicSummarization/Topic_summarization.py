@@ -41,21 +41,24 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
         return False
 
 def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf):
-    if cluster_number == '15':
+    if cluster_number == '190':
         test = 1
     scores = {}
     text = text.replace(".", ". ")
-    lemmatized_text = lemmatized_text.replace(".", ". ").replace("!", "! ").replace("?", "? ")
-    lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text).replace('.', '').replace('?', '').replace('!', '')
+    text = text.replace(".", ". ").replace("!", "! ").replace("?", "? ").replace("/", "/ ")
+    text = text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
+    lemmatized_text = lemmatized_text.replace(".", ". ").replace("!", "! ").replace("?", "? ").replace("/", "/ ")
+    lemmatized_text = lemmatized_text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
+    lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" .", ".").replace(" /", "/")
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" /", "/")
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry]:
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry] or '\n' in lemmatized_topic_candidates[lem_entry]:
             del lemmatized_topic_candidates[lem_entry]
     #topic_candidates = [text]
     topic_candidates = re.split('(?<=[.!?]) +', text)
     for entry in range(len(topic_candidates) - 1, 0, -1):
-        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0 or ' ' not in topic_candidates[entry]:
+        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0 or ' ' not in topic_candidates[entry] or '\n' in topic_candidates[entry]:
             del topic_candidates[entry]
 
     topic_candidate_number = 0
@@ -65,7 +68,10 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
             continue
         # Split the topic candidate into individual words and check whether any match the query words, score accordingly
         words = split_sentence_into_list(topic_candidate)
-        lemmatized_topic_candidate = lemmatized_topic_candidates[topic_candidate_number]
+        try:
+            lemmatized_topic_candidate = lemmatized_topic_candidates[topic_candidate_number]
+        except:
+            print('um')
         lemmatized_words = split_sentence_into_list(lemmatized_topic_candidate)
         hypernym_list = hypernyms_text.split('\n')
         hypernyms = {}
@@ -224,7 +230,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
                     query[entry[0]] = 1
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
-            doc = open('example_documents/Aalborg_pirates/' + document, "r")
+            doc = open('example_documents/Socialdemokratiet/' + document, "r")
             text = doc.read() + ". "
             text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
