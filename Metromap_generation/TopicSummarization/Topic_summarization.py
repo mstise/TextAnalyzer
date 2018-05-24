@@ -86,9 +86,6 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                     hypernyms[hyper] = [hyponym]
                 else:
                     hypernyms[hyper].append(hyponym)
-        # Check for 1-document clusters
-        if len(query.values()) == 0:
-            testing = True
         if next(iter(query.values())) == -1:
             topic = ''
             for word in headline[str(cluster_number)]:
@@ -237,9 +234,10 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             doc = open('Lemmatized/' + document, "r")
             lemmatized_text = doc.read() + ". "
             lemmatized_text = lemmatized_text.replace('..', '.')
-            doc = open('Ranked/' + document, "r")
+            doc = open('/media/michael/My Passport/Ranked/' + document, "r")
             hyponyms_text = doc.read()
             text = replace_abbreviation_dots(text)
+            lemmatized_text = replace_abbreviation_dots(lemmatized_text)
             summary_candidates = ts(text, lemmatized_text, hyponyms_text, query, clusters2headlines, cluster, ent2idf, dis2rec)
             for candidate in summary_candidates.keys():
                 document2summary_candidates[candidate] = [summary_candidates[candidate], document]
@@ -394,10 +392,11 @@ def test_topic_summarization():
     clusters2term = shelve.open("dbs/clusters2term")
     clusters2headlines = shelve.open("dbs/zclusters2headlines")
     cluster2resolution = shelve.open("dbs/cluster2resolution")
+    dis2rec = shelve.open("dbs/dis2rec")
     dirpath = 'example_documents/Socialdemokratiet'
     resolution = 'month'
     from Metromap_generation.Resolution import resolutionize
     partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)
-    topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs)
+    topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs, dis2rec)
 
-# test_topic_summarization()
+test_topic_summarization()
