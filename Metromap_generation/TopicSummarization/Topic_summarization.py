@@ -228,6 +228,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
                     query[entry[0]] = 1
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
+            #if get_date_from_docname(document)
             doc = open('example_documents/Socialdemokratiet/' + document, "r")
             text = doc.read() + ". "
             text = text.replace('..', '.')
@@ -289,7 +290,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             if summary[0] >= 1:
                 clusters2summaries_for_cluster.append(summary)
                 cluster_total_score += summary[0]
-        if cluster_total_score < 15:
+        if cluster_total_score < 15 and query.values()[0] != -1:
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
 
