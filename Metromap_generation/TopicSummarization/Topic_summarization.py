@@ -164,7 +164,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
         for candidate2 in scores:
             if candidate2 in candidates_already_checked:
                 continue
-            if are_topics_similar(candidate1, candidate2):
+            if are_topics_similar(candidate1, candidate2) and candidate2 not in candidates_to_delete:
                 candidates_to_delete.append(candidate2)
     for candidate in candidates_to_delete:
         del scores[candidate]
@@ -234,7 +234,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             doc = open('Lemmatized/' + document, "r")
             lemmatized_text = doc.read() + ". "
             lemmatized_text = lemmatized_text.replace('..', '.')
-            doc = open('/media/michael/My Passport/Ranked/' + document, "r")
+            doc = open('Ranked/' + document, "r")
             hyponyms_text = doc.read()
             text = replace_abbreviation_dots(text)
             lemmatized_text = replace_abbreviation_dots(lemmatized_text)
@@ -399,4 +399,4 @@ def test_topic_summarization():
     partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)
     topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs, dis2rec)
 
-test_topic_summarization()
+#test_topic_summarization()
