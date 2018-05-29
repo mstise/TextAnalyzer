@@ -87,11 +87,23 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                 else:
                     hypernyms[hyper].append(hyponym)
         if next(iter(query.values())) == -1:
-            topic = ''
+            topicNumber = 1
+            topic1 = ''
+            topic2 = ''
+            topic3 = ''
             for word in headline[str(cluster_number)]:
-                topic += word[0] + ' '
-            topic = topic[0:-1] + '.'
-            scores[topic] = 1
+                if topicNumber == 1:
+                    topic1 += word[0] + ' '
+                elif topicNumber == 2:
+                    topic2 += word[0] + ' '
+                elif topicNumber == 3:
+                    topic3 += word[0] + ' '
+                if word[-1] == '.':
+                    topicNumber += 1
+            #topic = topic[0:-1] + '.'
+            scores[topic1] = 100
+            scores[topic2] = 10
+            scores[topic3] = 1
         else:
             for term in query:
                 score_for_term = query[term] # 1
@@ -229,7 +241,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             #if get_date_from_docname(document)
-            doc = open('example_documents/Socialdemokratiet/' + document, "r")
+            doc = open('example_documents/Aalborg_pirates/' + document, "r")
             text = doc.read() + ". "
             text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
