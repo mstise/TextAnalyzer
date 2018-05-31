@@ -16,7 +16,7 @@ from Metromap_generation.CosinePreProc import do_pre_processing
 from Metromap_generation.TimelineUtils import factorize, get_rec_disamb_pairs
 import Metromap_generation.snap.Snap_wrapper as Swrapper
 from Metromap_generation.TopicSummarization.Topic_summarization import topic_summarization
-from Metromap_generation.Prune_clusters import prune_clusters
+#from Metromap_generation.Prune_clusters import prune_clusters
 import os
 
 ####################################################################################################################################
@@ -49,7 +49,7 @@ snapclam = True
 
 
 ########################################################################################################################
-dirpath = 'example_documents/Aalborg_pirates'
+dirpath = 'example_documents/Socialdemokratiet'
 
 def run():
     partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)#new_examples Example_documents
@@ -112,7 +112,7 @@ def run():
     #prune_clusters(clusters2term, cluster2resolution)
     print("Topic summarization begins: " + time.strftime("%H:%M:%S"))
     test = len(clusters2term)
-    ts = topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs)
+    #ts = topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs)
     test2 = len(clusters2term)
     print("Topic summarization ends: " + time.strftime("%H:%M:%S"))
 
@@ -189,7 +189,7 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2h
                     tmp = clusters2term[str(clustercount)]
                     tmp.append((term.lower(), -1))
                     clusters2term[str(clustercount)] = tmp
-                print('gh')
+                #print('gh')
             cluster2resolution[str(clustercount)] = p
             clustercount += 1
     doc2terms.close()
@@ -241,7 +241,7 @@ def create_dicts(filenames, term2idx, idx2term, doc2terms, ent2replacement):
         epsilon = resetter
     return V.tolil(), term2idx, idx2term, epsilon #V in CSR format has faster arithmetic and matrix vector operations
 
-def mk_ent_replacement_dic(doc2terms, filenames):
+def mk_ent_replacement_dic(doc2terms, filenames): #concats similar *r
     wr_list = []
     for doc in filenames:
         for term in doc2terms[doc]:
@@ -254,10 +254,19 @@ def mk_ent_replacement_dic(doc2terms, filenames):
         if wr1 in ent2replacement.keys():
             continue
         similar_wrs = list(set([wr2 for wr2 in wr_list if wr1[3:] in wr2]))
-        similar_wrs_non_unique = [wr2 for wr2 in wr_list if wr1[3:] in wr2]
-        similar_wrs.sort(key=lambda x: similar_wrs_non_unique.count(x), reverse=True)
         if len(similar_wrs) == 1:
             continue
+        similar_wrs_cp1 = similar_wrs.copy()
+        similar_wrs_cp2 = similar_wrs.copy()
+        adv_modication(similar_wrs, wr1)
+        adv_modication(similar_wrs_cp1, wr1 + wr1[-1])
+        adv_modication(similar_wrs_cp2, wr1.replace('-', ' '), nodash=True)
+        similar_wrs = list(set(similar_wrs).union(similar_wrs_cp1).union(similar_wrs_cp2))
+        if len(similar_wrs) == 1:
+            continue
+        similar_wrs_non_unique = [wr2 for wr2 in wr_list if wr1[3:] in wr2]
+        similar_wrs.sort(key=lambda x: similar_wrs_non_unique.count(x), reverse=True)
+
         concat = ''
         for similar_wr in similar_wrs:
             concat += similar_wr
@@ -274,6 +283,33 @@ def mk_ent_replacement_dic(doc2terms, filenames):
             ent2replacement[ent] = concat
 
     return ent2replacement
+
+
+def adv_modication(similar_wrs, wr1, nodash=False):
+    wr1e = wr1[3:-1] if wr1[-1] == 'e' else wr1[3:]
+    wr1i = wr1[3:-1] if wr1[-1] == 'i' else wr1[3:]
+    wr1s = wr1[3:-1] if wr1[-1] == 's' else wr1[3:]
+    wr1n = wr1[3:-1] if wr1[-1] == 'n' else wr1[3:]
+    wr1h = wr1[3:-1] if wr1[-1] == 'h' else wr1[3:]
+    for i in range(len(similar_wrs) - 1, -1, -1):
+        sims = similar_wrs[i][3:].split(' ')
+        if nodash:
+            sims = similar_wrs[i].replace('-', ' ')[3:].split(' ')
+        if wr1e + 'e' in sims or wr1e + 'else' in sims or wr1e + 'en' in sims or wr1e + 'er' in sims or wr1e + 'et' in sims or wr1e + 'ende' in sims or wr1e + 'ene' in sims or wr1e + 'erne' in sims or wr1e + 'es' in sims:
+            continue
+        elif wr1i + 'i' in sims or wr1i + 'ing' in sims or wr1i + 'is' in sims or wr1i + 'isme' in sims:
+            continue
+        elif wr1s + 's' in sims or wr1s + 'ske' in sims:
+            continue
+        elif wr1n + 'n' in sims or wr1n + 'ne' in sims or wr1n + 'ning' in sims:
+            continue
+        elif wr1h + 'h' in sims or wr1h + 'hed' in sims:
+            continue
+        elif wr1[3:] in sims:
+            continue
+        else:
+            del similar_wrs[i]
+
 
 def create_adj(filenames, term2docidx, term2idx):
     num_unique_terms = len(term2docidx.keys())
