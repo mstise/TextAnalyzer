@@ -412,4 +412,4 @@ def test_topic_summarization():
     partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)
     topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs, dis2rec)
 
-#test_topic_summarization()
+test_topic_summarization()
