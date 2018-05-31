@@ -52,12 +52,12 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" .", ".").replace(" /", "/")
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" /", "/")
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry] or '\n' in lemmatized_topic_candidates[lem_entry]:
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry] or '\n' in lemmatized_topic_candidates[lem_entry] or (len(lemmatized_topic_candidates[lem_entry].split()) == 2 and not lemmatized_topic_candidates[lem_entry].split()[0].isalpha()):
             del lemmatized_topic_candidates[lem_entry]
     #topic_candidates = [text]
     topic_candidates = re.split('(?<=[.!?]) +', text)
     for entry in range(len(topic_candidates) - 1, 0, -1):
-        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0 or ' ' not in topic_candidates[entry] or '\n' in topic_candidates[entry]:
+        if len(topic_candidates[entry]) == 1 or len(topic_candidates[entry]) == 0 or ' ' not in topic_candidates[entry] or '\n' in topic_candidates[entry] or (len(topic_candidates[entry].split()) == 2 and not topic_candidates[entry].split()[0].isalpha()):
             del topic_candidates[entry]
 
     topic_candidate_number = 0
@@ -114,7 +114,18 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                     else:
                         score_for_term *= 20
                 if term[0:2] == '*w':
-                    recognized = dis2rec[term]
+                    try:
+                        recognized = dis2rec[term]
+                    except:
+                        tmp = ''
+                        for word in term.split()[:-1]:
+                            tmp += word + ' '
+                        tmp += '(' + term.split()[-1] + ')'
+                        if tmp in dis2rec:
+                            recognized = dis2rec[tmp]#
+                            print(term + 'handled')
+                        else:
+                            print(term + 'failed')
                     for term in recognized:
                         term = term[2:]
                         words_in_term = len(term.split())
@@ -241,7 +252,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             #if get_date_from_docname(document)
-            doc = open('example_documents/Aalborg_pirates/' + document, "r")
+            doc = open('example_documents/Socialdemokratiet/' + document, "r")#v
             text = doc.read() + ". "
             text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
@@ -302,7 +313,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             if summary[0] >= 1:
                 clusters2summaries_for_cluster.append(summary)
                 cluster_total_score += summary[0]
-        if cluster_total_score < 15 and query.values()[0] != -1:
+        if cluster_total_score < 15 and list(query.values())[0] != -1:
             clusters2summaries_for_cluster = []
         cluster2summaries[cluster] = clusters2summaries_for_cluster
 
@@ -392,11 +403,14 @@ def df_creator(document_clusters):
             if "*w" + rec in ent2doc:
                 doctuples = ent2doc["*w" + rec]
             elif "*r" + rec in ent2doc:
-                doctuples = ent2doc["*r" + rec]
-            for doctuple in doctuples:
-                if docidx2name[str(doctuple[0])] in documents:
-                    ent2idf.setdefault(entity, 0)
-                    ent2idf[entity] += doctuple[1]
+                doctuples = ent2doc["*r" + rec] #
+            try:
+                for doctuple in doctuples:
+                    if docidx2name[str(doctuple[0])] in documents:
+                        ent2idf.setdefault(entity, 0)
+                        ent2idf[entity] += doctuple[1]
+            except:
+                print(entity + ' does not exist in ent2doc')
     for entity in ent2idf:
         ent2idf[entity] = 1 / ent2idf[entity]
     return ent2idf

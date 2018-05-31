@@ -4,7 +4,7 @@ import os
 import re
 from scipy.sparse import csr_matrix, lil_matrix, rand
 import shelve
-from Metromap_generation.TimelineUtils import get_disambiguations
+from Metromap_generation.TimelineUtils import get_rec_disamb_pairs
 import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -24,13 +24,13 @@ def get_doc_representation(document_path, incl_ents=False):
 def get_doc2ents():
     doc2ents = {}
     for filename in os.listdir(DISAMBIGUATED_PATH):
-        d_ents = get_disambiguations(filename, DISAMBIGUATED_PATH)
+        d_ents = get_rec_disamb_pairs(filename, DISAMBIGUATED_PATH)
         dent_set = set() #We do not want multiple of the same disambiguations per doc
         for d_ent in d_ents:
-            if str(d_ent[:4]) != 'None':
-                dent_set.add('*' + d_ent)
+            if str(d_ent[1]) != 'None':
+                dent_set.add('*w.' + d_ent[0])
             else:
-                dent_set.add('*r.' + str(d_ent[5:]))
+                dent_set.add('*r.' + str(d_ent[0]))
         doc2ents[filename] = list(dent_set)
 
     return doc2ents
@@ -80,10 +80,19 @@ def create_stop_words(limit = 150, doc2ents = {}):
         dent_set = set()
         for filename in doc2ents.keys():
             for d_ent in doc2ents[filename]:
-                for dent_word in str(d_ent[2:]).split():
-                    if dent_word[0] == '(':  # so we dont include last part of: Thomas (footballplayer)
-                        break
-                    dent_set.add(dent_word)
+                for dent_word in str(d_ent[3:]).split():
+                    if dent_word[-2:] == 'en':
+                        dent_set.add(str(dent_word[:-1]).lower())
+                        dent_set.add(str(dent_word[:-2]).lower())
+                    if dent_word[-1:] == 's':
+                        dent_set.add(str(dent_word[:-1]).lower())
+                    if dent_word[-2:] == 'er':
+                        dent_set.add(str(dent_word[:-1]).lower())
+                        dent_set.add(str(dent_word[:-2]).lower())
+                    if dent_word[-1:] == 'e':
+                        dent_set.add(str(dent_word[:-1]).lower())
+
+                    dent_set.add(dent_word.lower())
         stop_words.extend(list(dent_set))
 
     return stop_words
