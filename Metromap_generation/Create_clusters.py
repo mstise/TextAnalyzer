@@ -172,10 +172,14 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2h
     for p in range(0, len(pdocs_excl)):
         for doc in pdocs_excl[p]:
             f = open('Processed_news/' + doc)
-            rec_disambs = get_rec_disamb_pairs(doc, 'Disambiguated')
+            rec_disambs = get_rec_disamb_pairs(doc, '/media/michael/My Passport/Disambiguated')
             rec_disambs.sort(key=lambda tup: len(tup[1]), reverse=True)
             for line in f:
-                headline = line.split('.')[0].lower()
+                headline = line.split('.')[0].lower() + '.'
+                if len(line.split('.')) >= 2:
+                    headline += line.split('.')[1].lower() + '.'
+                if len(line.split('.')) >= 3:
+                    headline += line.split('.')[2].lower() + '.'
                 headterms = headline.split(' ')
                 headterms = list([name.lower() for name in headterms])
                 for term in headterms:
