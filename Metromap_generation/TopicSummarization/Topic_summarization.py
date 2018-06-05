@@ -205,9 +205,13 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     candidates_already_checked = []
     for candidate1 in scores:
         candidates_already_checked.append(candidate1)
+        chars_in_candidate1 = re.sub(r'\W+', '', candidate1)
         for candidate2 in scores:
             if candidate2 in candidates_already_checked:
                 continue
+            chars_in_candidate2 = re.sub(r'\W+', '', candidate2)
+            if chars_in_candidate1 == chars_in_candidate2:
+                candidates_to_delete.append(candidate2)
             if are_topics_similar(candidate1, candidate2) and candidate2 not in candidates_to_delete:
                 candidates_to_delete.append(candidate2)
     for candidate in candidates_to_delete:
