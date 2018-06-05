@@ -146,6 +146,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                         else:#l
                             print(term + ' failed')#
                             print('with ' + tmp)
+                            continue
                     for term in recognized:
                         term = term[2:]
                         words_in_term = len(term.split())
