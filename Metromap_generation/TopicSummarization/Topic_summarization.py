@@ -40,19 +40,21 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
         return False
 
 def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf, dis2rec):
-    if cluster_number == '190':
+    if cluster_number == '30':
         test = 1
     scores = {}
     text = text.replace(".", ". ")
     text = text.replace(".", ". ").replace("!", "! ").replace("?", "? ").replace("/", "/ ")
-    text = text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
+    while " ." in text or " !" in text or " ?" in text or " /" in text:
+        text = text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
     lemmatized_text = lemmatized_text.replace(".", ". ").replace("!", "! ").replace("?", "? ").replace("/", "/ ")
-    lemmatized_text = lemmatized_text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
+    while " ." in lemmatized_text or " !" in lemmatized_text or " ?" in lemmatized_text or " /" in lemmatized_text:
+        lemmatized_text = lemmatized_text.replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" /", "/")
     lemmatized_topic_candidates = re.split('(?<=[.!?]) +', lemmatized_text)
     for lem_entry in range(len(lemmatized_topic_candidates) - 1, 0, -1):
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" .", ".").replace(" /", "/")
         #lemmatized_topic_candidates[lem_entry] = lemmatized_topic_candidates[lem_entry].replace(" /", "/")
-        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry] or '\n' in lemmatized_topic_candidates[lem_entry] or (len(lemmatized_topic_candidates[lem_entry].split()) == 2 and not lemmatized_topic_candidates[lem_entry].split()[0].isalpha()):
+        if len(lemmatized_topic_candidates[lem_entry]) == 1 or len(lemmatized_topic_candidates[lem_entry]) == 0 or ' ' not in lemmatized_topic_candidates[lem_entry] or '\n' in lemmatized_topic_candidates[lem_entry] or (len(lemmatized_topic_candidates[lem_entry].split()) == 2 and not lemmatized_topic_candidates[lem_entry].replace('|', '').split()[0].isalpha()):
             del lemmatized_topic_candidates[lem_entry]
     #topic_candidates = [text]
     topic_candidates = re.split('(?<=[.!?]) +', text)
@@ -71,6 +73,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
             lemmatized_topic_candidate = lemmatized_topic_candidates[topic_candidate_number]
         except:
             print('um')
+            exit()
         lemmatized_words = split_sentence_into_list(lemmatized_topic_candidate)
         hypernym_list = hypernyms_text.split('\n')
         hypernyms = {}
@@ -92,23 +95,31 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
             topic2 = ''
             topic3 = ''
             for word in headline[str(cluster_number)]:
-                if topicNumber == 1:
+                if topicNumber == 1 and len(word[0]) > 0 and word[0] != '.':
                     topic1 += word[0] + ' '
-                elif topicNumber == 2:
+                elif topicNumber == 2 and len(word[0]) > 0 and word[0] != '.':
                     topic2 += word[0] + ' '
-                elif topicNumber == 3:
+                elif topicNumber == 3 and len(word[0]) > 0 and word[0] != '.':
                     topic3 += word[0] + ' '
-                if word[-1] == '.':
-                    topicNumber += 1
+                if len(word[0]) > 0 and word[0][-1] == '.' and word[0] != '.':
+                    if topicNumber == 1 and len(topic1) > 0:
+                        topicNumber += 1
+                    elif topicNumber == 2 and len(topic2) > 0:
+                        topicNumber += 1
+                    elif topicNumber == 3 and len(topic3) > 0:
+                        topicNumber += 1
             #topic = topic[0:-1] + '.'
-            scores[topic1] = 100
-            scores[topic2] = 10
-            scores[topic3] = 1
+            scores[topic1] = 1000
+            scores[topic2] = 100
+            scores[topic3] = 10
         else:
             for term in query:
                 score_for_term = query[term] # 1
                 if term[0:2] == '*w' or term[0:2] == '*r':
-                    score_for_term = score_for_term * ent2idf[term]
+                    try:
+                        score_for_term = score_for_term * ent2idf[term]
+                    except:
+                        print('dgg')
                     if score_for_term * 20 > 3:
                         score_for_term = 3
                     else:
@@ -124,8 +135,17 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                         if tmp in dis2rec:
                             recognized = dis2rec[tmp]#
                             print(term + 'handled')
-                        else:
-                            print(term + 'failed')
+                        tmp = ''#
+                        for word in term.split()[:-2]:
+                            tmp += word + ' '
+                        if len(term.split()) > 2:
+                            tmp += '(' + term.split()[-2] + ' ' + term.split()[-1] + ')'
+                        if tmp in dis2rec:
+                            recognized = dis2rec[tmp]#
+                            print(term + ' handled')
+                        else:#l
+                            print(term + ' failed')#
+                            print('with ' + tmp)
                     for term in recognized:
                         term = term[2:]
                         words_in_term = len(term.split())
@@ -225,7 +245,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     #            del summarizations[candidate2_index]
     return scores# summarizations[0:amount_of_summarizations]
 
-def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents, dis2rec, sentences_per_cluster=5):
+def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, documents, dis2rec, sentences_per_cluster=3):
     cluster2summaries = {}
     already_seen_words = {}
     ent2idf = df_creator(documents)
@@ -237,7 +257,10 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         for word in query:
             already_seen_words.setdefault(word, 0)
             already_seen_words[word] += 1
+    counter = 0
     for cluster in cluster2term:
+        if counter % 10 == 0:
+            print(str(counter) + ' of ' + str(len(cluster2term.keys())))
         document2summary_candidates = {}
         query = {}
         tuples = cluster2term[str(cluster)]
@@ -252,7 +275,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             #if get_date_from_docname(document)
-            doc = open('example_documents/Socialdemokratiet/' + document, "r")#v
+            doc = open('example_documents/Karneval/' + document, "r")#v
             text = doc.read() + ". "
             text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
@@ -323,6 +346,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
 #                for summary2 in cluster2summaries[cluster]:
 
 #                test = 1
+        counter += 1
     return cluster2summaries
 
 
@@ -420,10 +444,10 @@ def test_topic_summarization():
     clusters2headlines = shelve.open("dbs/zclusters2headlines")
     cluster2resolution = shelve.open("dbs/cluster2resolution")
     dis2rec = shelve.open("dbs/dis2rec")
-    dirpath = 'example_documents/Socialdemokratiet'
+    dirpath = 'example_documents/Aalborg_Kommune'
     resolution = 'month'
     from Metromap_generation.Resolution import resolutionize
     partitioned_docs, _ = resolutionize(dirpath, resolution=resolution)
     topic_summarization(clusters2term, clusters2headlines, cluster2resolution, partitioned_docs, dis2rec)
 
-test_topic_summarization()
+#test_topic_summarization()
