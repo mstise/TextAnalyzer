@@ -174,12 +174,18 @@ def fill_excl_clusters(pdocs_excl, cluster2resolution, clusters2term, clusters2h
             f = open('Processed_news/' + doc)
             rec_disambs = get_rec_disamb_pairs(doc, '/media/michael/My Passport/Disambiguated')
             rec_disambs.sort(key=lambda tup: len(tup[1]), reverse=True)
+            sentencesAppended = 0
             for line in f:
-                headline = line.split('.')[0].lower() + '.'
-                if len(line.split('.')) >= 2:
-                    headline += line.split('.')[1].lower() + '.'
-                if len(line.split('.')) >= 3:
-                    headline += line.split('.')[2].lower() + '.'
+                for sentenceNumber in range(len(line.split('.'))):
+                    if sentencesAppended == 0 and len(line.split('.')[sentenceNumber]) > 1:
+                        headline = line.split('.')[sentenceNumber].lower() + '.'
+                        sentencesAppended = 1
+                    elif sentencesAppended == 1 and len(line.split('.')) >= sentenceNumber + 1 and len(line.split('.')[sentenceNumber]) > 1:
+                        headline += line.split('.')[sentenceNumber].lower() + '.'
+                        sentencesAppended = 2
+                    elif sentencesAppended == 2 and len(line.split('.')) >= sentenceNumber + 1 and len(line.split('.')[sentenceNumber]) > 1:
+                        headline += line.split('.')[sentenceNumber].lower() + '.'
+                        break
                 headterms = headline.split(' ')
                 headterms = list([name.lower() for name in headterms])
                 for term in headterms:
