@@ -40,8 +40,6 @@ def are_topics_similar(topic1, topic2, threshold=0.8):
         return False
 
 def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, ent2idf, dis2rec):
-    if cluster_number == '30':
-        test = 1
     scores = {}
     text = text.replace(".", ". ")
     text = text.replace(".", ". ").replace("!", "! ").replace("?", "? ").replace("/", "/ ")
@@ -109,9 +107,9 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                     elif topicNumber == 3 and len(topic3) > 0:
                         topicNumber += 1
             #topic = topic[0:-1] + '.'
-            scores[topic1] = 1000
-            scores[topic2] = 100
-            scores[topic3] = 10
+            scores[topic1] = 3
+            scores[topic2] = 2
+            scores[topic3] = 1
         else:
             for term in query:
                 score_for_term = query[term] # 1
@@ -119,7 +117,7 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
                     try:
                         score_for_term = score_for_term * ent2idf[term]
                     except:
-                        print('dgg')
+                        print('not in ent2idf: ' + term)
                     if score_for_term * 20 > 3:
                         score_for_term = 3
                     else:
@@ -203,14 +201,16 @@ def ts(text, lemmatized_text, hypernyms_text, query, headline, cluster_number, e
     # Check if any of the top topics are similar, and that we have enough to afford losing one, if so, delete the lower scoring one of them.
     candidates_to_delete = []
     candidates_already_checked = []
+    if cluster_number == '28':
+        TESTING = True
     for candidate1 in scores:
         candidates_already_checked.append(candidate1)
-        chars_in_candidate1 = re.sub(r'\W+', '', candidate1)
+        chars_in_candidate1 = re.sub(r'[^A-Za-z]+', '', candidate1)
         for candidate2 in scores:
             if candidate2 in candidates_already_checked:
                 continue
-            chars_in_candidate2 = re.sub(r'\W+', '', candidate2)
-            if chars_in_candidate1 == chars_in_candidate2:
+            chars_in_candidate2 = re.sub(r'[^A-Za-z]+', '', candidate2)
+            if chars_in_candidate1 == chars_in_candidate2 and candidate2 not in candidates_to_delete:
                 candidates_to_delete.append(candidate2)
             if are_topics_similar(candidate1, candidate2) and candidate2 not in candidates_to_delete:
                 candidates_to_delete.append(candidate2)
@@ -280,7 +280,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
             #query[entry[0]] = entry[1]
         for document in documents[int(cluster2resolution[str(cluster)])]:
             #if get_date_from_docname(document)
-            doc = open('example_documents/Karneval/' + document, "r")#v
+            doc = open('example_documents/Socialdemokratiet/' + document, "r")#v
             text = doc.read() + ". "
             text = text.replace('..', '.')
             doc = open('Lemmatized/' + document, "r")
@@ -298,6 +298,7 @@ def topic_summarization(cluster2term, clusters2headlines, cluster2resolution, do
         winner_summaries = []
         for candidate in document2summary_candidates:
             #if len(winner_summaries) < 5:
+            if len([equal for equal in winner_summaries if re.sub(r'[^A-Za-z]+', '', candidate.replace('\t','')) == re.sub(r'[^A-Za-z]+', '', equal[1].replace('\t',''))]) < 1:
                 winner_summaries.append([document2summary_candidates[candidate][0], candidate, document2summary_candidates[candidate][1]])
                 winner_summaries.sort(key=lambda x: x[0], reverse=True)
             #elif winner_summaries[4][0] < document2summary_candidates[candidate][0]:

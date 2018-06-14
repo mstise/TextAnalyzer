@@ -1,0 +1,147 @@
+14
+4
+clusternr: 0
+1: det går rigtigt fint i ålbår. 
+2: der er sommer i aalborg. 
+3: det er fredeligt. 
+2017
+07
+30
+1
+aalborg
+4
+clusternr: 1
+1: vasketøjs- firma klar til nordjylland. 
+2: nordjylland: - jeg skal hente en pakke og så mit vasketøj, tak. 
+3: sådan kan det nu lyde i den lokale gls-pakkeshop fremover. 
+2017
+07
+30
+1
+nordjylland
+4
+clusternr: 2
+1: ældre trækker på beredskab. 
+2: nordjylland: når den store golfturnering made in denmark om få dage går i gang i gatten i vesthimmerland ventes der tusinder af tilskuere. 
+3: det øger sandsynligheden for, at der her kan opstå alvorlig sygdom eller der kan ske ulykker. 
+2017
+08
+30
+1
+nordjylland
+4
+clusternr: 3
+1: grønne åndehuller skal fredes. 
+2: aalborg: fire af aalborgs mest populære parker skal fredes. 
+3: det siger by- og landskabsrådmand hans henrik henriksen (s). 
+2017
+08
+30
+2
+socialdemokraterne
+aalborg#1
+4
+clusternr: 4
+1: lysets engel i aalborg. 
+2: teater. 
+3: ”jomfru ane og maren turis – kærlighed, magt og hekseri”. 
+2017
+08
+30
+1
+aalborg
+4
+clusternr: 10
+1: v-politiker forlader karnevalsbestyrelse. 
+2: aalborg: byrådspolitikeren anne honoré østergaard (v) er ved generalforsamlingen for aalborg karneval udtrådt af bestyrelsen efter to år på posten. 
+3: - med to års positiv regnskab i træk, mener jeg at det er tid til, at der nu kommer nye kræfter ind i bestyrelsen, fortæller hun i en pressemeddelelse. 
+2017
+09
+25
+2
+venstre
+aalborg
+4
+clusternr: 7
+1: karnevallet bør stoppe. 
+2: ”voldtægtstfest”: aalborg karneval er en af de største årlige begivenheder i danmark. 
+3: det er derfor også for dårlig, at der år efter år kommer rapporter om, at der sker voldtægter til arrangementet uden nogle former for konsekvenser for selve begivenheden!. 
+2017
+09
+25
+1
+aalborg#1
+4
+clusternr: 6
+1: karneval klar med ønskeseddel. 
+2: aalborg: aalborg karneval ønsker en fordobling af tilskuddet fra aalborg kommune. 
+3: ønsket om en million kroner i stedet for en halv fremgår af et oplæg fra aalborg karneval i forbindelse med, at der skal laves en ny samarbejdsaftale mellem kommunen og aalborg karneval for perioden 2018-2021. 
+2017
+09
+25
+2
+aalborg kommune
+aalborg#2
+4
+clusternr: 12
+1: en anden prioritering. 
+2: kommunalvalg: i folketinget ønsker socialdemokraterne velfærd over skattelettelser. 
+3: i aalborg kommune ser de lidt anderledes på det. 
+2017
+10
+27
+2
+aalborg kommune
+socialdemokraterne
+4
+clusternr: 18
+1: nye borgerlige: føler ansvar for nationalt fællesskab. 
+2: aalborg: i forbindelse med kommunalvalget har nordjyske stiftstidende givet de forskellige partier og lister, der stiller op i aalborg kommune mulighed for en præsentation. 
+3: i dag handler det om nye borgerlige, hvor spidskandidaten carsten normann munk har fået til opgave at svare på, hvilke tre ting - i prioriteret rækkefølge – der er vigtigst i den kommende byrådsperiode. 
+2017
+11
+18
+2
+aalborg kommune
+aalborg
+4
+clusternr: 17
+1: lette wienertoner i aalborg. 
+2: koncert. 
+3: aso og fire wiener- philharmonikere. 
+2017
+11
+18
+1
+aalborg#1
+4
+clusternr: 26
+1: dømt for skud og knivstik aalborg: en 26-årig mand er blevet idømt tre et halvt års fængsel for at have skudt mod en menneskemængde på en parkeringsplads i aalborg øst samt for at have kørt en mand ned i bil under skyderiet. 
+2: en 23-årig mand blev i samme sag idømt fire et halvt års fængsel for skud- episoden samt for et knivstikkeri under karneval sidste år. 
+3: 
+2018
+02
+10
+1
+aalborg
+4
+clusternr: 24
+1: dødsfald. 
+2: ‡ niels wilhelm ludvigsen (ludvig), lenevej 15, aalborg, 63 år. 
+3: ludvig var med til at skabe kollektivbevægelsen i aalborg. 
+2018
+02
+10
+1
+aalborg#1
+4
+clusternr: 23
+1: salling får rooftop på 1400 kvm. 
+2: aalborg: der er knap gået et år, siden salling i aarhus slog dørene op til deres tagterrasse på toppen af stormagasinet, og den er blevet en bragende succes. 
+3: over 700. 
+2018
+02
+10
+2
+aalborg#2
+socialdemokraterne

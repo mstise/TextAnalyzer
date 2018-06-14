@@ -1,21 +1,13 @@
-from nltk.stem import snowball
 import os
-import re
-import paths
 
-def stemmer(string_input):
-    stemmer = snowball.DanishStemmer()
-    pattern = re.compile('[?!.,:;%()\"\'´`/]+', re.UNICODE)
-    string_input = pattern.sub('', string_input)
-    result = ''
-    for word in string_input.split():
-        result += ' '
-        result += stemmer.stem(word)
-    return result
+def lemmatize(idirpath, odirpath):
+    counter = 0
+    for doc in os.listdir(idirpath):
+        if counter % 500 == 0:
+            print(str(counter))
+        idocpath = idirpath + '/' + doc
+        odocpath = odirpath + '/' + doc
+        os.system("./cstlemma -L -eU -p+ -q- -t- -f'1/flexrules' -B'$w' -l- -b'$w' -d'dict' -u -c'$b1[[$b~1]?$B]$s' -i " + idocpath + " -o " + odocpath)
+        counter += 1
 
-for filename in os.listdir(paths.get_external_procesed_news()):
-    stemmed_document_text = ''
-    with open(paths.get_external_procesed_news() + '/' + filename, 'r') as f:
-        stemmed_document_text = stemmer(f.read())
-    with open(paths.get_stemmed_path() + "/" + filename, "w") as text_file:
-        text_file.write(stemmed_document_text)
+lemmatize('../Metromap_generation/Processed_news', '../Metromap_generation/Lemmatized')

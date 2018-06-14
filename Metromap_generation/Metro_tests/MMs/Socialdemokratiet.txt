@@ -1,0 +1,217 @@
+20
+4
+clusternr: 275*
+1: Hobro Kommune (2002-2007) stillede Jørgen Pontoppidan sig i spidsen for bestræbelser på at bygge et kommunalt plejehjem ved Hostrupkrogen i Hobros nordlige bydel..
+2: S og K i byrådet indgik forlig om, at kommunen i stedet skulle udvide Hobro Alderdomshjem og Plejehjemmet Solgaven i Hobro..
+3: I 2004 kom Jørgen Pontoppidan, borgmester i daværende Hobro Kommune, og hans parti Venstre, i mindretal i en sag om ældreboligbyggeri i Hobro..
+2017
+07
+07
+3
+venstre
+socialdemokratiet
+kelvin
+4
+clusternr: 276*
+1: REBILD: Partiet Venstre med fire repræsentanter i byrådet er ikke medunderskrivere af borgmester Leon Sebbelins debatindlæg om Terndrup Skole på vegne af Socialdemokratiet, Konservative, SF, Radikale Venstre og løsgængerne Anders Norup og Søren Konnerup.
+2: En beslutning der var fuld opbakning til i høringssvar fra de demokratiske valgte skolebestyrelser og MED-udvalg på Bakkehusene og Terndrup Skole.
+3: Oplandslisten ved Søren Søe er heller ikke som den sidste liste i byrådet medunderskriver af borgmesterens aktuelle debatindlæg om Terndrup Skole og påstanden om Allan Busk’s kupforsøg mod skolen.
+2017
+07
+13
+3
+socialdemokraterne
+venstre
+socialdemokratiet
+4
+clusternr: 278*
+1: GRØN OMSTILLING: Svend Auken var om nogen manden, der stod i spidsen for den grønne omstilling.
+2: Så derfor var Svend Auken jo fremsynet og udviste rettidig omhu for at sikre en grøn omstilling til sol og vind, som i fremtiden bliver de primære energikilder..
+3: Socialdemokratiet står ved det vigtige i at få lavet en grøn omstilling, så vi fx bruger vores vindmøllestrøm i stedet for at sende den billigt ud af landet.
+2017
+07
+24
+2
+venstre
+socialdemokratiet
+4
+clusternr: 281*
+1: Tallene er dramatiske: Brændeovnene forurener ifølge Nationalt Center for Miljø og Energi, langt mere end den samlede biltrafik.
+2: Det viser tal fra Nationalt Center for Miljø og Energi, DCE.
+3: Hvordan skal vi så skaffe energi til al vores produktion, opvarmning og opladning af alle vores forskellige elektriske apparater som shavere og telefoner?.
+2017
+07
+25
+3
+socialdemokraterne
+venstre
+socialdemokratiet
+4
+clusternr: 13
+1: flertal ønsker bankernes gebyrhop frem i lyset. 
+2: indland: det skal være helt klart, hvad prisen for at bruge sit visadankort i udlandet er. 
+3: det mener et flertal af politikerne i folketinget, efter at en stribe af landets største banker har hævet gebyret for at bruge betalingskortet i udlandet. 
+2017
+07
+31
+1
+folketinget
+4
+clusternr: 21
+1: klar til at lægge låg på airbnb. 
+2: københavn: et tysk par slæber kufferter op ad trappen den ene uge. 
+3: næste weekend er det en familie fra kina, der pusler rundt i naboens lejlighed. 
+2017
+07
+31
+1
+socialdemokraterne
+4
+clusternr: 24
+1: dømte sidder længere inde. 
+2: indland: i 2007 kostede det i gennemsnit 4,8 måneder i fængsel at begå en voldsforbrydelse. 
+3: i 2016 kostede den samme forbrydelse 7,4 måneder bag tremmer. 
+2017
+07
+31
+1
+kelvin
+4
+clusternr: 46
+1: uretfærdigt mod politiet. 
+2: bandekonflikten: preben bang henriksen, venstres retsordfører, ryster på hånden over for islams negative sider. 
+3: i foråret støttede han og socialdemokratiet den blasfemilov, der dengang gjorde det muligt at straffe en nordjyde for at brænde en koran af. 
+2017
+08
+31
+2
+venstre
+socialdemokratiet
+4
+clusternr: 48
+1: minister: ingen tegn på monopol hos tandlæger. 
+2: indland: et besøg hos tandlægen kan være en dyr fornøjelse, og nogle danskere vil sikkert ønske sig mere konkurrence blandt de danske tandlæger. 
+3: senest har det vakt bekymring, at kapitalfonde og andre storinvestorer er i gang med at købe sig ind i dansk tandpleje. 
+2017
+08
+31
+1
+venstre#1
+4
+clusternr: 64
+1: min kandidat?. 
+2: valg: mit nuværende medlemskab af socialdemokratier er knyttet til en vælgerforening under vestre kreds i aalborg. 
+3: i en årrække var rasmus prehn vores folketingskandidat – med genvalg på genvalg. 
+2017
+09
+30
+2
+socialdemokraterne
+aalborg
+4
+clusternr: 87
+1: per halsboe er socialdemokrat. 
+2: jammerbugt: i onsdagens udgave af nordjyske stiftstidende kom vi i en artikel om et debatmøde om læger til fjerritslev til at gøre kommunalbestyrelsesmedlem per halsboe-larsen til venstremand. 
+3: per halsboe-larsen er medlem af socialdemokratiet. 
+2017
+09
+30
+2
+venstre
+socialdemokratiet
+4
+clusternr: 90
+1: tillykke til brovst friplejehjem. 
+2: fejring: fredag den 22. 
+3: september fejres indvielsen af brovst friplejehjem. 
+2017
+09
+30
+1
+socialdemokraterne#1
+4
+clusternr: 108
+1: bekæmp fattigdom - ikke de fattige. 
+2: fattigdom: jeg husker stadig den dag før sommerferien, da søren pape og regeringen mente, at folketinget ekstraordinært og under dispensation for den almindelige procedure for lovgivning i folketinget ville have gennemført en lov mod tiggeri. 
+3: 
+2017
+10
+31
+2
+folketinget
+hadsund
+4
+clusternr: 137
+1: ny udgave af trap om mors. 
+2: mors: i dag, torsdag, udkommer sjette bind af den ny udgave af trap danmark. 
+3: bindet dækker kommunerne morsø, vesthimmerland, rebild og mariagerfjord. 
+2017
+10
+31
+2
+rebild kommune
+mariagerfjord kommune
+4
+clusternr: 146
+1: s: løkke må sætte sig for bordenden. 
+2: københavn: politiet er massivt til stede på nørrebro i københavn, men alligevel fortsætter skyderierne i bandemiljøet. 
+3: tirsdag aften blev en person dræbt og to såret i et nyt skyderi ved mjølnerparken. 
+2017
+11
+30
+1
+konservative folkeparti
+4
+clusternr: 147
+1: udvalgte udtalelser fra gjøl kro. 
+2: vi vil gå langt for at bevare skolen på gjøl, jørgen olsson (ø). 
+3: det kunne være spændende at udfordre beboerne på øland for at se, hvad de vil sige til at tage i skole på gjøl, mogens gade (v). 
+2017
+11
+30
+1
+venstre
+4
+clusternr: 161
+1: vi har spurgt. 
+2: kv17: op mod valgdagen 21. 
+3: november bringer nordjyske på lokalsiderne for himmerland - ved siden af den øvrige journalistiske valgdækning - en præsentation af samtlige lister/partier i rebild, mariagerfjord og vesthimmerlands kommune. 
+2017
+11
+30
+2
+rebild kommune
+mariagerfjord kommune
+4
+clusternr: 217
+1: penge til partier frem i lyset?. 
+2: støtte: i nyrup-regeringens tid lykkedes det i 1995 for socialdemokratiet at få de konservative og de radikale med på det lovforslag om partistøtte, som vi lever under den dag i dag. 
+3: det fremgår af denne lov, at et parti skal opgive navn og adresse på private donorer, som giver beløb over 20. 
+2018
+02
+27
+3
+socialdemokraterne
+venstre
+konservative folkeparti
+4
+clusternr: 260
+1: forslag splitter skoleudvalgg. 
+2: aalborg: ungebyrådets forslag om at indføre samfundsfag i 7. 
+3: klasse har splittet aalborgs ny skoleudvalg så meget, at det i stedet bliver op til byrådet at afgøre, hvordan det skal kunne lade sig gøre. 
+2018
+02
+27
+2
+venstre#1
+aalborg
+4
+clusternr: 265
+1: i socialdemokratiet er kulturpolitikken tilsyneladende blevet slugt af en omfordelingspolitik og en flygtningepolitik, der er som kalkeret over df’s, hvorfor partiet også forekommer sært profilløst, blot ventende på magten. 
+2: morten hesseldahl, direktør for det kongelige teater, i berlingske. 
+3: 
+2018
+02
+27
+1
+socialdemokratiet

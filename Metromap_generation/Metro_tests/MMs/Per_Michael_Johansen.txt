@@ -1,0 +1,118 @@
+10
+4
+clusternr: 7*
+1: Faktisk arbejder AAU sammen med flere virksomheder i Region Hovedstaden end CBS (og Aarhus Universitet), men dog færre end DTU og KU.
+2: Den andel er højere end andelen af lignende virksomheder i hovedstadsområdet, der har samarbejdet med egnens tre store universiteter: Københavns Universitet, Danmarks Tekniske Universitet og CBS (Handelshøjskolen).
+3: Således har Volvo placeret sit ”User Experience Competence Center (UXCC)” på Aalborg Universitets cam.
+2017
+07
+20
+4
+nordjylland
+københavns universitet
+per michael johansen
+aalborg universitet
+4
+clusternr: 8*
+1: Konsulentfirmaet Iris Group har gennemført analysen, og den viser, at de virksomheder, der samarbejder med AAU, i gennemsnit oplever en vækst i produktiviteten over en otteårig periode, der er 12,5 procentpoint højere end sammenlignelige virksomheder, der ikke samarbejder med universitetet.
+2: De oplever i gennemsnit en vækst i produktiviteten over en otteårig periode, der er 12,5 procentpoint højere end sammenlignelige virksomheder, der ikke samarbejder med universitetet..
+3: Sådan lyder et af resultaterne i den analyse af Aalborg Universitets samarbejde med virksomheder, myndigheder og samfund, som konsulentfirmaet Iris Group har gennemført for universitetet.
+2017
+07
+20
+3
+aalborg universitet#1
+per michael johansen#1
+nordjylland#1
+4
+clusternr: 0
+1: medlem af nyt forenklingsudvalg. 
+2: udnævnt: louise gade, 45 år, direktør for via efter- og videreuddannelse, er udnævnt til at være medlem af regeringens nye forenklingsudvalg. 
+3: medlem af udvalget er også per michael johansen, professor og rektor for aalborg universitet. 
+2017
+07
+26
+2
+per michael johansen
+aalborg universitet
+4
+clusternr: 9*
+1: To af de vigtigste talere bliver dels svenske Sverker Sörlin fra Kungliga Tekniska Högskolan i Stockholm - han fik i 1993 Nordens første professorat i miljøhistorie, dels australske Lynda Roper.
+2: Konferencen finder sted i Aalborg Kongres & Kultur Center fra tirsdag til fredag i den kommende uge, og som generalsekretær for arrangementet har Poul Duedahl ikke haft meget tid til at kigge i gamle arkiver og den slags den seneste tid.
+3: Programmet for de fire dage fylder adskillige sider og rummer omkring 200 arrangementer: Foredrag, diskussioner og som noget nyt også filmfremvisning om Første Verdenskrig med introduktion af Nils Arne Sørensen, der har skrevet bogen ”Den Store Krig” om netop krigen i 1914-18.
+2017
+08
+15
+4
+danmark
+aalborg
+københavns universitet
+aalborg universitet
+4
+clusternr: 10*
+1: To af de vigtigste talere bliver dels svenske Sverker Sörlin fra Kungliga Tekniska Högskolan i Stockholm - han fik i 1993 Nordens første professorat i miljøhistorie, dels australske Lynda Roper.
+2: Konferencen finder sted i Aalborg Kongres & Kultur Center fra tirsdag til fredag i den kommende uge, og som generalsekretær for arrangementet har Poul Duedahl ikke haft meget tid til at kigge i gamle arkiver og den slags den seneste tid.
+3: Programmet for de fire dage fylder adskillige sider og rummer omkring 200 arrangementer: Foredrag, diskussioner og som noget nyt også filmfremvisning om Første Verdenskrig med introduktion af Nils Arne Sørensen, der har skrevet bogen ”Den Store Krig” om netop krigen i 1914-18.
+2017
+08
+15
+4
+aalborg#1
+danmark#1
+aalborg universitet#1
+per michael johansen#1
+4
+clusternr: 1
+1: - drop sparekrav på uddannelser. 
+2: nordjylland: uddannelse er altafgørende for at sikre, at der i fremtiden er job til nordjyderne og nordjyder nok til de job, der til den tid er. 
+3: og mange deltagere i den nordjyske åbningsdebat havde forslag og ideer til, hvad der bør gøres. 
+2017
+09
+26
+1
+nordjylland
+4
+clusternr: 2
+1: aau - bedst i europa inden for ingeniørvidenskab. 
+2: aalborg: aalborg universitet (aau) er det bedste universitet i europa inden for ingeniørvidenskab. 
+3: det vurderer u. 
+2017
+10
+28
+2
+aalborg
+aalborg universitet
+4
+clusternr: 3
+1: nybyggeri på aau rykker tættere på. 
+2: aalborg: med a. 
+3: møller-fonden som bidragyder opfører bygningsstyrelsen og aalborg universitet (aau) en ny innovationsbygning – ”aau science & innovation hub” - der skal stå klar til indvielse på campus i aalborg øst ved indgangen til 2022. 
+2017
+11
+28
+2
+aalborg
+aalborg universitet
+4
+clusternr: 4
+1: aftale kan være skidt nyt for nordjylland. 
+2: nordjylland: de nordjyske uddannelsesinstitutioner aalborg universitet (aau) og university college nordjylland (ucn) kan vente årlige millionbesparelser, efter en aftale om et nyt bevillingssystem for de videregående uddannelser blev indgået mellem alle folketingets partier. 
+3: for ucn alene betyder det en årlig besparelse på mindst fem millioner kroner. 
+2017
+11
+28
+2
+aalborg universitet#1
+nordjylland
+4
+clusternr: 11*
+1: Samtidig, mener rektoren, at hvis Danmark og danske virksomheder skal sikre et fortsat rigt samfund, så betyder det, at der er behov for langt mere interaktion mellem samfund og universitet for at sikre, at den nyeste teknologi og den nyeste viden hele tiden er til rådighed, så Danmark kan sikre sin internationale konkurrenceevne og førerposition.
+2: Hvis Danmark skal sikres som et fortsat rigt samfund og danske virksomheders globale konkurrenceevne skal styrkes, så kræver det langt mere interaktion mellem samfund og universitet.
+3: Aalborg Universitet er dog godt klædt på til at klare de udfordringer, mener rektoren..
+2018
+01
+28
+3
+danmark
+per michael johansen
+aalborg universitet

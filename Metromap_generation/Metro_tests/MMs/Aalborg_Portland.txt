@@ -1,0 +1,337 @@
+28
+4
+clusternr: 2
+1: aab giver til børn i sorg. 
+2: aalborg: aab og spar nord fonden uddeler igen i dette efterår hele nordjyllands håndsrækning, hvor et velgørende formål modtager to kroner pr. 
+3: tilskuer, der gæster aalborg portland park i hjemmekampene i dette efterår. 
+2017
+07
+29
+3
+aalborg portland park
+aalborg
+aab fodbold
+4
+clusternr: 3
+1: - jeg er her for at spille. 
+2: aalborg: aab fik en fremragende start på sæsonen, da holdet udspillede de forsvarende mestre fra fc københavn i anden halvleg og fik et fortjent point ud af anstrengelserne på landets sværeste udebane. 
+3: i dag venter en anden kamp, når sønderjyske kommer på besøg på aalborg portland park - en kamp, hvor aab må påtage sig favoritværdigheden. 
+2017
+07
+29
+5
+aab fodbold#1
+fc københavn
+aalborg#1
+sønderjyske fodbold
+aalborg portland park#1
+4
+clusternr: 4
+1: portland lokker med uddannelse. 
+2: nordjylland: kampen om de dygtigste talenter tager til. 
+3: også blandt højtuddannede faggrupper. 
+2017
+07
+29
+2
+portland
+nordjylland
+4
+clusternr: 35*
+1: HOBRO: En sæsonstart med syv point i de første fire superligakampe har gjort godt for stemningen i Hobro IK.
+2: Mens Hobro-mandskabet virkede som en sammentømret enhed, der allerede tidligt på sommeren havde truppen på plads og har kunnet arbejde koncentreret frem mod sæsonstart, så er det stadig et AaB-hold, der har tydelige mangler her, hvor vi er fem spillerunder inde i sæsonen.
+3: Mål kom efter godt genpres, hvor man fangede Hobro, og eneste anden kvalificerede afslutning kom fra et godt frispark fra den i øvrigt endnu engang bedste AaB’er, Edison Flores.
+2017
+08
+14
+4
+aalborg portland park
+hobro
+aalborg
+aab fodbold
+4
+clusternr: 39*
+1: Hobro IK (4-4-2): Jesper Rask - Jesper Bøge, Rasmus Minor Petersen, Nicholas Gotfredsen, Björn Kopplin - Edgar Babayan (Mikkel M.
+2: HOBRO: En sæsonstart med syv point i de første fire superligakampe har gjort godt for stemningen i Hobro IK.
+3: Den seneste kamp var måske ikke min bedste, men generelt føler jeg mig godt tilpas, og jeg har jo også spillet fuld tid i de første fire opgør, lyder det fra Jesper Bøge, der også får roser fra trænerteamet.
+2017
+08
+15
+2
+aalborg portland park
+hobro
+4
+clusternr: 40*
+1: Kirkevold, Quincy Antipas (Sebastian Grønning, 84.
+2: Kirkevold, Hobro (12.
+3: Vito Hammershøj-Mistrati fungerede igen som en formidabel kreatør, og da Pål Alexander Kirkevold fik oceaner af plads at boltre sig på på kanterne i anden halvleg, så viste nordmanden for alvor, hvor god han i virkeligheden er.
+2017
+08
+15
+2
+aalborg portland park
+hobro#1
+4
+clusternr: 37*
+1: Pavol Safranko er holdets tredje slovak, og de gode anbefalinger fra blandt andet landsmanden Filip Lesniak, gjorde det nemmere for angriberen at træffe beslutningen om at skifte til AaB.
+2: Hans navn er Pavol Safranko, og allerede mandag var han i ilden i Reserveholdsligaen.
+3: Gaarde var tilfreds med det, han så fra den nye angriber Pavol Safranko, der blot havde få træninger i benene inden AGF-kampen.
+2017
+08
+22
+3
+pavol safranko
+aalborg
+aab fodbold
+4
+clusternr: 5
+1: elselskaber har fejlinvesteret for milliarder. 
+2: indland: solceller i afrika. 
+3: træpiller i storbritannien. 
+2017
+08
+27
+1
+sønderjyske fodbold
+4
+clusternr: 8
+1: nordjyder køber firma. 
+2: nordjylland: to erfarne nordjyske erhvervsfolk, poul arne kloster og jesper vinther, har købt samtlige aktier i kurt sørensen maskinfabrik i randers samt 90 procent af aktierne i datterselskabet ksm poland. 
+3: de to virksomheder, der er samlet i ksm group, tæller i alt 120 medarbejdere, heraf 40 i randers. 
+2017
+08
+27
+1
+nordjylland
+4
+clusternr: 38*
+1: AaB (4-4-2): Nicolai Larsen - Kristoffer Pallesen, Jakob Blåbjerg, Kasper Pedersen, Jakob Ahlmann - Rasmus Thellufsen, Magnus Christensen (Magnus Thellufsen, 78.
+2: minut), Filip Lesniak, Edison Flores (Frederik Børsting, 90.
+3: minut) - Jannik Pohl (Jakub Sylvestr, 85.
+2017
+08
+27
+4
+aalborg portland park#1
+filip lesniak
+aab fodbold
+jakob ahlmann
+4
+clusternr: 42*
+1: INDLAND: Dansk Fjernvarme tror ikke, at en afgørelse fra Skatteankenævnet om afgiftsfrihed for overskudsvarme fra Facebooks nye server-center i Odense får betydning for eksisterende aftaler om overskudsvarme fra virksomheder til fjernvarme.
+2: Olsen (EL), efter at Skatteankenævnet har givet Facebook medhold i, at der ikke skal betales afgift på den overskudsvarme, selskabets datacenter skal levere til Odense.
+3: - I de igangværende forhandlinger, vi har med Aalborg Portland, har afgiften været et stort problem, så med Skatteankenævnets afgørelse er der ryddet en stor sten af vejen hen mod en aftale, siger rådmanden, der uddybende forklarer, at en varslet afgift fra statens side ville øge varmeregning for et standardhus med 350 kroner årligt med den nuværende mængde overskudsvarme i fjernvarmenettet.
+2017
+09
+15
+3
+aalborg portland
+portland
+aalborg
+4
+clusternr: 43*
+1: INDLAND: Dansk Fjernvarme tror ikke, at en afgørelse fra Skatteankenævnet om afgiftsfrihed for overskudsvarme fra Facebooks nye server-center i Odense får betydning for eksisterende aftaler om overskudsvarme fra virksomheder til fjernvarme.
+2: Portland-direktør Michael Lundgaard Thomsen har ikke fordybet sig i afgørelsen fra Skatteankenævnet, men han har siden sin første melding erkendt, at den næppe får betydning i Aalborg..
+3: Aalborg Portlands direktør, Michael Lundgaard Thomsen, udtrykte ellers umiddelbart efter afgørelsen optimisme med hensyn til at udnytte en endnu større del af virksomhedens overskudsvarme i det aalborgensiske fjernvarmesystem, og miljø- og energirådmand Lasse P.
+2017
+09
+15
+2
+viborg
+aalborg#1
+4
+clusternr: 44*
+1: INDLAND: Dansk Fjernvarme tror ikke, at en afgørelse fra Skatteankenævnet om afgiftsfrihed for overskudsvarme fra Facebooks nye server-center i Odense får betydning for eksisterende aftaler om overskudsvarme fra virksomheder til fjernvarme.
+2: Olsen (EL), efter at Skatteankenævnet har givet Facebook medhold i, at der ikke skal betales afgift på den overskudsvarme, selskabets datacenter skal levere til Odense.
+3: - I de igangværende forhandlinger, vi har med Aalborg Portland, har afgiften været et stort problem, så med Skatteankenævnets afgørelse er der ryddet en stor sten af vejen hen mod en aftale, siger rådmanden, der uddybende forklarer, at en varslet afgift fra statens side ville øge varmeregning for et standardhus med 350 kroner årligt med den nuværende mængde overskudsvarme i fjernvarmenettet.
+2017
+09
+15
+1
+aalborg#2
+4
+clusternr: 15
+1: - vi er sultne efter mere. 
+2: aalborg: aab fik endelig fuld gevinst i et opgør i alka superligaen, da silkeborg blev besejret på aalborg portland park mandag aften - det blev også holdets anden sejr på stribe, da man fire dage forinden var gået videre i dbu pokalen med en sejr på 5-1 over viborg efter forlænget spilletid. 
+3: dermed er der endelig kommet noget selvtillid ind i en trup, der sandt for dyden ikke har haft et sjovt kalenderår, hvor nedturene har været mange og opturene få. 
+2017
+09
+26
+6
+aalborg portland park
+viborg
+aab fodbold
+superligaen
+aalborg
+dbu pokalen
+4
+clusternr: 16
+1: - en sejr vil rykke i tabellen. 
+2: aalborg: efter onsdagens pokalsejr over middelfart er aab efterhånden ubesejret i otte kampe - faktisk skal vi helt tilbage til juli for at finde det seneste nederlag. 
+3: men i perioden er det heller ikke ligefrem, fordi sejrene er væltet ind. 
+2017
+09
+26
+2
+aab fodbold#1
+aalborg#1
+4
+clusternr: 18
+1: industrien i aalborg. 
+2: 567 arbejdssteder med 23 ansatte i gennemsnit. 
+3: 12. 
+2017
+09
+26
+1
+aalborg#2
+4
+clusternr: 45*
+1: AALBORG: Skaden i baglåret er han kommet sig over - alligevel er AaB-anføreren Rasmus Würtz ikke med i truppen til dagens kamp i ALKA Superligaen, hvor AaB tager imod FC Helsingør på Aalborg Portland Park.
+2: - Jeg vil da umiddelbart sige, at der var mange andre gange i de sidste seks uger, hvor en omgang influenza havde passet bedre ind i programmet, lyder det med et lille smil fra Rasmus Würtz, der ikke har været med for AaB siden han fik en forstrækning i baglåret i kampen mod AC Horsens 18.
+3: Rasmus Würtz er så småt tilbage, men han måtte udeblive fra kampen på grund af sygdom.
+2017
+10
+15
+4
+aalborg
+aab fodbold
+superligaen
+rasmus würtz
+4
+clusternr: 49*
+1: Så selvom Filip Lesniak og Robert Kakeeto til tider har imponeret, så virker det ikke som en fuldgod erstatning for den foretrukne midtbaneduo, der tilsammen har mere end 700 AaB-kampe at trække på.
+2: Især Robert Kakeeto formåede ikke at markere sig i de.
+3: Robert Kakeeto rejste fra hjemlandet Uganda i sommeren 2013 og har været tilknyttet Nordjyllands Idrætshøjskole i Brønderslev, mens han i sine første år i AaB optrådte i U/ 19 Ligaen.
+2017
+10
+16
+4
+aab fodbold#1
+aalborg#1
+nordjylland
+robert kakeeto
+4
+clusternr: 50*
+1: Så selvom Filip Lesniak og Robert Kakeeto til tider har imponeret, så virker det ikke som en fuldgod erstatning for den foretrukne midtbaneduo, der tilsammen har mere end 700 AaB-kampe at trække på.
+2: Dermed var det Robert Kakeeto og Filip Lesniak, som bemandede maskinrummet for AaB.
+3: Filip Lesniak har været fast starter længe, og også Robert Kakeeto fra Uganda har leveret gode præstationer på pladsen.
+2017
+10
+16
+5
+filip lesniak
+aab fodbold
+fc helsingør
+robert kakeeto#1
+aalborg
+4
+clusternr: 46*
+1: AALBORG: Igennem et par år har midtbanespilleren Robert Kakeeto været tilknyttet AaB-truppen på et af de yderste mandater, men det har i den grad ændret sig i dette efterår, hvor spilleren fra Uganda har udnyttet flere skader hos stamspillerne til at vise sig flot frem på den centrale del af banen.
+2: Robert Kakeeto rejste fra hjemlandet Uganda i sommeren 2013 og har været tilknyttet Nordjyllands Idrætshøjskole i Brønderslev, mens han i sine første år i AaB optrådte i U/ 19 Ligaen.
+3: Filip Lesniak har været fast starter længe, og også Robert Kakeeto fra Uganda har leveret gode præstationer på pladsen.
+2017
+10
+27
+4
+aalborg portland park#1
+aab fodbold#1
+aalborg#1
+robert kakeeto
+4
+clusternr: 19
+1: jobskaberne skal belønnes. 
+2: beskæftigelse: det går fantastisk i danmark – og det smitter heldigvis af på aalborg. 
+3: siden lars løkke rasmussen overtog statsministeriet for to år siden, er der skabt mere end 100. 
+2017
+10
+30
+2
+danmark
+aalborg
+4
+clusternr: 20
+1: børsting: er bare vores egen skyld. 
+2: aalborg: - det er bare for ringe. 
+3: så direkte kom det fra aab’s frederik børsting, da han skulle sætte ord på 0-2-nedturen mod ob på aalborg portland park. 
+2017
+10
+30
+3
+aalborg portland park
+aalborg#1
+aab fodbold
+4
+clusternr: 21
+1: - jeg griber chancen, når jeg får den. 
+2: aalborg: tilskuerrækkerne på aalborg portland park tårner sig op omkring banen, da aab 11. 
+3: september har besøg af silkeborg if. 
+2017
+11
+21
+2
+aalborg
+aab fodbold
+4
+clusternr: 24
+1: bassogog hyldet før aab - fcm. 
+2: aalborg: det gik stærkt, da christian bassogog i vinter forlod aab til fordel for den kinesiske klub henan jianye. 
+3: derfor nåede camerouneren ikke at sige farvel til aab-fansene på aalborg portland park. 
+2017
+11
+21
+3
+aalborg portland park
+aab fodbold#1
+aalborg#1
+4
+clusternr: 56*
+1: AALBORG: I onsdags spillede AaB sig videre til kvartfinalen i DBU Pokalen med en sejr over FC Helsingør, og i dag kan man selv afgøre, om man skal holde juleferie i den topseks, der efter Alka Superligaens grundspil vil give adgang til mesterskabsslutspillet.
+2: AALBORG: Uden brasilianeren Yann Rolim ville AaB for længst være sendt ud af fodboldens pokalturnering.
+3: Helsingør var foran, og stadionuret på Aalborg Portland Park skulle netop til at runde 90 minutter, da Rolim fra kanten af feltet huggede en returbold fladt i nettet til 1-1 mellem venner og fjender..
+2017
+12
+10
+7
+yann rolim
+fc københavn
+aab fodbold
+fc helsingør
+rasmus würtz
+aalborg
+dbu pokalen
+4
+clusternr: 55*
+1: Spørgsmålet er så, om ammunitionen er klar i samme omgang, for hverken Jannik Pohl eller Pavol Safranko overbeviste om, at de er klar til for alvor at bevæge sig mod toppen af Superligaens topscorerliste.
+2: Jannik Pohl har kæmpet med et ømt knæ, der gør, at han mangler de sidste fem procent af hans helt store force, farten, og Pavol Safranko er stadig bedre med ryggen til mål, end han er inde i boksen.
+3: Jakob Ahlmann presser sig på til positionen som venstre back, Pavol Safranko er en mulighed på bekostning af Jannik Pohl i angrebet, Yann Rolim konkurrerer med Frederik Børsting om venstrekanten, og endelig er det meget tæt mellem Patrick Kristensen og Kristoffer Pallesen på positionen som højre back..
+2018
+02
+02
+5
+pavol safranko
+yann rolim
+aab fodbold
+jakob ahlmann
+aalborg
+4
+clusternr: 26
+1: aalborg bedst til græs. 
+2: aalborg: fodboldspillerne i superligaen vil helst spille på naturligt græs. 
+3: de er ikke just begejstrede for at spille på kunstgræs. 
+2018
+02
+25
+2
+aalborg
+superligaen
+4
+clusternr: 30
+1: doktordisputats om dansk industri. 
+2: afhandlingen har titlen ”when china awakens…. 
+3: dansk multinational virksomhed i asien før anden verdenskrig” og er baseret på en kortlægning af ingeniørvirksomheden f. 
+2018
+02
+25
+1
+danmark

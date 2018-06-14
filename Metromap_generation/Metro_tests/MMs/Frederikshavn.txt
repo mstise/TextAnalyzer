@@ -1,0 +1,41 @@
+4
+4
+clusternr: 100
+1: jolle i knibe ud for frederikshavn sæby: lørdag aften blev sæby redningsstation alarmeret om, at en jolle med to mand om bord havde fået motorstop og var i knibe nær hirsholmene ud for frederikshavn. 
+2: situationen var farlig på grund af blæst og høje bølger, og bølgeskvulp medførte vand i jollen. 
+3: 
+2017
+07
+31
+1
+sæby
+4
+clusternr: 199
+1: konservative helt på toppen. 
+2: det konservative folkeparti i frederikshavn kommune går til det kommende byrådsvalg til valg med sloganet ”se muligheder” og vil arbejde for at gøre mulighederne til virkelighed - her illustreret med badehotellet på grenen. 
+3: 
+2017
+08
+31
+1
+frederikshavn kommune
+4
+clusternr: 221
+1: bliv klogere på arveret og testamente. 
+2: sæby: nu har du mulighed for at blive afklaret omkring arvereglerne, og hvordan du opretter et testamente, når manegen og sæby bibliotek får besøg af to jurister fra kræftens bekæmpelse mandag 11. 
+3: september klokken 14. 
+2017
+09
+30
+1
+sæby
+4
+clusternr: 502
+1: 64 procent offentligt ansatte i byrådet. 
+2: politik: i dag er 18 medlemmer af byrådet i frederikshavn kommune kommunalt eller offentligt ansatte. 
+3: det svarer til over 58 procent. 
+2017
+11
+30
+1
+frederikshavn kommune
